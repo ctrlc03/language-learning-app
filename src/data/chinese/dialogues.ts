@@ -1,0 +1,664 @@
+import type { DialogueLine } from '@/types';
+
+export interface Dialogue {
+  id: string;
+  title: string;
+  titleChinese: string;
+  setting: string;
+  lesson: number;
+  lines: DialogueLine[];
+}
+
+export const chineseDialogues: Dialogue[] = [
+  // ============================================================
+  // Lesson 3 - Pinyin & Adjectives
+  // ============================================================
+  {
+    id: 'dlg-l03-01',
+    title: 'Describing a Friend',
+    titleChinese: '形容朋友',
+    setting: 'Two classmates talk about a mutual friend.',
+    lesson: 3,
+    lines: [
+      { speaker: 'A', text: '你认识李明吗？', pinyin: 'Nǐ rènshi Lǐ Míng ma?', translation: 'Do you know Li Ming?' },
+      { speaker: 'B', text: '认识。他很高，也很帅。', pinyin: 'Rènshi. Tā hěn gāo, yě hěn shuài.', translation: 'Yes. He is very tall and also very handsome.' },
+      { speaker: 'A', text: '他聪明吗？', pinyin: 'Tā cōngming ma?', translation: 'Is he smart?' },
+      { speaker: 'B', text: '他很聪明，也很友好。', pinyin: 'Tā hěn cōngming, yě hěn yǒuhǎo.', translation: 'He is very smart and also very friendly.' },
+      { speaker: 'A', text: '太好了！我想认识他。', pinyin: 'Tài hǎo le! Wǒ xiǎng rènshi tā.', translation: 'Great! I want to get to know him.' },
+    ],
+  },
+  {
+    id: 'dlg-l03-02',
+    title: 'Talking About the Weather',
+    titleChinese: '谈天气',
+    setting: 'Two neighbors chat about today\'s weather.',
+    lesson: 3,
+    lines: [
+      { speaker: 'A', text: '今天天气怎么样？', pinyin: 'Jīntiān tiānqì zěnmeyàng?', translation: 'How is the weather today?' },
+      { speaker: 'B', text: '今天很热，也很闷。', pinyin: 'Jīntiān hěn rè, yě hěn mēn.', translation: 'Today is very hot and also stuffy.' },
+      { speaker: 'A', text: '明天呢？', pinyin: 'Míngtiān ne?', translation: 'What about tomorrow?' },
+      { speaker: 'B', text: '明天会凉快一点。', pinyin: 'Míngtiān huì liángkuai yìdiǎn.', translation: 'Tomorrow will be a bit cooler.' },
+      { speaker: 'A', text: '那太好了！今天太热了。', pinyin: 'Nà tài hǎo le! Jīntiān tài rè le.', translation: 'That\'s great! Today is too hot.' },
+    ],
+  },
+  {
+    id: 'dlg-l03-03',
+    title: 'Describing Things',
+    titleChinese: '形容东西',
+    setting: 'Two friends look at items in a shop window.',
+    lesson: 3,
+    lines: [
+      { speaker: 'A', text: '你看，那个包很好看！', pinyin: 'Nǐ kàn, nà ge bāo hěn hǎokàn!', translation: 'Look, that bag is very pretty!' },
+      { speaker: 'B', text: '是的，可是太贵了。', pinyin: 'Shì de, kěshì tài guì le.', translation: 'Yes, but it\'s too expensive.' },
+      { speaker: 'A', text: '这个红色的呢？很便宜。', pinyin: 'Zhè ge hóngsè de ne? Hěn piányi.', translation: 'How about this red one? It\'s very cheap.' },
+      { speaker: 'B', text: '红色的太小了。我喜欢大的。', pinyin: 'Hóngsè de tài xiǎo le. Wǒ xǐhuan dà de.', translation: 'The red one is too small. I like big ones.' },
+      { speaker: 'A', text: '那个蓝色的又大又便宜。', pinyin: 'Nà ge lánsè de yòu dà yòu piányi.', translation: 'That blue one is both big and cheap.' },
+      { speaker: 'B', text: '不错，我很喜欢！', pinyin: 'Búcuò, wǒ hěn xǐhuan!', translation: 'Not bad, I really like it!' },
+    ],
+  },
+  {
+    id: 'dlg-l03-04',
+    title: 'New Classmate',
+    titleChinese: '新同学',
+    setting: 'Students discuss a new classmate.',
+    lesson: 3,
+    lines: [
+      { speaker: 'A', text: '新来的同学是哪国人？', pinyin: 'Xīn lái de tóngxué shì nǎ guó rén?', translation: 'Where is the new classmate from?' },
+      { speaker: 'B', text: '她是法国人。', pinyin: 'Tā shì Fǎguó rén.', translation: 'She is French.' },
+      { speaker: 'A', text: '她漂亮吗？', pinyin: 'Tā piàoliang ma?', translation: 'Is she pretty?' },
+      { speaker: 'B', text: '很漂亮，头发长长的，眼睛大大的。', pinyin: 'Hěn piàoliang, tóufa chángcháng de, yǎnjing dàdà de.', translation: 'Very pretty, with long hair and big eyes.' },
+      { speaker: 'A', text: '她的中文好不好？', pinyin: 'Tā de Zhōngwén hǎo bu hǎo?', translation: 'Is her Chinese good?' },
+      { speaker: 'B', text: '还不错，她很努力。', pinyin: 'Hái búcuò, tā hěn nǔlì.', translation: 'Not bad, she works very hard.' },
+    ],
+  },
+
+  // ============================================================
+  // Lesson 5 - Time & Daily Schedule
+  // ============================================================
+  {
+    id: 'dlg-l05-01',
+    title: 'Morning Routine',
+    titleChinese: '早上的安排',
+    setting: 'Roommates discuss their morning plans.',
+    lesson: 5,
+    lines: [
+      { speaker: 'A', text: '你每天几点起床？', pinyin: 'Nǐ měitiān jǐ diǎn qǐchuáng?', translation: 'What time do you get up every day?' },
+      { speaker: 'B', text: '我六点半起床。你呢？', pinyin: 'Wǒ liù diǎn bàn qǐchuáng. Nǐ ne?', translation: 'I get up at 6:30. You?' },
+      { speaker: 'A', text: '我七点起床，然后吃早饭。', pinyin: 'Wǒ qī diǎn qǐchuáng, ránhòu chī zǎofàn.', translation: 'I get up at 7, then eat breakfast.' },
+      { speaker: 'B', text: '你几点上课？', pinyin: 'Nǐ jǐ diǎn shàngkè?', translation: 'What time do you start class?' },
+      { speaker: 'A', text: '八点上课。我得走了！', pinyin: 'Bā diǎn shàngkè. Wǒ děi zǒu le!', translation: 'Class starts at 8. I have to go!' },
+      { speaker: 'B', text: '再见，路上小心！', pinyin: 'Zàijiàn, lùshang xiǎoxīn!', translation: 'Bye, be careful on the way!' },
+    ],
+  },
+  {
+    id: 'dlg-l05-02',
+    title: 'Making Plans',
+    titleChinese: '做计划',
+    setting: 'Two friends make plans for the afternoon.',
+    lesson: 5,
+    lines: [
+      { speaker: 'A', text: '你下午有空吗？', pinyin: 'Nǐ xiàwǔ yǒu kòng ma?', translation: 'Are you free this afternoon?' },
+      { speaker: 'B', text: '下午两点到四点有课。四点以后有空。', pinyin: 'Xiàwǔ liǎng diǎn dào sì diǎn yǒu kè. Sì diǎn yǐhòu yǒu kòng.', translation: 'I have class from 2 to 4. I\'m free after 4.' },
+      { speaker: 'A', text: '那我们四点半去打篮球，好不好？', pinyin: 'Nà wǒmen sì diǎn bàn qù dǎ lánqiú, hǎo bu hǎo?', translation: 'Then let\'s go play basketball at 4:30, OK?' },
+      { speaker: 'B', text: '好的！在哪儿见面？', pinyin: 'Hǎode! Zài nǎr jiànmiàn?', translation: 'OK! Where shall we meet?' },
+      { speaker: 'A', text: '在学校门口见。', pinyin: 'Zài xuéxiào ménkǒu jiàn.', translation: 'Let\'s meet at the school gate.' },
+      { speaker: 'B', text: '没问题，四点半见！', pinyin: 'Méi wèntí, sì diǎn bàn jiàn!', translation: 'No problem, see you at 4:30!' },
+    ],
+  },
+  {
+    id: 'dlg-l05-03',
+    title: 'Daily Schedule',
+    titleChinese: '每天的日程',
+    setting: 'A student describes their typical day to a language partner.',
+    lesson: 5,
+    lines: [
+      { speaker: 'A', text: '你每天都很忙吗？', pinyin: 'Nǐ měitiān dōu hěn máng ma?', translation: 'Are you busy every day?' },
+      { speaker: 'B', text: '是的。上午我上课，下午我去图书馆。', pinyin: 'Shì de. Shàngwǔ wǒ shàngkè, xiàwǔ wǒ qù túshūguǎn.', translation: 'Yes. In the morning I have class, in the afternoon I go to the library.' },
+      { speaker: 'A', text: '晚上做什么？', pinyin: 'Wǎnshang zuò shénme?', translation: 'What do you do in the evening?' },
+      { speaker: 'B', text: '晚上我先做作业，然后看电视。', pinyin: 'Wǎnshang wǒ xiān zuò zuòyè, ránhòu kàn diànshì.', translation: 'In the evening I do homework first, then watch TV.' },
+      { speaker: 'A', text: '你几点睡觉？', pinyin: 'Nǐ jǐ diǎn shuìjiào?', translation: 'What time do you go to sleep?' },
+      { speaker: 'B', text: '十一点左右睡觉。太晚了，我知道！', pinyin: 'Shíyī diǎn zuǒyòu shuìjiào. Tài wǎn le, wǒ zhīdào!', translation: 'Around 11. Too late, I know!' },
+    ],
+  },
+
+  // ============================================================
+  // Lesson 6 - Family & Occupations
+  // ============================================================
+  {
+    id: 'dlg-l06-01',
+    title: 'Introducing Family',
+    titleChinese: '介绍家人',
+    setting: 'A student introduces their family to a new friend.',
+    lesson: 6,
+    lines: [
+      { speaker: 'A', text: '你家有几口人？', pinyin: 'Nǐ jiā yǒu jǐ kǒu rén?', translation: 'How many people are in your family?' },
+      { speaker: 'B', text: '我家有四口人：爸爸、妈妈、姐姐和我。', pinyin: 'Wǒ jiā yǒu sì kǒu rén: bàba, māma, jiějie hé wǒ.', translation: 'There are four people in my family: dad, mom, older sister, and me.' },
+      { speaker: 'A', text: '你爸爸做什么工作？', pinyin: 'Nǐ bàba zuò shénme gōngzuò?', translation: 'What does your dad do for work?' },
+      { speaker: 'B', text: '我爸爸是医生，我妈妈是老师。', pinyin: 'Wǒ bàba shì yīshēng, wǒ māma shì lǎoshī.', translation: 'My dad is a doctor, my mom is a teacher.' },
+      { speaker: 'A', text: '你姐姐呢？她也工作了吗？', pinyin: 'Nǐ jiějie ne? Tā yě gōngzuò le ma?', translation: 'What about your sister? Does she work too?' },
+      { speaker: 'B', text: '她还在上大学，学的是法律。', pinyin: 'Tā hái zài shàng dàxué, xué de shì fǎlǜ.', translation: 'She is still in college, studying law.' },
+    ],
+  },
+  {
+    id: 'dlg-l06-02',
+    title: 'Talking About Jobs',
+    titleChinese: '谈工作',
+    setting: 'Two people meet at a party and discuss their jobs.',
+    lesson: 6,
+    lines: [
+      { speaker: 'A', text: '你好！你是做什么工作的？', pinyin: 'Nǐ hǎo! Nǐ shì zuò shénme gōngzuò de?', translation: 'Hello! What do you do for work?' },
+      { speaker: 'B', text: '我是程序员，在一家科技公司上班。你呢？', pinyin: 'Wǒ shì chéngxùyuán, zài yì jiā kējì gōngsī shàngbān. Nǐ ne?', translation: 'I\'m a programmer, I work at a tech company. You?' },
+      { speaker: 'A', text: '我是记者。工作很忙，但是很有意思。', pinyin: 'Wǒ shì jìzhě. Gōngzuò hěn máng, dànshì hěn yǒu yìsi.', translation: 'I\'m a journalist. Work is busy, but very interesting.' },
+      { speaker: 'B', text: '你每天都要写文章吗？', pinyin: 'Nǐ měitiān dōu yào xiě wénzhāng ma?', translation: 'Do you write articles every day?' },
+      { speaker: 'A', text: '差不多。有时候也要出去采访。', pinyin: 'Chàbuduō. Yǒu shíhou yě yào chūqù cǎifǎng.', translation: 'More or less. Sometimes I also go out for interviews.' },
+    ],
+  },
+  {
+    id: 'dlg-l06-03',
+    title: 'Family Photo',
+    titleChinese: '家庭照片',
+    setting: 'A friend shows a family photo and explains who everyone is.',
+    lesson: 6,
+    lines: [
+      { speaker: 'A', text: '这是你的家庭照片吗？', pinyin: 'Zhè shì nǐ de jiātíng zhàopiàn ma?', translation: 'Is this your family photo?' },
+      { speaker: 'B', text: '是的。这是我爷爷和奶奶。', pinyin: 'Shì de. Zhè shì wǒ yéye hé nǎinai.', translation: 'Yes. This is my grandpa and grandma.' },
+      { speaker: 'A', text: '他们看起来很年轻！', pinyin: 'Tāmen kàn qǐlái hěn niánqīng!', translation: 'They look very young!' },
+      { speaker: 'B', text: '谢谢。这是我弟弟，他今年十岁。', pinyin: 'Xièxie. Zhè shì wǒ dìdi, tā jīnnián shí suì.', translation: 'Thanks. This is my younger brother, he is 10 this year.' },
+      { speaker: 'A', text: '他长得很可爱！你们一家人都很幸福。', pinyin: 'Tā zhǎng de hěn kě\'ài! Nǐmen yì jiā rén dōu hěn xìngfú.', translation: 'He is so cute! Your whole family looks very happy.' },
+      { speaker: 'B', text: '谢谢你！', pinyin: 'Xièxie nǐ!', translation: 'Thank you!' },
+    ],
+  },
+
+  // ============================================================
+  // Lesson 7 - Shopping & Money
+  // ============================================================
+  {
+    id: 'dlg-l07-01',
+    title: 'Buying Clothes',
+    titleChinese: '买衣服',
+    setting: 'A customer shops for clothes at a store.',
+    lesson: 7,
+    lines: [
+      { speaker: 'A (Customer)', text: '请问，这件衣服多少钱？', pinyin: 'Qǐngwèn, zhè jiàn yīfu duōshao qián?', translation: 'Excuse me, how much is this piece of clothing?' },
+      { speaker: 'B (Seller)', text: '这件200块。', pinyin: 'Zhè jiàn liǎng bǎi kuài.', translation: 'This one is 200 yuan.' },
+      { speaker: 'A', text: '太贵了！能便宜一点吗？', pinyin: 'Tài guì le! Néng piányi yìdiǎn ma?', translation: 'Too expensive! Can it be cheaper?' },
+      { speaker: 'B', text: '最少160块。', pinyin: 'Zuìshǎo yìbǎi liùshí kuài.', translation: 'At least 160 yuan.' },
+      { speaker: 'A', text: '150块行不行？', pinyin: 'Yìbǎi wǔshí kuài xíng bu xíng?', translation: 'How about 150 yuan?' },
+      { speaker: 'B', text: '好吧，150块。您要什么颜色？', pinyin: 'Hǎo ba, yìbǎi wǔshí kuài. Nín yào shénme yánsè?', translation: 'Fine, 150 yuan. What color do you want?' },
+      { speaker: 'A', text: '我要黑色的。', pinyin: 'Wǒ yào hēisè de.', translation: 'I want the black one.' },
+    ],
+  },
+  {
+    id: 'dlg-l07-02',
+    title: 'At the Supermarket',
+    titleChinese: '在超市',
+    setting: 'A customer asks for help finding items in a supermarket.',
+    lesson: 7,
+    lines: [
+      { speaker: 'A (Customer)', text: '请问，水果在哪儿？', pinyin: 'Qǐngwèn, shuǐguǒ zài nǎr?', translation: 'Excuse me, where is the fruit?' },
+      { speaker: 'B (Staff)', text: '在那边，第三排。', pinyin: 'Zài nàbiān, dì sān pái.', translation: 'Over there, third aisle.' },
+      { speaker: 'A', text: '谢谢。苹果怎么卖？', pinyin: 'Xièxie. Píngguǒ zěnme mài?', translation: 'Thanks. How much are the apples?' },
+      { speaker: 'B', text: '苹果8块钱一斤。', pinyin: 'Píngguǒ bā kuài qián yì jīn.', translation: 'Apples are 8 yuan per jin.' },
+      { speaker: 'A', text: '我要两斤苹果和一斤香蕉。', pinyin: 'Wǒ yào liǎng jīn píngguǒ hé yì jīn xiāngjiāo.', translation: 'I want two jin of apples and one jin of bananas.' },
+      { speaker: 'B', text: '一共22块。在那边付钱。', pinyin: 'Yígòng èrshí\'èr kuài. Zài nàbiān fù qián.', translation: '22 yuan total. Pay over there.' },
+    ],
+  },
+  {
+    id: 'dlg-l07-03',
+    title: 'Bargaining at a Market',
+    titleChinese: '讨价还价',
+    setting: 'A tourist bargains at a market stall.',
+    lesson: 7,
+    lines: [
+      { speaker: 'A (Seller)', text: '看看吧！这些帽子很好看！', pinyin: 'Kànkan ba! Zhèxiē màozi hěn hǎokàn!', translation: 'Take a look! These hats are very nice!' },
+      { speaker: 'B (Customer)', text: '这个帽子多少钱？', pinyin: 'Zhè ge màozi duōshao qián?', translation: 'How much is this hat?' },
+      { speaker: 'A', text: '80块。', pinyin: 'Bāshí kuài.', translation: '80 yuan.' },
+      { speaker: 'B', text: '80块太贵了！40块卖不卖？', pinyin: 'Bāshí kuài tài guì le! Sìshí kuài mài bu mài?', translation: '80 yuan is too expensive! Will you sell for 40?' },
+      { speaker: 'A', text: '40块不行。最少60块。', pinyin: 'Sìshí kuài bù xíng. Zuìshǎo liùshí kuài.', translation: '40 yuan won\'t work. At least 60.' },
+      { speaker: 'B', text: '50块，好不好？', pinyin: 'Wǔshí kuài, hǎo bu hǎo?', translation: '50 yuan, OK?' },
+      { speaker: 'A', text: '好吧好吧，50就50。', pinyin: 'Hǎo ba hǎo ba, wǔshí jiù wǔshí.', translation: 'Fine fine, 50 it is.' },
+    ],
+  },
+
+  // ============================================================
+  // Lesson 8 - Chinese New Year & Mobile Payment
+  // ============================================================
+  {
+    id: 'dlg-l08-01',
+    title: 'New Year Greetings',
+    titleChinese: '新年祝福',
+    setting: 'Friends exchange Chinese New Year greetings.',
+    lesson: 8,
+    lines: [
+      { speaker: 'A', text: '新年快乐！恭喜发财！', pinyin: 'Xīnnián kuàilè! Gōngxǐ fācái!', translation: 'Happy New Year! Wishing you prosperity!' },
+      { speaker: 'B', text: '新年快乐！你今年回家过年吗？', pinyin: 'Xīnnián kuàilè! Nǐ jīnnián huí jiā guònián ma?', translation: 'Happy New Year! Are you going home for New Year this year?' },
+      { speaker: 'A', text: '是的，我买了火车票，明天回去。', pinyin: 'Shì de, wǒ mǎi le huǒchē piào, míngtiān huíqù.', translation: 'Yes, I bought a train ticket, going back tomorrow.' },
+      { speaker: 'B', text: '你们家怎么过春节？', pinyin: 'Nǐmen jiā zěnme guò Chūnjié?', translation: 'How does your family celebrate Spring Festival?' },
+      { speaker: 'A', text: '我们一起吃年夜饭，放鞭炮，看春晚。', pinyin: 'Wǒmen yìqǐ chī niányèfàn, fàng biānpào, kàn Chūnwǎn.', translation: 'We eat New Year\'s Eve dinner together, set off firecrackers, and watch the Spring Festival Gala.' },
+      { speaker: 'B', text: '真好！祝你一路平安！', pinyin: 'Zhēn hǎo! Zhù nǐ yílù píng\'ān!', translation: 'How nice! Wish you a safe journey!' },
+    ],
+  },
+  {
+    id: 'dlg-l08-02',
+    title: 'Scanning to Pay',
+    titleChinese: '扫码支付',
+    setting: 'A customer pays using mobile payment at a convenience store.',
+    lesson: 8,
+    lines: [
+      { speaker: 'A (Cashier)', text: '一共18块5毛。', pinyin: 'Yígòng shíbā kuài wǔ máo.', translation: 'That\'s 18.50 yuan total.' },
+      { speaker: 'B (Customer)', text: '可以用微信支付吗？', pinyin: 'Kěyǐ yòng Wēixìn zhīfù ma?', translation: 'Can I pay with WeChat Pay?' },
+      { speaker: 'A', text: '可以，你扫我还是我扫你？', pinyin: 'Kěyǐ, nǐ sǎo wǒ háishi wǒ sǎo nǐ?', translation: 'Sure, do you scan me or I scan you?' },
+      { speaker: 'B', text: '我扫你吧。', pinyin: 'Wǒ sǎo nǐ ba.', translation: 'I\'ll scan you.' },
+      { speaker: 'A', text: '好，这是二维码。', pinyin: 'Hǎo, zhè shì èrwéimǎ.', translation: 'OK, here is the QR code.' },
+      { speaker: 'B', text: '付好了。', pinyin: 'Fù hǎo le.', translation: 'Payment done.' },
+      { speaker: 'A', text: '收到了，谢谢！', pinyin: 'Shōudào le, xièxie!', translation: 'Received, thanks!' },
+    ],
+  },
+  {
+    id: 'dlg-l08-03',
+    title: 'Red Envelopes',
+    titleChinese: '红包',
+    setting: 'Colleagues talk about red envelopes during Chinese New Year.',
+    lesson: 8,
+    lines: [
+      { speaker: 'A', text: '你收到红包了吗？', pinyin: 'Nǐ shōudào hóngbāo le ma?', translation: 'Did you receive any red envelopes?' },
+      { speaker: 'B', text: '收到了！爷爷奶奶给了我一个大红包。', pinyin: 'Shōudào le! Yéye nǎinai gěi le wǒ yí ge dà hóngbāo.', translation: 'Yes! Grandpa and grandma gave me a big red envelope.' },
+      { speaker: 'A', text: '现在很多人在微信上发红包。', pinyin: 'Xiànzài hěn duō rén zài Wēixìn shang fā hóngbāo.', translation: 'Nowadays many people send red envelopes on WeChat.' },
+      { speaker: 'B', text: '对，我也在群里抢了几个红包。', pinyin: 'Duì, wǒ yě zài qúnlǐ qiǎng le jǐ ge hóngbāo.', translation: 'Right, I also grabbed a few red envelopes in group chats.' },
+      { speaker: 'A', text: '哈哈，抢到多少钱？', pinyin: 'Hāhā, qiǎng dào duōshao qián?', translation: 'Haha, how much did you get?' },
+      { speaker: 'B', text: '不多，加起来才五块钱。', pinyin: 'Bù duō, jiā qǐlái cái wǔ kuài qián.', translation: 'Not much, only 5 yuan altogether.' },
+    ],
+  },
+  {
+    id: 'dlg-l08-04',
+    title: 'Spring Festival Traditions',
+    titleChinese: '春节传统',
+    setting: 'A Chinese student explains Spring Festival traditions to a foreign friend.',
+    lesson: 8,
+    lines: [
+      { speaker: 'A', text: '春节你们为什么要贴春联？', pinyin: 'Chūnjié nǐmen wèishénme yào tiē chūnlián?', translation: 'Why do you put up spring couplets during Spring Festival?' },
+      { speaker: 'B', text: '因为春联代表好运。我们还要贴"福"字。', pinyin: 'Yīnwèi chūnlián dàibiǎo hǎoyùn. Wǒmen hái yào tiē "fú" zì.', translation: 'Because spring couplets represent good luck. We also put up the character "fu" (blessing).' },
+      { speaker: 'A', text: '我看到有人倒着贴"福"字，为什么？', pinyin: 'Wǒ kàndào yǒu rén dàozhe tiē "fú" zì, wèishénme?', translation: 'I saw some people put the "fu" character upside down, why?' },
+      { speaker: 'B', text: '因为"倒"和"到"发音一样，意思是福到了！', pinyin: 'Yīnwèi "dào" hé "dào" fāyīn yíyàng, yìsi shì fú dào le!', translation: 'Because "upside down" and "arrive" sound the same, it means blessings have arrived!' },
+      { speaker: 'A', text: '太有意思了！中国文化真丰富。', pinyin: 'Tài yǒu yìsi le! Zhōngguó wénhuà zhēn fēngfù.', translation: 'So interesting! Chinese culture is really rich.' },
+    ],
+  },
+
+  // ============================================================
+  // Lesson 9 - Review & Advanced Topics
+  // ============================================================
+  {
+    id: 'dlg-l09-01',
+    title: 'Lost Phone',
+    titleChinese: '手机丢了',
+    setting: 'Someone has lost their phone and asks for help.',
+    lesson: 9,
+    lines: [
+      { speaker: 'A', text: '糟糕！我的手机不见了！', pinyin: 'Zāogāo! Wǒ de shǒujī bújiàn le!', translation: 'Oh no! My phone is gone!' },
+      { speaker: 'B', text: '别着急。你最后一次用手机是什么时候？', pinyin: 'Bié zhāojí. Nǐ zuìhòu yí cì yòng shǒujī shì shénme shíhou?', translation: 'Don\'t worry. When was the last time you used your phone?' },
+      { speaker: 'A', text: '在餐馆吃饭的时候，我用手机付了钱。', pinyin: 'Zài cānguǎn chīfàn de shíhou, wǒ yòng shǒujī fù le qián.', translation: 'When I was eating at the restaurant, I used my phone to pay.' },
+      { speaker: 'B', text: '那你回餐馆看看吧。可能忘在那儿了。', pinyin: 'Nà nǐ huí cānguǎn kànkan ba. Kěnéng wàng zài nàr le.', translation: 'Then go back to the restaurant and check. Maybe you left it there.' },
+      { speaker: 'A', text: '好的，我现在就去。谢谢你！', pinyin: 'Hǎode, wǒ xiànzài jiù qù. Xièxie nǐ!', translation: 'OK, I\'ll go right now. Thank you!' },
+      { speaker: 'B', text: '不客气。希望你能找到！', pinyin: 'Bú kèqi. Xīwàng nǐ néng zhǎodào!', translation: 'You\'re welcome. Hope you find it!' },
+    ],
+  },
+  {
+    id: 'dlg-l09-02',
+    title: 'Seeing a Doctor',
+    titleChinese: '看医生',
+    setting: 'A patient visits the doctor with a cold.',
+    lesson: 9,
+    lines: [
+      { speaker: 'A (Doctor)', text: '你哪儿不舒服？', pinyin: 'Nǐ nǎr bù shūfu?', translation: 'What\'s bothering you?' },
+      { speaker: 'B (Patient)', text: '我头疼，还有点发烧。', pinyin: 'Wǒ tóu téng, hái yǒudiǎn fāshāo.', translation: 'I have a headache and a slight fever.' },
+      { speaker: 'A', text: '从什么时候开始的？', pinyin: 'Cóng shénme shíhou kāishǐ de?', translation: 'When did it start?' },
+      { speaker: 'B', text: '从昨天晚上开始的。', pinyin: 'Cóng zuótiān wǎnshang kāishǐ de.', translation: 'Since last night.' },
+      { speaker: 'A', text: '你感冒了。多喝水，多休息。我给你开点药。', pinyin: 'Nǐ gǎnmào le. Duō hē shuǐ, duō xiūxi. Wǒ gěi nǐ kāi diǎn yào.', translation: 'You have a cold. Drink more water, rest more. I\'ll prescribe some medicine.' },
+      { speaker: 'B', text: '好的，谢谢医生。', pinyin: 'Hǎode, xièxie yīshēng.', translation: 'OK, thank you doctor.' },
+    ],
+  },
+  {
+    id: 'dlg-l09-03',
+    title: 'Renting an Apartment',
+    titleChinese: '租房子',
+    setting: 'Someone inquires about renting an apartment.',
+    lesson: 9,
+    lines: [
+      { speaker: 'A', text: '请问，这个房子还出租吗？', pinyin: 'Qǐngwèn, zhè ge fángzi hái chūzū ma?', translation: 'Excuse me, is this apartment still for rent?' },
+      { speaker: 'B (Landlord)', text: '是的。一个月3000块，水电费另算。', pinyin: 'Shì de. Yí ge yuè sānqiān kuài, shuǐdiànfèi lìng suàn.', translation: 'Yes. 3000 yuan per month, utilities extra.' },
+      { speaker: 'A', text: '有家具吗？', pinyin: 'Yǒu jiājù ma?', translation: 'Is it furnished?' },
+      { speaker: 'B', text: '有床、桌子、衣柜和空调。', pinyin: 'Yǒu chuáng, zhuōzi, yīguì hé kōngtiáo.', translation: 'There is a bed, desk, wardrobe, and air conditioning.' },
+      { speaker: 'A', text: '能养宠物吗？', pinyin: 'Néng yǎng chǒngwù ma?', translation: 'Can I keep pets?' },
+      { speaker: 'B', text: '小的可以，大的不行。', pinyin: 'Xiǎo de kěyǐ, dà de bù xíng.', translation: 'Small ones are OK, large ones are not.' },
+      { speaker: 'A', text: '好的，我考虑一下。', pinyin: 'Hǎode, wǒ kǎolǜ yíxià.', translation: 'OK, let me think about it.' },
+    ],
+  },
+
+  // ============================================================
+  // Lesson 10 - Asking for Directions
+  // ============================================================
+  {
+    id: 'dlg-l10-01',
+    title: 'Finding a Bank',
+    titleChinese: '找银行',
+    setting: 'A pedestrian asks for directions to the bank.',
+    lesson: 10,
+    lines: [
+      { speaker: 'A', text: '请问，附近有银行吗？', pinyin: 'Qǐngwèn, fùjìn yǒu yínháng ma?', translation: 'Excuse me, is there a bank nearby?' },
+      { speaker: 'B', text: '有。你一直往前走，到第二个路口左转。', pinyin: 'Yǒu. Nǐ yìzhí wǎng qián zǒu, dào dì èr ge lùkǒu zuǒ zhuǎn.', translation: 'Yes. Go straight ahead and turn left at the second intersection.' },
+      { speaker: 'A', text: '左转以后呢？', pinyin: 'Zuǒ zhuǎn yǐhòu ne?', translation: 'After turning left?' },
+      { speaker: 'B', text: '走大概五分钟，银行就在右边。', pinyin: 'Zǒu dàgài wǔ fēnzhōng, yínháng jiù zài yòubiān.', translation: 'Walk about 5 minutes, the bank is on the right side.' },
+      { speaker: 'A', text: '远不远？走路能到吗？', pinyin: 'Yuǎn bu yuǎn? Zǒulù néng dào ma?', translation: 'Is it far? Can I walk there?' },
+      { speaker: 'B', text: '不远，走路十分钟左右就到了。', pinyin: 'Bù yuǎn, zǒulù shí fēnzhōng zuǒyòu jiù dào le.', translation: 'Not far, about 10 minutes on foot.' },
+      { speaker: 'A', text: '谢谢你！', pinyin: 'Xièxie nǐ!', translation: 'Thank you!' },
+    ],
+  },
+  {
+    id: 'dlg-l10-02',
+    title: 'Taking the Subway',
+    titleChinese: '坐地铁',
+    setting: 'A tourist asks how to get to a destination by subway.',
+    lesson: 10,
+    lines: [
+      { speaker: 'A', text: '请问，去天安门怎么走？', pinyin: 'Qǐngwèn, qù Tiān\'ānmén zěnme zǒu?', translation: 'Excuse me, how do I get to Tiananmen?' },
+      { speaker: 'B', text: '你可以坐地铁。这儿有地铁站。', pinyin: 'Nǐ kěyǐ zuò dìtiě. Zhèr yǒu dìtiě zhàn.', translation: 'You can take the subway. There\'s a subway station here.' },
+      { speaker: 'A', text: '坐几号线？', pinyin: 'Zuò jǐ hào xiàn?', translation: 'Which line should I take?' },
+      { speaker: 'B', text: '坐一号线，到天安门东站下车。', pinyin: 'Zuò yī hào xiàn, dào Tiān\'ānmén Dōng zhàn xià chē.', translation: 'Take Line 1, get off at Tiananmen East station.' },
+      { speaker: 'A', text: '要换乘吗？', pinyin: 'Yào huànchéng ma?', translation: 'Do I need to transfer?' },
+      { speaker: 'B', text: '不用换乘，直接到。大概三站就到了。', pinyin: 'Búyòng huànchéng, zhíjiē dào. Dàgài sān zhàn jiù dào le.', translation: 'No need to transfer, it goes directly. About 3 stops.' },
+    ],
+  },
+  {
+    id: 'dlg-l10-03',
+    title: 'Taking a Taxi',
+    titleChinese: '打车',
+    setting: 'A passenger gives directions to a taxi driver.',
+    lesson: 10,
+    lines: [
+      { speaker: 'A (Passenger)', text: '师傅，去火车站。', pinyin: 'Shīfu, qù huǒchē zhàn.', translation: 'Driver, to the train station please.' },
+      { speaker: 'B (Driver)', text: '好的。走哪条路？', pinyin: 'Hǎode. Zǒu nǎ tiáo lù?', translation: 'OK. Which road should I take?' },
+      { speaker: 'A', text: '走大路吧，快一点。', pinyin: 'Zǒu dàlù ba, kuài yìdiǎn.', translation: 'Take the main road, it\'s faster.' },
+      { speaker: 'B', text: '现在堵车，走小路可能更快。', pinyin: 'Xiànzài dǔchē, zǒu xiǎolù kěnéng gèng kuài.', translation: 'There\'s traffic now, side roads might be faster.' },
+      { speaker: 'A', text: '那你决定吧。我两点的火车。', pinyin: 'Nà nǐ juédìng ba. Wǒ liǎng diǎn de huǒchē.', translation: 'Then you decide. My train is at 2 o\'clock.' },
+      { speaker: 'B', text: '没问题，肯定来得及。', pinyin: 'Méi wèntí, kěndìng lái de jí.', translation: 'No problem, you\'ll definitely make it in time.' },
+    ],
+  },
+
+  // ============================================================
+  // Lesson 11 - Class Notes & Dialogues (existing)
+  // ============================================================
+  {
+    id: 'dlg-l11-01',
+    title: 'At a Restaurant',
+    titleChinese: '在餐馆',
+    setting: 'A waiter greets a customer at a restaurant.',
+    lesson: 11,
+    lines: [
+      { speaker: 'A (Waiter)', text: '欢迎光临！请问，您想喝点儿什么？', pinyin: 'Huānyíng guānglín! Qǐngwèn, nín xiǎng hē diǎnr shénme?', translation: 'Welcome! Excuse me, what would you like to drink?' },
+      { speaker: 'B (Customer)', text: '我想喝咖啡。', pinyin: 'Wǒ xiǎng hē kāfēi.', translation: 'I want to drink coffee.' },
+      { speaker: 'A', text: '好的，大杯还是小杯？', pinyin: 'Hǎode, dà bēi háishi xiǎo bēi?', translation: 'OK, large or small cup?' },
+      { speaker: 'B', text: '小杯，谢谢。', pinyin: 'Xiǎo bēi, xièxie.', translation: 'Small cup, thanks.' },
+    ],
+  },
+  {
+    id: 'dlg-l11-02',
+    title: 'Ordering Food',
+    titleChinese: '点菜',
+    setting: 'Two friends decide what to eat.',
+    lesson: 11,
+    lines: [
+      { speaker: 'A', text: '你想吃什么？', pinyin: 'Nǐ xiǎng chī shénme?', translation: 'What do you want to eat?' },
+      { speaker: 'B', text: '我想吃饺子。你呢？', pinyin: 'Wǒ xiǎng chī jiǎozi. Nǐ ne?', translation: 'I want to eat dumplings. How about you?' },
+      { speaker: 'A', text: '我不想吃饺子，我想吃面条。', pinyin: 'Wǒ bù xiǎng chī jiǎozi, wǒ xiǎng chī miàntiáo.', translation: "I don't want dumplings, I want noodles." },
+      { speaker: 'B', text: '那我们点一份饺子，一份面条。', pinyin: 'Nà wǒmen diǎn yī fèn jiǎozi, yī fèn miàntiáo.', translation: "Then let's order one serving of dumplings and one of noodles." },
+      { speaker: 'A', text: '好主意！', pinyin: 'Hǎo zhǔyì!', translation: 'Good idea!' },
+    ],
+  },
+  {
+    id: 'dlg-l11-03',
+    title: 'Deciding What to Eat',
+    titleChinese: '决定吃什么',
+    setting: 'Two people decide where and what to eat.',
+    lesson: 11,
+    lines: [
+      { speaker: 'A', text: '今天吃什么？米饭还是面条？', pinyin: 'Jīntiān chī shénme? Mǐfàn háishi miàntiáo?', translation: 'What shall we eat today? Rice or noodles?' },
+      { speaker: 'B', text: '我不想吃米饭。', pinyin: 'Wǒ bù xiǎng chī mǐfàn.', translation: "I don't want rice." },
+      { speaker: 'A', text: '那我们吃面条吧。', pinyin: 'Nà wǒmen chī miàntiáo ba.', translation: "Then let's eat noodles." },
+      { speaker: 'B', text: '好的，怎么样？去那个饭馆？', pinyin: 'Hǎode, zěnmeyàng? Qù nà ge fànguǎn?', translation: 'OK, what do you think? Go to that restaurant?' },
+      { speaker: 'A', text: '那个饭馆很好，咱们去吧！', pinyin: 'Nà ge fànguǎn hěn hǎo, zánmen qù ba!', translation: "That restaurant is great, let's go!" },
+    ],
+  },
+  {
+    id: 'dlg-l11-04',
+    title: 'Paying the Bill',
+    titleChinese: '付钱',
+    setting: 'A customer pays the bill at a restaurant.',
+    lesson: 11,
+    lines: [
+      { speaker: 'A (Customer)', text: '一共多少钱？', pinyin: 'Yígòng duōshao qián?', translation: 'How much in total?' },
+      { speaker: 'B (Waiter)', text: '一共45块。', pinyin: 'Yígòng sìshíwǔ kuài.', translation: '45 yuan in total.' },
+      { speaker: 'A', text: '你们可以刷卡吗？', pinyin: 'Nǐmen kěyǐ shuākǎ ma?', translation: 'Can I pay by card?' },
+      { speaker: 'B', text: '可以。现金还是刷卡？', pinyin: 'Kěyǐ. Xiànjīn háishi shuākǎ?', translation: 'Yes. Cash or card?' },
+      { speaker: 'A', text: '刷卡。', pinyin: 'Shuākǎ.', translation: 'Card.' },
+      { speaker: 'B', text: '好的，谢谢光临！', pinyin: 'Hǎode, xièxie guānglín!', translation: 'OK, thank you for coming!' },
+    ],
+  },
+  {
+    id: 'dlg-l11-05',
+    title: 'At a Cafe',
+    titleChinese: '在咖啡馆',
+    setting: 'A customer orders tea at a cafe with a special price.',
+    lesson: 11,
+    lines: [
+      { speaker: 'A (Waiter)', text: '请问，您想喝点儿什么？', pinyin: 'Qǐngwèn, nín xiǎng hē diǎnr shénme?', translation: 'What would you like to drink?' },
+      { speaker: 'B (Customer)', text: '你们有什么茶？', pinyin: 'Nǐmen yǒu shénme chá?', translation: 'What teas do you have?' },
+      { speaker: 'A', text: '我们有红茶和绿茶。', pinyin: 'Wǒmen yǒu hóngchá hé lǜchá.', translation: 'We have black tea and green tea.' },
+      { speaker: 'B', text: '红茶多少钱？', pinyin: 'Hóngchá duōshao qián?', translation: 'How much is the black tea?' },
+      { speaker: 'A', text: '红茶15块，今天特价12块。', pinyin: 'Hóngchá shíwǔ kuài, jīntiān tèjià shí\'èr kuài.', translation: 'Black tea is 15 yuan, today special price 12 yuan.' },
+      { speaker: 'B', text: '真便宜！那我要一杯红茶。', pinyin: 'Zhēn piányi! Nà wǒ yào yī bēi hóngchá.', translation: 'Really cheap! Then I\'ll have a cup of black tea.' },
+      { speaker: 'A', text: '好的，请稍等。', pinyin: 'Hǎode, qǐng shāo děng.', translation: 'OK, please wait a moment.' },
+    ],
+  },
+  {
+    id: 'dlg-l11-06',
+    title: 'Weekend Plans',
+    titleChinese: '周末计划',
+    setting: 'Two friends discuss weekend plans.',
+    lesson: 11,
+    lines: [
+      { speaker: 'A', text: '周末你想做什么？', pinyin: 'Zhōumò nǐ xiǎng zuò shénme?', translation: 'What do you want to do this weekend?' },
+      { speaker: 'B', text: '我想去超市买衣服。你呢？', pinyin: 'Wǒ xiǎng qù chāoshì mǎi yīfu. Nǐ ne?', translation: 'I want to go to the supermarket to buy clothes. You?' },
+      { speaker: 'A', text: '我想去游泳。', pinyin: 'Wǒ xiǎng qù yóuyǒng.', translation: 'I want to go swimming.' },
+      { speaker: 'B', text: '那下午我们一起去超市，怎么样？', pinyin: 'Nà xiàwǔ wǒmen yīqǐ qù chāoshì, zěnmeyàng?', translation: 'Then in the afternoon we go to the supermarket together, how about it?' },
+      { speaker: 'A', text: '好主意！', pinyin: 'Hǎo zhǔyì!', translation: 'Good idea!' },
+    ],
+  },
+
+  // ============================================================
+  // Lesson 12 - Ordering Food & Drinks (existing)
+  // ============================================================
+  {
+    id: 'dlg-notes-08',
+    title: 'Buying Watermelon',
+    titleChinese: '买西瓜',
+    setting: 'A customer bargains and buys watermelon at a market stall.',
+    lesson: 12,
+    lines: [
+      { speaker: 'A (Seller)', text: '西瓜是3块9毛9一斤。', pinyin: 'Xīguā shì sān kuài jiǔ máo jiǔ yì jīn.', translation: 'Watermelon is 3.99 yuan per jin.' },
+      { speaker: 'A', text: '你买一个还是半个？', pinyin: 'Nǐ mǎi yí ge háishi bàn ge?', translation: 'Do you want a whole one or half?' },
+      { speaker: 'B (Customer)', text: '我要一个西瓜。', pinyin: 'Wǒ yào yí ge xīguā.', translation: 'I want one watermelon.' },
+      { speaker: 'A', text: '好的，这个西瓜8斤，一共31块吧。', pinyin: 'Hǎode, zhè ge xīguā bā jīn, yígòng sānshíyī kuài ba.', translation: "OK, this watermelon is 8 jin, let's say 31 yuan total." },
+      { speaker: 'B', text: '我给你32块。', pinyin: 'Wǒ gěi nǐ sānshí\'èr kuài.', translation: "I'll give you 32 yuan." },
+      { speaker: 'A', text: '找您一块。谢谢！', pinyin: 'Zhǎo nín yí kuài. Xièxie!', translation: "Here's 1 yuan change. Thanks!" },
+      { speaker: 'B', text: '不客气。', pinyin: 'Bú kèqi.', translation: "You're welcome." },
+    ],
+  },
+  {
+    id: 'dlg-notes-09',
+    title: 'At the Egg Cake Stand',
+    titleChinese: '蛋烘糕',
+    setting: 'A customer discovers and orders egg cakes at a Sichuan street food stand.',
+    lesson: 12,
+    lines: [
+      { speaker: 'B (Customer)', text: '上午好！请问这是什么？', pinyin: 'Shàngwǔ hǎo! Qǐngwèn zhè shì shénme?', translation: 'Good morning! Excuse me, what is this?' },
+      { speaker: 'A (Seller)', text: '这是蛋烘糕。', pinyin: 'Zhè shì dàn hōng gāo.', translation: 'This is egg cake.' },
+      { speaker: 'B', text: '蛋烘糕是什么？', pinyin: 'Dàn hōng gāo shì shénme?', translation: 'What is egg cake?' },
+      { speaker: 'A', text: '它有鸡蛋、糖、牛奶和馅儿，很好吃。', pinyin: 'Tā yǒu jīdàn, táng, niúnǎi hé xiànr, hěn hǎochī.', translation: 'It has eggs, sugar, milk and fillings. Very delicious.' },
+      { speaker: 'B', text: '你有什么馅儿？', pinyin: 'Nǐ yǒu shénme xiànr?', translation: 'What fillings do you have?' },
+      { speaker: 'A', text: '有花生、豆沙、肉松。', pinyin: 'Yǒu huāshēng, dòushā, ròusōng.', translation: 'We have peanut, red bean paste, meat floss.' },
+      { speaker: 'B', text: '我要一个肉松和一个豆沙。多少钱？', pinyin: 'Wǒ yào yí ge ròusōng hé yí ge dòushā. Duōshao qián?', translation: 'I want one meat floss and one red bean. How much?' },
+      { speaker: 'A', text: '肉松4块钱一个，豆沙3块钱一个，一共7块钱。', pinyin: 'Ròusōng sì kuài qián yí ge, dòushā sān kuài qián yí ge, yígòng qī kuài qián.', translation: 'Meat floss is 4 yuan each, red bean is 3 yuan each, total 7 yuan.' },
+      { speaker: 'B', text: '我给你10块，谢谢。', pinyin: 'Wǒ gěi nǐ shí kuài, xièxie.', translation: "I'll give you 10 yuan, thanks." },
+      { speaker: 'A', text: '你能扫码吗？我没有零钱。', pinyin: 'Nǐ néng sǎomǎ ma? Wǒ méiyǒu língqián.', translation: "Can you scan? I don't have change." },
+      { speaker: 'B', text: '好的。支付宝还是微信？', pinyin: 'Hǎode. Zhīfùbǎo háishi Wēixìn?', translation: 'OK. Alipay or WeChat?' },
+      { speaker: 'A', text: '都可以。', pinyin: 'Dōu kěyǐ.', translation: 'Both are fine.' },
+      { speaker: 'A', text: '蛋烘糕好了，请慢用。', pinyin: 'Dàn hōng gāo hǎo le, qǐng màn yòng.', translation: 'The egg cake is ready, please enjoy.' },
+    ],
+  },
+
+  // ============================================================
+  // Lesson 13 - Question Words & Patterns
+  // ============================================================
+  {
+    id: 'dlg-l13-01',
+    title: 'Meeting Someone New',
+    titleChinese: '认识新朋友',
+    setting: 'Two people meet for the first time and ask questions to get to know each other.',
+    lesson: 13,
+    lines: [
+      { speaker: 'A', text: '你好！你叫什么名字？', pinyin: 'Nǐ hǎo! Nǐ jiào shénme míngzi?', translation: 'Hello! What is your name?' },
+      { speaker: 'B', text: '我叫王丽。你是哪国人？', pinyin: 'Wǒ jiào Wáng Lì. Nǐ shì nǎ guó rén?', translation: 'My name is Wang Li. Where are you from?' },
+      { speaker: 'A', text: '我是美国人。你在哪儿工作？', pinyin: 'Wǒ shì Měiguó rén. Nǐ zài nǎr gōngzuò?', translation: 'I\'m American. Where do you work?' },
+      { speaker: 'B', text: '我在大学工作。你呢？你做什么工作？', pinyin: 'Wǒ zài dàxué gōngzuò. Nǐ ne? Nǐ zuò shénme gōngzuò?', translation: 'I work at a university. You? What do you do?' },
+      { speaker: 'A', text: '我是学生。你为什么学英语？', pinyin: 'Wǒ shì xuésheng. Nǐ wèishénme xué Yīngyǔ?', translation: 'I\'m a student. Why are you learning English?' },
+      { speaker: 'B', text: '因为我想去美国旅游！', pinyin: 'Yīnwèi wǒ xiǎng qù Měiguó lǚyóu!', translation: 'Because I want to travel to America!' },
+    ],
+  },
+  {
+    id: 'dlg-l13-02',
+    title: 'At the Lost and Found',
+    titleChinese: '在失物招领处',
+    setting: 'Someone goes to the lost and found office to look for a lost item.',
+    lesson: 13,
+    lines: [
+      { speaker: 'A (Staff)', text: '你好，请问你找什么？', pinyin: 'Nǐ hǎo, qǐngwèn nǐ zhǎo shénme?', translation: 'Hello, what are you looking for?' },
+      { speaker: 'B', text: '我的包丢了。', pinyin: 'Wǒ de bāo diū le.', translation: 'I lost my bag.' },
+      { speaker: 'A', text: '你的包是什么颜色的？', pinyin: 'Nǐ de bāo shì shénme yánsè de?', translation: 'What color is your bag?' },
+      { speaker: 'B', text: '黑色的。里面有我的钱包和手机。', pinyin: 'Hēisè de. Lǐmiàn yǒu wǒ de qiánbāo hé shǒujī.', translation: 'Black. Inside there is my wallet and phone.' },
+      { speaker: 'A', text: '你是在哪儿丢的？什么时候丢的？', pinyin: 'Nǐ shì zài nǎr diū de? Shénme shíhou diū de?', translation: 'Where did you lose it? When did you lose it?' },
+      { speaker: 'B', text: '今天上午在地铁上丢的。', pinyin: 'Jīntiān shàngwǔ zài dìtiě shang diū de.', translation: 'I lost it on the subway this morning.' },
+      { speaker: 'A', text: '是这个吗？有人捡到一个黑色的包。', pinyin: 'Shì zhè ge ma? Yǒu rén jiǎndào yí ge hēisè de bāo.', translation: 'Is this it? Someone found a black bag.' },
+      { speaker: 'B', text: '是的！太感谢了！是谁捡到的？', pinyin: 'Shì de! Tài gǎnxiè le! Shì shéi jiǎndào de?', translation: 'Yes! Thank you so much! Who found it?' },
+    ],
+  },
+  {
+    id: 'dlg-l13-03',
+    title: 'Planning a Trip',
+    titleChinese: '计划旅行',
+    setting: 'Friends discuss where and how to travel.',
+    lesson: 13,
+    lines: [
+      { speaker: 'A', text: '暑假你想去哪儿玩？', pinyin: 'Shǔjià nǐ xiǎng qù nǎr wán?', translation: 'Where do you want to go for summer vacation?' },
+      { speaker: 'B', text: '我想去成都。你知道怎么去吗？', pinyin: 'Wǒ xiǎng qù Chéngdū. Nǐ zhīdào zěnme qù ma?', translation: 'I want to go to Chengdu. Do you know how to get there?' },
+      { speaker: 'A', text: '可以坐飞机或者坐火车。你想坐哪个？', pinyin: 'Kěyǐ zuò fēijī huòzhě zuò huǒchē. Nǐ xiǎng zuò nǎ ge?', translation: 'You can fly or take a train. Which would you like?' },
+      { speaker: 'B', text: '机票多少钱？', pinyin: 'Jīpiào duōshao qián?', translation: 'How much is a plane ticket?' },
+      { speaker: 'A', text: '大概800块。火车便宜，但是要几个小时。', pinyin: 'Dàgài bābǎi kuài. Huǒchē piányi, dànshì yào jǐ ge xiǎoshí.', translation: 'About 800 yuan. The train is cheaper, but takes several hours.' },
+      { speaker: 'B', text: '我们为什么不坐高铁呢？又快又便宜。', pinyin: 'Wǒmen wèishénme bú zuò gāotiě ne? Yòu kuài yòu piányi.', translation: 'Why don\'t we take the high-speed rail? It\'s both fast and cheap.' },
+      { speaker: 'A', text: '好主意！那我们什么时候出发？', pinyin: 'Hǎo zhǔyì! Nà wǒmen shénme shíhou chūfā?', translation: 'Good idea! Then when do we leave?' },
+    ],
+  },
+  {
+    id: 'dlg-l13-04',
+    title: 'Asking About a Class',
+    titleChinese: '问课程',
+    setting: 'A new student asks questions about a Chinese class.',
+    lesson: 13,
+    lines: [
+      { speaker: 'A', text: '请问，中文课每周上几次？', pinyin: 'Qǐngwèn, Zhōngwén kè měi zhōu shàng jǐ cì?', translation: 'Excuse me, how many times per week is Chinese class?' },
+      { speaker: 'B', text: '每周三次，周一、周三和周五。', pinyin: 'Měi zhōu sān cì, zhōuyī, zhōusān hé zhōuwǔ.', translation: 'Three times a week, Monday, Wednesday, and Friday.' },
+      { speaker: 'A', text: '老师是谁？', pinyin: 'Lǎoshī shì shéi?', translation: 'Who is the teacher?' },
+      { speaker: 'B', text: '张老师。她教得很好。', pinyin: 'Zhāng lǎoshī. Tā jiāo de hěn hǎo.', translation: 'Teacher Zhang. She teaches very well.' },
+      { speaker: 'A', text: '教室在哪儿？', pinyin: 'Jiàoshì zài nǎr?', translation: 'Where is the classroom?' },
+      { speaker: 'B', text: '在三楼305教室。', pinyin: 'Zài sān lóu sān líng wǔ jiàoshì.', translation: 'Room 305 on the third floor.' },
+      { speaker: 'A', text: '我怎么报名？', pinyin: 'Wǒ zěnme bàomíng?', translation: 'How do I sign up?' },
+      { speaker: 'B', text: '你去一楼的办公室问问就行了。', pinyin: 'Nǐ qù yī lóu de bàngōngshì wènwen jiù xíng le.', translation: 'Just go ask at the office on the first floor.' },
+    ],
+  },
+  // Lesson 17 — China Travel Plan (monologue)
+  {
+    id: 'dlg-l17-01',
+    title: 'Our China Travel Plan — Hong Kong',
+    titleChinese: '我们的中国旅行计划——香港',
+    setting: 'Narrating the first stop of a China trip.',
+    lesson: 17,
+    lines: [
+      { speaker: 'Narrator', text: '4月24日，我们将飞往香港。', pinyin: 'Sì yuè èrshísì rì, wǒmen jiāng fēi wǎng Xiānggǎng.', translation: 'On the 24th of April, we are flying to Hong Kong.' },
+      { speaker: 'Narrator', text: '我们将停留三天。', pinyin: 'Wǒmen jiāng tíngliú sān tiān.', translation: 'We are staying three days.' },
+      { speaker: 'Narrator', text: '在香港，我们想去看看太平山顶。', pinyin: 'Zài Xiānggǎng, wǒmen xiǎng qù kànkan Tàipíng shāndǐng.', translation: 'In Hong Kong, we want to visit Victoria Peak.' },
+    ],
+  },
+  {
+    id: 'dlg-l17-02',
+    title: 'Our China Travel Plan — Macau',
+    titleChinese: '我们的中国旅行计划——澳门',
+    setting: 'Narrating the Macau leg of the trip.',
+    lesson: 17,
+    lines: [
+      { speaker: 'Narrator', text: '星期二我们要去澳门。', pinyin: 'Xīngqí èr wǒmen yào qù Àomén.', translation: 'On Tuesday we are going to Macau.' },
+      { speaker: 'Narrator', text: '在澳门，我们想赢很多钱。', pinyin: 'Zài Àomén, wǒmen xiǎng yíng hěnduō qián.', translation: 'In Macau, we want to win a lot of money!' },
+    ],
+  },
+  {
+    id: 'dlg-l17-03',
+    title: 'Our China Travel Plan — Chengdu',
+    titleChinese: '我们的中国旅行计划——成都',
+    setting: 'Narrating the Chengdu leg of the trip.',
+    lesson: 17,
+    lines: [
+      { speaker: 'Narrator', text: '星期三我们要去成都。', pinyin: 'Xīngqí sān wǒmen yào qù Chéngdū.', translation: 'On Wednesday we are going to Chengdu.' },
+      { speaker: 'Narrator', text: '在成都，我们要去看熊猫，还要掏耳朵。', pinyin: 'Zài Chéngdū, wǒmen yào qù kàn xióngmāo, hái yào tāo ěrduǒ.', translation: 'In Chengdu, we are going to see pandas and get our ears cleaned.' },
+    ],
+  },
+  {
+    id: 'dlg-l17-04',
+    title: 'Our China Travel Plan — Chongqing',
+    titleChinese: '我们的中国旅行计划——重庆',
+    setting: 'Narrating the Chongqing leg of the trip.',
+    lesson: 17,
+    lines: [
+      { speaker: 'Narrator', text: '星期六我们要去重庆。', pinyin: 'Xīngqí liù wǒmen yào qù Chóngqìng.', translation: 'On Saturday we are going to Chongqing.' },
+      { speaker: 'Narrator', text: '在重庆，我们将探索并品尝各种辛辣美食。', pinyin: 'Zài Chóngqìng, wǒmen jiāng tànsuǒ bìng pǐncháng gè zhǒng xīnlà měishí.', translation: 'In Chongqing, we are going to explore and eat lots of spicy food.' },
+    ],
+  },
+  {
+    id: 'dlg-l17-05',
+    title: 'Our China Travel Plan — Beijing',
+    titleChinese: '我们的中国旅行计划——北京',
+    setting: 'Narrating the final stop in Beijing.',
+    lesson: 17,
+    lines: [
+      { speaker: 'Narrator', text: '下周二我们将前往北京，一直待到周日。', pinyin: 'Xià zhōu\'èr wǒmen jiāng qiánwǎng Běijīng, yīzhí dài dào zhōurì.', translation: 'The following Tuesday we are going to Beijing, staying until Sunday.' },
+      { speaker: 'Narrator', text: '在北京，我们计划游览长城、故宫，还要吃北京鸭。', pinyin: 'Zài Běijīng, wǒmen jìhuà yóulǎn Chángchéng, Gùgōng, hái yào chī Běijīng yā.', translation: 'In Beijing, we plan to visit the Great Wall, the Forbidden City, and eat Peking Duck.' },
+    ],
+  },
+  {
+    id: 'dlg-l17-06',
+    title: 'Our China Travel Plan — Full',
+    titleChinese: '我们的中国旅行计划',
+    setting: 'The complete travel plan narrated from start to finish.',
+    lesson: 17,
+    lines: [
+      { speaker: 'Narrator', text: '4月24日，我们将飞往香港。', pinyin: 'Sì yuè èrshísì rì, wǒmen jiāng fēi wǎng Xiānggǎng.', translation: 'On the 24th of April, we are flying to Hong Kong.' },
+      { speaker: 'Narrator', text: '我们将停留三天。', pinyin: 'Wǒmen jiāng tíngliú sān tiān.', translation: 'We are staying three days.' },
+      { speaker: 'Narrator', text: '在香港，我们想去看看太平山顶。', pinyin: 'Zài Xiānggǎng, wǒmen xiǎng qù kànkan Tàipíng shāndǐng.', translation: 'In Hong Kong, we want to visit Victoria Peak.' },
+      { speaker: 'Narrator', text: '星期二我们要去澳门。', pinyin: 'Xīngqí èr wǒmen yào qù Àomén.', translation: 'On Tuesday we are going to Macau.' },
+      { speaker: 'Narrator', text: '在澳门，我们想赢很多钱。', pinyin: 'Zài Àomén, wǒmen xiǎng yíng hěnduō qián.', translation: 'In Macau, we want to win a lot of money!' },
+      { speaker: 'Narrator', text: '星期三我们要去成都。', pinyin: 'Xīngqí sān wǒmen yào qù Chéngdū.', translation: 'On Wednesday we are going to Chengdu.' },
+      { speaker: 'Narrator', text: '在成都，我们要去看熊猫，还要掏耳朵。', pinyin: 'Zài Chéngdū, wǒmen yào qù kàn xióngmāo, hái yào tāo ěrduǒ.', translation: 'In Chengdu, we are going to see pandas and get our ears cleaned.' },
+      { speaker: 'Narrator', text: '星期六我们要去重庆。', pinyin: 'Xīngqí liù wǒmen yào qù Chóngqìng.', translation: 'On Saturday we are going to Chongqing.' },
+      { speaker: 'Narrator', text: '在重庆，我们将探索并品尝各种辛辣美食。', pinyin: 'Zài Chóngqìng, wǒmen jiāng tànsuǒ bìng pǐncháng gè zhǒng xīnlà měishí.', translation: 'In Chongqing, we are going to explore and eat lots of spicy food.' },
+      { speaker: 'Narrator', text: '下周二我们将前往北京，一直待到周日。', pinyin: 'Xià zhōu\'èr wǒmen jiāng qiánwǎng Běijīng, yīzhí dài dào zhōurì.', translation: 'The following Tuesday we are going to Beijing, staying until Sunday.' },
+      { speaker: 'Narrator', text: '在北京，我们计划游览长城、故宫，还要吃北京鸭。', pinyin: 'Zài Běijīng, wǒmen jìhuà yóulǎn Chángchéng, Gùgōng, hái yào chī Běijīng yā.', translation: 'In Beijing, we plan to visit the Great Wall, the Forbidden City, and eat Peking Duck.' },
+    ],
+  },
+];
