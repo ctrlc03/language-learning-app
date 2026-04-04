@@ -120,9 +120,9 @@ export default function ListeningPage() {
 
   if (mode === 'select') {
     return (
-      <div className="p-4 md:p-6 max-w-2xl mx-auto space-y-6">
+      <div className="p-5 md:p-8 max-w-2xl mx-auto space-y-6">
         <div>
-          <h1 className="text-2xl font-bold">Listening Practice</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Listening Practice</h1>
           <p className="text-muted-foreground mt-1">
             Train your ear for {language === 'chinese' ? 'Chinese' : 'Japanese'}
           </p>
@@ -172,7 +172,7 @@ export default function ListeningPage() {
   if (mode === 'dictation') {
     const exercise = dictationSet[currentIndex];
     return (
-      <div className="p-4 md:p-6 max-w-2xl mx-auto space-y-4">
+      <div className="p-5 md:p-8 max-w-2xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <Button variant="ghost" size="sm" onClick={() => setMode('select')}>
             &larr; Back
@@ -199,7 +199,7 @@ export default function ListeningPage() {
   if (mode === 'listen-choose') {
     const exercise = listenChooseSet[currentIndex];
     return (
-      <div className="p-4 md:p-6 max-w-2xl mx-auto space-y-4">
+      <div className="p-5 md:p-8 max-w-2xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <Button variant="ghost" size="sm" onClick={() => setMode('select')}>
             &larr; Back

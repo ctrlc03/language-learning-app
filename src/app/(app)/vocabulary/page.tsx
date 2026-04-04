@@ -66,9 +66,9 @@ export default function VocabularyPage() {
   }, [allVocab, selectedLevel, selectedTopic, search]);
 
   return (
-    <div className="p-4 md:p-6 max-w-3xl mx-auto space-y-4">
+    <div className="p-5 md:p-8 max-w-2xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Vocabulary</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Vocabulary</h1>
         <p className="text-muted-foreground mt-1">
           {allVocab.length} words · {language === 'chinese' ? 'Chinese' : 'Japanese'}
         </p>

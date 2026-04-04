@@ -131,7 +131,7 @@ export default function FlashcardsPage() {
   };
 
   return (
-    <div className="p-4 md:p-6 max-w-2xl mx-auto">
+    <div className="p-5 md:p-8 max-w-2xl mx-auto space-y-6">
       {view === 'decks' && (
         <DeckBrowser
           decks={languageDecks}

@@ -20,7 +20,7 @@ const variantStyles: Record<ButtonVariant, string> = {
 const sizeStyles: Record<ButtonSize, string> = {
   sm: 'h-8 px-3 text-sm rounded-md',
   md: 'h-10 px-4 text-sm rounded-lg',
-  lg: 'h-12 px-6 text-base rounded-lg',
+  lg: 'h-12 px-6 text-base rounded-xl',
   icon: 'h-10 w-10 rounded-lg',
 };
 
@@ -30,7 +30,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={cn(
-          'inline-flex items-center justify-center font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:pointer-events-none disabled:opacity-50',
+          'inline-flex items-center justify-center font-medium transition-colors active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:pointer-events-none disabled:opacity-50',
           variantStyles[variant],
           sizeStyles[size],
           className

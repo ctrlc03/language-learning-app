@@ -107,7 +107,7 @@ export function ExerciseShell({ exercise, onComplete, onNext }: ExerciseShellPro
 
   return (
     <Card>
-      <CardContent className="p-5 md:p-6 space-y-5">
+      <CardContent className="p-5 space-y-5">
         {/* Header */}
         <div className="flex items-center justify-between">
           <Badge variant="outline" className="text-[11px]">

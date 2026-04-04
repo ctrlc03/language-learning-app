@@ -20,10 +20,10 @@ export default function DashboardPage() {
   const languageDecks = decks.filter(d => d.language === language);
 
   return (
-    <div className="p-4 md:p-6 max-w-4xl mx-auto space-y-6">
+    <div className="p-5 md:p-8 max-w-2xl mx-auto space-y-6">
       {/* Welcome section */}
       <div>
-        <h1 className="text-2xl font-bold">
+        <h1 className="text-2xl font-bold tracking-tight">
           {language === 'chinese' ? '你好！' : 'こんにちは！'} Welcome back
         </h1>
         <p className="text-muted-foreground mt-1">

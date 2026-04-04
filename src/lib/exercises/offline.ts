@@ -498,14 +498,76 @@ function generateGrammarDrill(
   return generateGrammarDrillFromVocab(pool, language, difficulty, rng);
 }
 
+/**
+ * Key grammar particles and endings that make good fill-in-the-blank targets.
+ * Ordered roughly by specificity (longer/more specific first) so matching
+ * prefers the most meaningful blank.
+ */
+const GRAMMAR_BLANK_TARGETS = [
+  // Verb endings & auxiliaries (longer first)
+  'てください', 'てくれる', 'てもいい', 'ています', 'ている',
+  'ましょう', 'ませんか', 'ません', 'ました', 'ますか', 'ます',
+  'ないです', 'ことができ',
+  // Copula & adjective endings
+  'じゃないです', 'じゃない', 'くないです', 'くない',
+  'でした', 'です',
+  // Particles (longer compound particles first)
+  'から', 'まで', 'より', 'だけ', 'ので', 'のに', 'けど',
+  'が', 'を', 'に', 'で', 'と', 'も', 'は', 'へ', 'の',
+  // Common grammar words
+  'たい', 'たく',
+];
+
+/**
+ * Distractor pools grouped by category so we can generate plausible wrong
+ * answers for each blank type.
+ */
+const PARTICLE_DISTRACTORS: Record<string, string[]> = {
+  'が': ['を', 'に', 'は', 'で', 'と'],
+  'を': ['が', 'に', 'は', 'で', 'と'],
+  'に': ['で', 'へ', 'を', 'が', 'と'],
+  'で': ['に', 'を', 'が', 'へ', 'は'],
+  'と': ['も', 'が', 'に', 'を', 'は'],
+  'も': ['は', 'が', 'を', 'に', 'で'],
+  'は': ['が', 'を', 'も', 'に', 'で'],
+  'へ': ['に', 'で', 'を', 'が', 'は'],
+  'の': ['が', 'を', 'に', 'は', 'で'],
+  'から': ['まで', 'より', 'に', 'で', 'を'],
+  'まで': ['から', 'に', 'で', 'を', 'より'],
+  'より': ['から', 'まで', 'に', 'で', 'は'],
+  'だけ': ['も', 'しか', 'は', 'が', 'を'],
+  'ので': ['のに', 'けど', 'から', 'が', 'は'],
+  'のに': ['ので', 'けど', 'から', 'が', 'は'],
+  'けど': ['ので', 'のに', 'から', 'が', 'は'],
+  'です': ['ます', 'でした', 'ません', 'だ', 'じゃない'],
+  'ます': ['です', 'ました', 'ません', 'る', 'ない'],
+  'ました': ['ます', 'ません', 'です', 'でした', 'ない'],
+  'ません': ['ます', 'ました', 'ないです', 'です', 'ない'],
+  'ませんか': ['ましょう', 'ません', 'ますか', 'ます', 'ました'],
+  'ましょう': ['ませんか', 'ます', 'ました', 'ません', 'ますか'],
+  'ますか': ['ます', 'ました', 'ません', 'ませんか', 'ましょう'],
+  'てください': ['てもいい', 'ています', 'てくれる', 'ます', 'ません'],
+  'てくれる': ['てください', 'ています', 'てもいい', 'ます', 'ない'],
+  'てもいい': ['てください', 'ています', 'てくれる', 'ません', 'ない'],
+  'ています': ['てください', 'てもいい', 'ます', 'ません', 'ました'],
+  'ている': ['てある', 'てくる', 'ていく', 'ます', 'ない'],
+  'ないです': ['ません', 'ます', 'です', 'ました', 'ない'],
+  'じゃないです': ['です', 'でした', 'じゃない', 'ないです', 'くないです'],
+  'じゃない': ['じゃないです', 'です', 'くない', 'ない', 'でした'],
+  'くないです': ['です', 'くない', 'じゃないです', 'ないです', 'いです'],
+  'くない': ['くないです', 'じゃない', 'ない', 'い', 'です'],
+  'たい': ['ます', 'ない', 'た', 'ている', 'てください'],
+  'たく': ['ます', 'ない', 'た', 'ている', 'てください'],
+};
+
 function generateGrammarDrillFromPatterns(
   patterns: GrammarPattern[],
   language: Language,
   difficulty: DifficultyLevel,
   rng: () => number
 ): Exercise {
-  // Filter patterns with examples
-  const withExamples = patterns.filter(p => p.example);
+  // Filter patterns with examples — pick the first non-multiline example line
+  const withExamples = patterns.filter(p => p.example && p.example.length > 0);
   if (withExamples.length === 0) {
     return generateGrammarDrillFromVocab(
       getVocabulary(language),
@@ -515,57 +577,107 @@ function generateGrammarDrillFromPatterns(
     );
   }
 
-  const pattern = pickRandom(withExamples, rng);
+  // Shuffle patterns and try each until we produce a good exercise
+  const shuffled = shuffle(withExamples, rng);
 
-  // Try to blank out a key part of the example
-  const example = pattern.example;
-  // Find a reasonable word/particle to blank out (2-4 chars from the pattern)
-  const patternParts = pattern.pattern.split(/[（）\s\n\/]/g).filter(s => s.length >= 1 && s.length <= 4);
-  let blankTarget = '';
-  let sentence = example;
+  for (const pattern of shuffled) {
+    // Many Irodori examples have multiple lines separated by \r\n — pick one at random
+    const exampleLines = pattern.example
+      .split(/\r?\n/)
+      .map(l => l.trim())
+      .filter(l => l.length > 0 && !l.startsWith('Ａ：') && !l.startsWith('Ｂ：'));
 
-  for (const part of patternParts) {
-    if (example.includes(part) && part.length >= 1) {
-      blankTarget = part;
-      sentence = example.replace(part, '___');
-      break;
+    // If the example has A:/B: dialogue format, include those lines too (stripped of label)
+    const dialogueLines = pattern.example
+      .split(/\r?\n/)
+      .map(l => l.trim())
+      .filter(l => l.startsWith('Ａ：') || l.startsWith('Ｂ：'))
+      .map(l => l.slice(2));
+
+    const allLines = [...exampleLines, ...dialogueLines].filter(l => l.length >= 3);
+    if (allLines.length === 0) continue;
+
+    const example = pickRandom(allLines, rng);
+
+    // Try to find the best grammar element to blank out
+    let blankTarget = '';
+    let sentence = '';
+
+    // Strategy 1: Match known grammar targets that appear in the example
+    for (const target of GRAMMAR_BLANK_TARGETS) {
+      if (example.includes(target)) {
+        blankTarget = target;
+        // Replace only the first occurrence
+        sentence = example.replace(target, '___');
+        break;
+      }
     }
-  }
 
-  if (!blankTarget) {
-    // Fallback: blank out a segment
-    const chars = example.replace(/[。、！？]/g, '');
-    if (chars.length >= 4) {
-      const start = Math.floor(rng() * (chars.length - 2));
-      const len = Math.min(2 + Math.floor(rng() * 2), chars.length - start);
-      blankTarget = chars.slice(start, start + len);
-      sentence = example.replace(blankTarget, '___');
+    // Strategy 2: Extract key parts from the pattern description itself
+    if (!blankTarget) {
+      const patternParts = pattern.pattern
+        .split(/[（）【】\s\r\n\/＜＞]/g)
+        .filter(s => s.length >= 1 && s.length <= 6 && !/^[A-Z]$/.test(s) && !/^N\d?$/.test(s) && !/^V/.test(s) && !/^S$/.test(s));
+
+      for (const part of patternParts) {
+        if (example.includes(part) && part.length >= 1) {
+          blankTarget = part;
+          sentence = example.replace(part, '___');
+          break;
+        }
+      }
     }
+
+    if (!blankTarget || !sentence.includes('___')) continue;
+    // Avoid exercises where the sentence is just "___" or nearly empty
+    if (sentence.replace(/___/g, '').replace(/[。、！？\s]/g, '').length < 2) continue;
+
+    // Build multiple-choice options using category-aware distractors
+    const distractorPool = PARTICLE_DISTRACTORS[blankTarget];
+    let options: string[] | undefined;
+    let correctIndex: number | undefined;
+
+    if (distractorPool && distractorPool.length >= 3) {
+      const distractors = shuffle(distractorPool, rng).slice(0, 3);
+      correctIndex = Math.floor(rng() * 4);
+      options = [...distractors];
+      options.splice(correctIndex, 0, blankTarget);
+    }
+
+    // Build explanation with the full pattern and example
+    let explanation = `Pattern: ${pattern.pattern}\nExample: ${example}`;
+    if (pattern.exampleTranslation) {
+      explanation += `\nTranslation: ${pattern.exampleTranslation}`;
+    }
+    if (pattern.meaning && pattern.meaning !== pattern.pattern) {
+      explanation += `\nMeaning: ${pattern.meaning}`;
+    }
+
+    const data: GrammarDrillData = {
+      type: 'grammar-drill',
+      grammarPoint: pattern.pattern,
+      sentence,
+      answer: blankTarget,
+      acceptableAnswers: [blankTarget],
+      explanation,
+      options,
+      correctIndex,
+    };
+
+    return {
+      id: 'gram_' + nanoid(8),
+      type: 'grammar-drill',
+      language,
+      difficulty,
+      question: `Fill in the blank using the correct grammar.`,
+      instruction: `Grammar point: ${pattern.pattern}`,
+      data,
+      createdAt: Date.now(),
+    };
   }
 
-  if (!blankTarget || !sentence.includes('___')) {
-    return generateGrammarDrillFromVocab(getVocabulary(language), language, difficulty, rng);
-  }
-
-  const data: GrammarDrillData = {
-    type: 'grammar-drill',
-    grammarPoint: pattern.pattern,
-    sentence,
-    answer: blankTarget,
-    acceptableAnswers: [blankTarget],
-    explanation: `Pattern: ${pattern.pattern}\nExample: ${pattern.example}`,
-  };
-
-  return {
-    id: 'gram_' + nanoid(8),
-    type: 'grammar-drill',
-    language,
-    difficulty,
-    question: `Fill in the blank using the correct grammar.`,
-    instruction: `Grammar point: ${pattern.pattern}`,
-    data,
-    createdAt: Date.now(),
-  };
+  // All patterns failed — fall back to vocab-based grammar drill
+  return generateGrammarDrillFromVocab(getVocabulary(language), language, difficulty, rng);
 }
 
 function generateGrammarDrillFromVocab(
@@ -583,10 +695,25 @@ function generateGrammarDrillFromVocab(
   ];
 
   const japaneseGrammarPatterns = [
+    // --- Original patterns ---
     { pattern: 'N + です', template: (w: VocabularyItem) => `${w.word}です`, blank: (w: VocabularyItem) => `${w.word}___`, answer: (_w: VocabularyItem) => 'です', pinyin: (_w: VocabularyItem) => '', translation: (_w: VocabularyItem) => '', filter: (v: VocabularyItem) => v.partOfSpeech === 'noun' },
     { pattern: 'V + ます', template: (w: VocabularyItem) => `${w.reading}ます`, blank: (w: VocabularyItem) => `${w.reading}___`, answer: (_w: VocabularyItem) => 'ます', pinyin: (_w: VocabularyItem) => '', translation: (_w: VocabularyItem) => '', filter: (v: VocabularyItem) => v.partOfSpeech === 'verb' },
     { pattern: 'N + が好きです', template: (w: VocabularyItem) => `${w.word}が好きです`, blank: (w: VocabularyItem) => `${w.word}___好きです`, answer: (_w: VocabularyItem) => 'が', pinyin: (_w: VocabularyItem) => '', translation: (_w: VocabularyItem) => '', filter: (v: VocabularyItem) => v.partOfSpeech === 'noun' },
     { pattern: 'N + を + V', template: (w: VocabularyItem) => `${w.word}を食べます`, blank: (w: VocabularyItem) => `${w.word}___食べます`, answer: (_w: VocabularyItem) => 'を', pinyin: (_w: VocabularyItem) => '', translation: (_w: VocabularyItem) => '', filter: (v: VocabularyItem) => v.partOfSpeech === 'noun' },
+    // --- New patterns ---
+    { pattern: 'N + から (from)', template: (w: VocabularyItem) => `${w.word}から来ました`, blank: (w: VocabularyItem) => `${w.word}___来ました`, answer: (_w: VocabularyItem) => 'から', pinyin: (_w: VocabularyItem) => '', translation: (w: VocabularyItem) => `came from ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'noun' },
+    { pattern: 'N + まで (until)', template: (w: VocabularyItem) => `${w.word}まで行きます`, blank: (w: VocabularyItem) => `${w.word}___行きます`, answer: (_w: VocabularyItem) => 'まで', pinyin: (_w: VocabularyItem) => '', translation: (w: VocabularyItem) => `go until/to ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'noun' },
+    { pattern: 'V + たい (want to)', template: (w: VocabularyItem) => `${w.reading}たいです`, blank: (w: VocabularyItem) => `${w.reading}___です`, answer: (_w: VocabularyItem) => 'たい', pinyin: (_w: VocabularyItem) => '', translation: (w: VocabularyItem) => `want to ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'verb' },
+    { pattern: 'V + ている (progressive)', template: (w: VocabularyItem) => `${w.reading}ています`, blank: (w: VocabularyItem) => `${w.reading}___います`, answer: (_w: VocabularyItem) => 'て', pinyin: (_w: VocabularyItem) => '', translation: (w: VocabularyItem) => `is ${w.meaning}ing`, filter: (v: VocabularyItem) => v.partOfSpeech === 'verb' },
+    { pattern: 'V + てください (please do)', template: (w: VocabularyItem) => `${w.reading}てください`, blank: (w: VocabularyItem) => `${w.reading}___ください`, answer: (_w: VocabularyItem) => 'て', pinyin: (_w: VocabularyItem) => '', translation: (w: VocabularyItem) => `please ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'verb' },
+    { pattern: 'N + より (than)', template: (w: VocabularyItem) => `${w.word}より大きいです`, blank: (w: VocabularyItem) => `${w.word}___大きいです`, answer: (_w: VocabularyItem) => 'より', pinyin: (_w: VocabularyItem) => '', translation: (w: VocabularyItem) => `bigger than ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'noun' },
+    { pattern: 'N + じゃないです (neg. copula)', template: (w: VocabularyItem) => `${w.word}じゃないです`, blank: (w: VocabularyItem) => `${w.word}___`, answer: (_w: VocabularyItem) => 'じゃないです', pinyin: (_w: VocabularyItem) => '', translation: (w: VocabularyItem) => `is not ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'noun' },
+    { pattern: 'V + ましょう (let\'s)', template: (w: VocabularyItem) => `${w.reading}ましょう`, blank: (w: VocabularyItem) => `${w.reading}___`, answer: (_w: VocabularyItem) => 'ましょう', pinyin: (_w: VocabularyItem) => '', translation: (w: VocabularyItem) => `let's ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'verb' },
+    { pattern: 'N + だけ (only)', template: (w: VocabularyItem) => `${w.word}だけです`, blank: (w: VocabularyItem) => `${w.word}___です`, answer: (_w: VocabularyItem) => 'だけ', pinyin: (_w: VocabularyItem) => '', translation: (w: VocabularyItem) => `only ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'noun' },
+    { pattern: 'V + ことができます (can do)', template: (w: VocabularyItem) => `${w.reading}ことができます`, blank: (w: VocabularyItem) => `${w.reading}___ができます`, answer: (_w: VocabularyItem) => 'こと', pinyin: (_w: VocabularyItem) => '', translation: (w: VocabularyItem) => `can ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'verb' },
+    { pattern: 'N + に行きます (go to)', template: (w: VocabularyItem) => `${w.word}に行きます`, blank: (w: VocabularyItem) => `${w.word}___行きます`, answer: (_w: VocabularyItem) => 'に', pinyin: (_w: VocabularyItem) => '', translation: (w: VocabularyItem) => `go to ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'noun' },
+    { pattern: 'N + で + V (location)', template: (w: VocabularyItem) => `${w.word}で食べます`, blank: (w: VocabularyItem) => `${w.word}___食べます`, answer: (_w: VocabularyItem) => 'で', pinyin: (_w: VocabularyItem) => '', translation: (w: VocabularyItem) => `eat at ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'noun' },
+    { pattern: 'N + がほしいです (want N)', template: (w: VocabularyItem) => `${w.word}がほしいです`, blank: (w: VocabularyItem) => `${w.word}___ほしいです`, answer: (_w: VocabularyItem) => 'が', pinyin: (_w: VocabularyItem) => '', translation: (w: VocabularyItem) => `want ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'noun' },
   ];
 
   const grammarPatterns = language === 'chinese' ? chineseGrammarPatterns : japaneseGrammarPatterns;
@@ -602,14 +729,19 @@ function generateGrammarDrillFromVocab(
     const answer = gp.answer(word);
 
     // Build distractor options for multiple choice
-    const otherWords = pool
-      .filter(v => v.id !== word.id && v.word !== answer && gp.filter(v))
-      .sort(() => rng() - 0.5)
-      .slice(0, 3)
-      .map(v => answer === word.word ? v.word : v.word.slice(0, answer.length) || v.word);
-
-    // Deduplicate and ensure we have enough options
-    const uniqueDistractors = [...new Set(otherWords.filter(d => d !== answer))].slice(0, 3);
+    // For particle/grammar answers, use the category-aware distractor pool
+    let uniqueDistractors: string[] = [];
+    if (answer !== word.word && PARTICLE_DISTRACTORS[answer]) {
+      uniqueDistractors = shuffle(PARTICLE_DISTRACTORS[answer], rng).slice(0, 3);
+    } else {
+      // For word-based answers, use other vocab words
+      const otherWords = pool
+        .filter(v => v.id !== word.id && v.word !== answer && gp.filter(v))
+        .sort(() => rng() - 0.5)
+        .slice(0, 3)
+        .map(v => answer === word.word ? v.word : v.word.slice(0, answer.length) || v.word);
+      uniqueDistractors = [...new Set(otherWords.filter(d => d !== answer))].slice(0, 3);
+    }
 
     let options: string[] | undefined;
     let correctIndex: number | undefined;

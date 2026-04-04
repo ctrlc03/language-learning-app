@@ -20,7 +20,7 @@ export function Card({ className, children, ...props }: CardProps) {
 
 export function CardHeader({ className, children, ...props }: CardProps) {
   return (
-    <div className={cn('p-4 pb-2', className)} {...props}>
+    <div className={cn('p-5 pb-3', className)} {...props}>
       {children}
     </div>
   );
@@ -36,7 +36,7 @@ export function CardTitle({ className, children, ...props }: React.HTMLAttribute
 
 export function CardContent({ className, children, ...props }: CardProps) {
   return (
-    <div className={cn('p-4 pt-2', className)} {...props}>
+    <div className={cn('p-5 pt-0', className)} {...props}>
       {children}
     </div>
   );

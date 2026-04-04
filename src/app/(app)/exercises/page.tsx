@@ -267,7 +267,7 @@ export default function ExercisesPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <button
               onClick={() => setShowTopicReview(true)}
-              className="text-left"
+              className="text-left active:scale-[0.98] transition-all"
             >
               <Card className="p-4 hover:border-primary/40 hover:bg-primary/[0.03] transition-all border-dashed h-full">
                 <div className="flex items-start justify-between gap-2">
@@ -285,7 +285,7 @@ export default function ExercisesPage() {
             </button>
             <button
               onClick={() => setShowDialogues(true)}
-              className="text-left"
+              className="text-left active:scale-[0.98] transition-all"
             >
               <Card className="p-4 hover:border-primary/40 hover:bg-primary/[0.03] transition-all border-dashed h-full">
                 <div className="flex items-start justify-between gap-2">
@@ -303,7 +303,7 @@ export default function ExercisesPage() {
             </button>
             <button
               onClick={() => setShowLessonPicker(true)}
-              className="text-left"
+              className="text-left active:scale-[0.98] transition-all"
             >
               <Card className="p-4 hover:border-primary/40 hover:bg-primary/[0.03] transition-all border-dashed h-full">
                 <div className="flex items-start justify-between gap-2">
@@ -322,7 +322,7 @@ export default function ExercisesPage() {
             {language === 'japanese' && (
               <button
                 onClick={() => setShowKanaPractice(true)}
-                className="text-left"
+                className="text-left active:scale-[0.98] transition-all"
               >
                 <Card className="p-4 hover:border-primary/40 hover:bg-primary/[0.03] transition-all border-dashed h-full">
                   <div className="flex items-start justify-between gap-2">
@@ -347,7 +347,7 @@ export default function ExercisesPage() {
               <button
                 key={type}
                 onClick={() => generateExercise(type)}
-                className="text-left group"
+                className="text-left group active:scale-[0.98] transition-all"
               >
                 <Card className="p-4 hover:border-primary/40 hover:bg-primary/[0.03] transition-all h-full">
                   <div className="flex items-start justify-between gap-2">

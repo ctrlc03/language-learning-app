@@ -100,7 +100,7 @@ export function GrammarDrill({ data, onSubmit, disabled }: GrammarDrillProps) {
               className={cn(
                 'w-full text-left px-4 py-3 rounded-xl border text-sm transition-all',
                 selected === null
-                  ? 'border-border hover:border-primary/40 hover:bg-primary/[0.03] active:scale-[0.99]'
+                  ? 'border-border hover:border-primary/40 hover:bg-primary/[0.03] active:scale-[0.98]'
                   : i === data.correctIndex
                     ? 'border-success/50 bg-success/10 text-success'
                     : selected === i

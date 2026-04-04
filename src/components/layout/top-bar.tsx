@@ -10,7 +10,7 @@ export function TopBar() {
   const { resolvedTheme, setTheme, theme } = useTheme();
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-card/80 backdrop-blur-sm px-4">
+    <header className="sticky top-0 z-30 flex h-12 items-center gap-3 border-b border-border bg-card/80 backdrop-blur-sm px-4">
       {/* Mobile menu button placeholder */}
       <div className="md:hidden" id="mobile-menu-trigger" />
 
@@ -19,7 +19,7 @@ export function TopBar() {
         <div className="flex items-center bg-muted rounded-lg p-0.5">
           <button
             onClick={() => setLanguage('chinese')}
-            className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+            className={`h-8 px-3 text-sm rounded-md transition-colors ${
               language === 'chinese'
                 ? 'bg-card text-foreground shadow-sm'
                 : 'text-muted-foreground hover:text-foreground'
@@ -29,7 +29,7 @@ export function TopBar() {
           </button>
           <button
             onClick={() => setLanguage('japanese')}
-            className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+            className={`h-8 px-3 text-sm rounded-md transition-colors ${
               language === 'japanese'
                 ? 'bg-card text-foreground shadow-sm'
                 : 'text-muted-foreground hover:text-foreground'
@@ -43,7 +43,7 @@ export function TopBar() {
         <select
           value={difficulty}
           onChange={e => setDifficulty(e.target.value as DifficultyLevel)}
-          className="h-9 rounded-lg border border-border bg-background px-2 text-sm text-foreground"
+          className="h-8 rounded-lg border border-border bg-background px-2 text-sm text-foreground"
         >
           <option value="beginner">Beginner</option>
           <option value="intermediate">Intermediate</option>

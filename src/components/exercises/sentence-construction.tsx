@@ -58,7 +58,7 @@ export function SentenceConstruction({ data, onSubmit, disabled }: SentenceConst
               'px-3 py-1.5 rounded-lg text-sm font-medium transition-all',
               disabled
                 ? 'bg-muted text-muted-foreground'
-                : 'bg-primary/10 text-primary border border-primary/20 hover:bg-primary/15 active:scale-[0.97]'
+                : 'bg-primary/10 text-primary border border-primary/20 hover:bg-primary/15 active:scale-[0.98]'
             )}
           >
             {word}
@@ -73,7 +73,7 @@ export function SentenceConstruction({ data, onSubmit, disabled }: SentenceConst
             key={`a-${i}`}
             onClick={() => handleSelect(word, i)}
             disabled={disabled}
-            className="px-3 py-1.5 rounded-lg text-sm font-medium border border-border bg-background hover:border-primary/40 hover:bg-primary/[0.03] transition-all active:scale-[0.97] disabled:opacity-40"
+            className="px-3 py-1.5 rounded-lg text-sm font-medium border border-border bg-background hover:border-primary/40 hover:bg-primary/[0.03] transition-all active:scale-[0.98] disabled:opacity-40"
           >
             {word}
           </button>

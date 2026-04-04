@@ -78,8 +78,8 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="p-4 md:p-6 max-w-2xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold">Settings</h1>
+    <div className="p-5 md:p-8 max-w-2xl mx-auto space-y-6">
+      <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
 
       {/* Language & Difficulty */}
       <Card>
@@ -123,6 +123,20 @@ export default function SettingsPage() {
                 </button>
               ))}
             </div>
+            <p className="text-xs text-muted-foreground mt-1.5">
+              {({
+                chinese: {
+                  beginner: 'HSK 1 + Pinyin & Adjectives, Time & Daily Schedule, Family & Occupations',
+                  intermediate: 'HSK 1-2 + all custom lessons',
+                  advanced: 'All vocabulary (HSK 1-6 + all lessons)',
+                },
+                japanese: {
+                  beginner: 'JLPT N5 + Irodori Starter',
+                  intermediate: 'JLPT N5-N4 + Irodori Starter & Elementary 1',
+                  advanced: 'All vocabulary (JLPT N5-N1 + all Irodori levels)',
+                },
+              } as Record<string, Record<string, string>>)[language]?.[difficulty]}
+            </p>
           </div>
 
           <div className="flex items-center justify-between">

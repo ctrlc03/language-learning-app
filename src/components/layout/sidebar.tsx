@@ -38,9 +38,9 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors active:scale-[0.98]',
                 isActive
-                  ? 'bg-primary/10 text-primary'
+                  ? 'bg-primary/10 text-primary font-semibold'
                   : 'text-muted-foreground hover:bg-muted hover:text-foreground'
               )}
             >
@@ -55,9 +55,9 @@ export function Sidebar() {
         <Link
           href="/settings"
           className={cn(
-            'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+            'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors active:scale-[0.98]',
             pathname === '/settings'
-              ? 'bg-primary/10 text-primary'
+              ? 'bg-primary/10 text-primary font-semibold'
               : 'text-muted-foreground hover:bg-muted hover:text-foreground'
           )}
         >
