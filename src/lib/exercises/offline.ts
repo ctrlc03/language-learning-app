@@ -93,6 +93,7 @@ function filterByDifficulty(
 // Offline exercise types (excludes 'translation' which needs API)
 export const OFFLINE_EXERCISE_TYPES: ExerciseType[] = [
   'multiple-choice',
+  'sentence-mc',
   'fill-in-blank',
   'sentence-construction',
   'character-recognition',
@@ -146,6 +147,8 @@ export function getOfflineExercise(
   switch (type) {
     case 'multiple-choice':
       return generateMultipleChoice(pool, allVocab, language, difficulty, rng);
+    case 'sentence-mc':
+      return generateSentenceMC(pool, allVocab, language, difficulty, rng);
     case 'fill-in-blank':
       return generateFillInBlank(pool, language, difficulty, rng);
     case 'sentence-construction':
@@ -213,6 +216,108 @@ function generateMultipleChoice(
     difficulty,
     question: `What does "${target.word}" (${target.reading}) mean?`,
     instruction: 'Choose the correct meaning.',
+    data,
+    createdAt: Date.now(),
+  };
+}
+
+function generateSentenceMC(
+  pool: VocabularyItem[],
+  allVocab: VocabularyItem[],
+  language: Language,
+  difficulty: DifficultyLevel,
+  rng: () => number
+): Exercise {
+  // Find items with both example sentence and translation
+  const withSentences = pool.filter(v => v.exampleSentence && v.exampleTranslation);
+
+  if (withSentences.length < 4) {
+    // Not enough sentence data, fall back to word-level MC
+    return generateMultipleChoice(pool, allVocab, language, difficulty, rng);
+  }
+
+  const target = pickRandom(withSentences, rng);
+
+  // Pick 3 distractors — other sentences' translations
+  const distractors = withSentences
+    .filter(v => v.id !== target.id && v.exampleTranslation !== target.exampleTranslation)
+    .sort(() => rng() - 0.5)
+    .slice(0, 3);
+
+  if (distractors.length < 3) {
+    return generateMultipleChoice(pool, allVocab, language, difficulty, rng);
+  }
+
+  const correctIndex = Math.floor(rng() * 4);
+  const options = [...distractors.map(d => d.exampleTranslation!)];
+  options.splice(correctIndex, 0, target.exampleTranslation!);
+
+  // Build explanation with reading hints
+  let explanation = `${target.exampleSentence}`;
+  if (target.reading) {
+    explanation += `\n${target.word} (${target.reading}) — ${target.meaning}`;
+  }
+  // Add reading hints for words found in the sentence
+  const sentenceReadings: string[] = [];
+  for (const v of allVocab) {
+    if (v.id !== target.id && v.word.length > 1 && target.exampleSentence!.includes(v.word)) {
+      sentenceReadings.push(`${v.word} = ${v.reading} (${v.meaning})`);
+      if (sentenceReadings.length >= 4) break;
+    }
+  }
+  if (sentenceReadings.length > 0) {
+    explanation += `\n${sentenceReadings.join(', ')}`;
+  }
+
+  const data: MultipleChoiceData = {
+    type: 'multiple-choice',
+    options: options.slice(0, 4),
+    correctIndex,
+    explanation,
+  };
+
+  // Build a reading line for the full sentence by matching known vocabulary words
+  // Sort by word length descending so longer words match first (e.g. 北京烤鸭 before 北京)
+  const sortedVocab = [...allVocab].sort((a, b) => b.word.length - a.word.length);
+  const sentence = target.exampleSentence!;
+  const readingParts: { pos: number; word: string; reading: string }[] = [];
+  const matched = new Set<number>(); // track character positions already covered
+
+  for (const v of sortedVocab) {
+    if (v.word.length < 1 || !v.reading) continue;
+    let searchFrom = 0;
+    while (true) {
+      const idx = sentence.indexOf(v.word, searchFrom);
+      if (idx === -1) break;
+      // Check no overlap with already matched positions
+      let overlap = false;
+      for (let c = idx; c < idx + v.word.length; c++) {
+        if (matched.has(c)) { overlap = true; break; }
+      }
+      if (!overlap) {
+        readingParts.push({ pos: idx, word: v.word, reading: v.reading });
+        for (let c = idx; c < idx + v.word.length; c++) matched.add(c);
+      }
+      searchFrom = idx + v.word.length;
+    }
+  }
+
+  // Sort by position and build reading string
+  readingParts.sort((a, b) => a.pos - b.pos);
+  const readingLine = readingParts.map(p => p.reading).join(' ');
+
+  // Use |||READING||| delimiter so the shell can render characters and pinyin on separate lines
+  const instruction = readingLine
+    ? `|||READING|||${readingLine}|||END|||What does this sentence mean?`
+    : 'What does this sentence mean?';
+
+  return {
+    id: target.id + '_smc_' + nanoid(6),
+    type: 'sentence-mc',
+    language,
+    difficulty,
+    question: target.exampleSentence!,
+    instruction,
     data,
     createdAt: Date.now(),
   };

@@ -18,6 +18,15 @@ function buildToolForType(exerciseType: ExerciseType) {
       },
       required: ['question', 'instruction', 'options', 'correctIndex', 'explanation'],
     },
+    'sentence-mc': {
+      properties: {
+        ...baseProperties,
+        options: { type: 'array' as const, items: { type: 'string' as const }, description: 'Array of 4 answer choices' },
+        correctIndex: { type: 'number' as const, description: 'Zero-based index of the correct answer (0-3)' },
+        explanation: { type: 'string' as const, description: 'Why the correct answer is right' },
+      },
+      required: ['question', 'instruction', 'options', 'correctIndex', 'explanation'],
+    },
     'fill-in-blank': {
       properties: {
         ...baseProperties,
@@ -98,6 +107,13 @@ function buildExerciseData(exerciseType: ExerciseType, input: Record<string, unk
 
   switch (exerciseType) {
     case 'multiple-choice':
+      return {
+        type: 'multiple-choice' as const,
+        options: (rest.options as string[]) ?? [],
+        correctIndex: (rest.correctIndex as number) ?? 0,
+        explanation: (rest.explanation as string) ?? '',
+      };
+    case 'sentence-mc':
       return {
         type: 'multiple-choice' as const,
         options: (rest.options as string[]) ?? [],

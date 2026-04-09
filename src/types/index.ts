@@ -118,6 +118,7 @@ export interface ReviewResult {
 
 export type ExerciseType =
   | 'multiple-choice'
+  | 'sentence-mc'
   | 'fill-in-blank'
   | 'translation'
   | 'sentence-construction'

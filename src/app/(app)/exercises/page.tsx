@@ -18,6 +18,7 @@ import type { Exercise, ExerciseType, ExerciseResult } from '@/types';
 
 const EXERCISE_TYPES: { type: ExerciseType; label: string; description: string; offline: boolean }[] = [
   { type: 'multiple-choice', label: 'Multiple Choice', description: 'Choose the correct answer', offline: true },
+  { type: 'sentence-mc', label: 'Sentence Quiz', description: 'Translate full sentences', offline: true },
   { type: 'fill-in-blank', label: 'Fill in the Blank', description: 'Complete the sentence', offline: true },
   { type: 'translation', label: 'Translation', description: 'Translate between languages', offline: false },
   { type: 'sentence-construction', label: 'Sentence Building', description: 'Arrange words in order', offline: true },

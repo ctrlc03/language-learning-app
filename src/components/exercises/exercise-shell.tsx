@@ -23,6 +23,7 @@ interface ExerciseShellProps {
 
 const TYPE_LABELS: Record<string, string> = {
   'multiple-choice': 'Multiple Choice',
+  'sentence-mc': 'Sentence Quiz',
   'fill-in-blank': 'Fill in the Blank',
   'translation': 'Translation',
   'sentence-construction': 'Sentence Building',
@@ -119,7 +120,19 @@ export function ExerciseShell({ exercise, onComplete, onNext }: ExerciseShellPro
         {/* Question */}
         <div className="space-y-1.5">
           <p className="text-lg font-semibold leading-snug">{exercise.question}</p>
-          <p className="text-xs text-muted-foreground">{exercise.instruction}</p>
+          {exercise.instruction.includes('|||READING|||') ? (() => {
+            const readingMatch = exercise.instruction.match(/\|\|\|READING\|\|\|(.+?)\|\|\|END\|\|\|([\s\S]*)/);
+            const reading = readingMatch?.[1] ?? '';
+            const rest = readingMatch?.[2] ?? exercise.instruction;
+            return (
+              <>
+                <p className="text-sm text-muted-foreground leading-relaxed">{reading}</p>
+                {rest && <p className="text-xs text-muted-foreground">{rest}</p>}
+              </>
+            );
+          })() : (
+            <p className="text-xs text-muted-foreground whitespace-pre-line">{exercise.instruction}</p>
+          )}
         </div>
 
         {/* Exercise body */}
