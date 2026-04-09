@@ -678,4 +678,81 @@ export const chineseDialogues: Dialogue[] = [
       { speaker: 'Narrator', text: '人一定很多。', pinyin: 'Rén yīdìng hěn duō.', translation: 'There will definitely be a lot of people.' },
     ],
   },
+
+  // ============================================================
+  // Lesson 18 - April Notes (四月课堂笔记)
+  // ============================================================
+  {
+    id: 'dlg-l18-01',
+    title: 'This and That',
+    titleChinese: '这和那',
+    setting: 'A teacher asks students to identify objects in the classroom.',
+    lesson: 18,
+    lines: [
+      { speaker: 'A', text: '这是什么？', pinyin: 'Zhè shì shénme?', translation: 'What is this?' },
+      { speaker: 'B', text: '这是一本书。', pinyin: 'Zhè shì yì běn shū.', translation: 'This is a book.' },
+      { speaker: 'A', text: '那个呢？那里是什么？', pinyin: 'Nà ge ne? Nàlǐ shì shénme?', translation: 'What about that? What is over there?' },
+      { speaker: 'B', text: '那里是教室。', pinyin: 'Nàlǐ shì jiàoshì.', translation: 'Over there is the classroom.' },
+      { speaker: 'A', text: '这些都是你的吗？', pinyin: 'Zhè xiē dōu shì nǐ de ma?', translation: 'Are these all yours?' },
+      { speaker: 'B', text: '这些是我的，那些是他的。', pinyin: 'Zhè xiē shì wǒ de, nà xiē shì tā de.', translation: 'These are mine, those are his.' },
+    ],
+  },
+  {
+    id: 'dlg-l18-02',
+    title: "Don't Do That!",
+    titleChinese: '别那样做！',
+    setting: 'A parent gives advice to their child before a trip.',
+    lesson: 18,
+    lines: [
+      { speaker: 'A', text: '外面很冷，别感冒。', pinyin: 'Wàimiàn hěn lěng, bié gǎnmào.', translation: "It's cold outside, don't catch a cold." },
+      { speaker: 'B', text: '好的，我知道了。', pinyin: 'Hǎo de, wǒ zhīdào le.', translation: 'OK, I know.' },
+      { speaker: 'A', text: '别害怕，别放弃。', pinyin: 'Bié hàipà, bié fàngqì.', translation: "Don't be afraid, don't give up." },
+      { speaker: 'B', text: '我不害怕！', pinyin: 'Wǒ bú hàipà!', translation: "I'm not afraid!" },
+      { speaker: 'A', text: '还有，别说谎。', pinyin: 'Hái yǒu, bié shuō huǎng.', translation: "Also, don't lie." },
+      { speaker: 'B', text: '我不会说谎的。', pinyin: 'Wǒ bú huì shuō huǎng de.', translation: "I won't lie." },
+    ],
+  },
+  {
+    id: 'dlg-l18-03',
+    title: 'Do You Know That Person?',
+    titleChinese: '你认识那个人吗？',
+    setting: 'Two friends spot someone they might know.',
+    lesson: 18,
+    lines: [
+      { speaker: 'A', text: '你认识前面那个人吗？', pinyin: 'Nǐ rènshi qiánmiàn nà ge rén ma?', translation: 'Do you know that person in front?' },
+      { speaker: 'B', text: '认识，他是我的老师。', pinyin: 'Rènshi, tā shì wǒ de lǎoshī.', translation: 'Yes, he is my teacher.' },
+      { speaker: 'A', text: '你认识几个汉字？', pinyin: 'Nǐ rènshi jǐ ge hànzì?', translation: 'How many Chinese characters do you know?' },
+      { speaker: 'B', text: '我认识几个汉字。', pinyin: 'Wǒ rènshi jǐ ge hànzì.', translation: 'I know a few Chinese characters.' },
+      { speaker: 'A', text: '非常好！', pinyin: 'Fēicháng hǎo!', translation: 'Very good!' },
+    ],
+  },
+  {
+    id: 'dlg-l18-04',
+    title: 'Walking Directions',
+    titleChinese: '走路方向',
+    setting: 'Someone asks for directions on the street.',
+    lesson: 18,
+    lines: [
+      { speaker: 'A', text: '请问，那个高楼怎么走？', pinyin: 'Qǐngwèn, nà ge gāo lóu zěnme zǒu?', translation: 'Excuse me, how do I get to that tall building?' },
+      { speaker: 'B', text: '往前走走。', pinyin: 'Wǎng qián zǒuzǒu.', translation: 'Walk forward a bit.' },
+      { speaker: 'A', text: '走几步？', pinyin: 'Zǒu jǐ bù?', translation: 'How many steps?' },
+      { speaker: 'B', text: '往前走了几步，然后往左走3米。', pinyin: 'Wǎng qián zǒu le jǐ bù, ránhòu wǎng zuǒ zǒu sān mǐ.', translation: 'Walk a few steps forward, then go 3 metres to the left.' },
+      { speaker: 'A', text: '那个高楼有几层？', pinyin: 'Nà ge gāo lóu yǒu jǐ céng?', translation: 'How many floors does that tall building have?' },
+      { speaker: 'B', text: '那个高楼有30层。', pinyin: 'Nà ge gāo lóu yǒu sānshí céng.', translation: 'That tall building has 30 floors.' },
+    ],
+  },
+  {
+    id: 'dlg-l18-05',
+    title: 'Seeing Pandas',
+    titleChinese: '看见熊猫',
+    setting: 'Friends talk about their favourite experiences in China.',
+    lesson: 18,
+    lines: [
+      { speaker: 'A', text: '看见熊猫我们非常高兴。', pinyin: 'Kàn jiàn xióngmāo wǒmen fēicháng gāoxìng.', translation: 'Seeing the pandas we were extremely happy.' },
+      { speaker: 'B', text: '去香港我们非常高兴。', pinyin: 'Qù Xiānggǎng wǒmen fēicháng gāoxìng.', translation: 'Going to Hong Kong we are extremely happy.' },
+      { speaker: 'A', text: '去长城我们非常高兴。', pinyin: 'Qù Chángchéng wǒmen fēicháng gāoxìng.', translation: 'Going to the Great Wall we are extremely happy.' },
+      { speaker: 'B', text: '这个价钱高不高？', pinyin: 'Zhège jiàqián gāo bù gāo?', translation: 'Is this price high or not?' },
+      { speaker: 'A', text: '不高，价钱很低。', pinyin: 'Bù gāo, jiàqián hěn dī.', translation: 'Not high, the price is very low.' },
+    ],
+  },
 ];

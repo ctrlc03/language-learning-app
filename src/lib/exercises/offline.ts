@@ -276,40 +276,13 @@ function generateSentenceMC(
     explanation,
   };
 
-  // Build a reading line for the full sentence by matching known vocabulary words
-  // Sort by word length descending so longer words match first (e.g. 北京烤鸭 before 北京)
-  const sortedVocab = [...allVocab].sort((a, b) => b.word.length - a.word.length);
-  const sentence = target.exampleSentence!;
-  const readingParts: { pos: number; word: string; reading: string }[] = [];
-  const matched = new Set<number>(); // track character positions already covered
-
-  for (const v of sortedVocab) {
-    if (v.word.length < 1 || !v.reading) continue;
-    let searchFrom = 0;
-    while (true) {
-      const idx = sentence.indexOf(v.word, searchFrom);
-      if (idx === -1) break;
-      // Check no overlap with already matched positions
-      let overlap = false;
-      for (let c = idx; c < idx + v.word.length; c++) {
-        if (matched.has(c)) { overlap = true; break; }
-      }
-      if (!overlap) {
-        readingParts.push({ pos: idx, word: v.word, reading: v.reading });
-        for (let c = idx; c < idx + v.word.length; c++) matched.add(c);
-      }
-      searchFrom = idx + v.word.length;
-    }
+  // Use examplePinyin if available for a full reading line
+  let instruction: string;
+  if (target.examplePinyin) {
+    instruction = `|||READING|||${target.examplePinyin}|||END|||What does this sentence mean?`;
+  } else {
+    instruction = `${target.word} (${target.reading}) = ${target.meaning}\nWhat does this sentence mean?`;
   }
-
-  // Sort by position and build reading string
-  readingParts.sort((a, b) => a.pos - b.pos);
-  const readingLine = readingParts.map(p => p.reading).join(' ');
-
-  // Use |||READING||| delimiter so the shell can render characters and pinyin on separate lines
-  const instruction = readingLine
-    ? `|||READING|||${readingLine}|||END|||What does this sentence mean?`
-    : 'What does this sentence mean?';
 
   return {
     id: target.id + '_smc_' + nanoid(6),

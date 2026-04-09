@@ -237,6 +237,7 @@ export interface VocabularyItem {
   level?: string; // HSK1, JLPT N5, etc.
   topic?: string;
   exampleSentence?: string;
+  examplePinyin?: string;
   exampleTranslation?: string;
 }
 
