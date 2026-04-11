@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { TopicReview } from '@/components/exercises/topic-review';
 import { DialogueBrowser } from '@/components/exercises/dialogue-browser';
 import { KanaPractice } from '@/components/exercises/kana-practice';
+import { GrammarReference } from '@/components/exercises/grammar-reference';
 import { getOfflineExercise, isOfflineExerciseType } from '@/lib/exercises/offline';
 import lessonsData from '@/data/chinese/lessons.json';
 import { irodoriLevels, irodoriLessonIndex, irodoriLessonTitles } from '@/data/japanese/irodori-vocab';
@@ -41,6 +42,7 @@ export default function ExercisesPage() {
   const [showDialogues, setShowDialogues] = useState(false);
   const [showLessonPicker, setShowLessonPicker] = useState(false);
   const [showKanaPractice, setShowKanaPractice] = useState(false);
+  const [showGrammar, setShowGrammar] = useState(false);
   const [lessonFilter, setLessonFilter] = useState<string | undefined>(undefined);
 
   const generateExercise = useCallback(async (type: ExerciseType, lesson?: string) => {
@@ -120,6 +122,10 @@ export default function ExercisesPage() {
 
   if (showKanaPractice) {
     return <KanaPractice onBack={() => setShowKanaPractice(false)} />;
+  }
+
+  if (showGrammar) {
+    return <GrammarReference onBack={() => setShowGrammar(false)} />;
   }
 
   if (showLessonPicker) {
@@ -320,6 +326,26 @@ export default function ExercisesPage() {
                 </div>
               </Card>
             </button>
+            {language === 'chinese' && (
+              <button
+                onClick={() => setShowGrammar(true)}
+                className="text-left active:scale-[0.98] transition-all"
+              >
+                <Card className="p-4 hover:border-primary/40 hover:bg-primary/[0.03] transition-all border-dashed h-full">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="space-y-1">
+                      <h3 className="font-semibold text-sm">Grammar Patterns</h3>
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        Rules, structures & example sentences
+                      </p>
+                    </div>
+                    <Badge variant="outline" className="text-[10px] shrink-0 mt-0.5">
+                      Reference
+                    </Badge>
+                  </div>
+                </Card>
+              </button>
+            )}
             {language === 'japanese' && (
               <button
                 onClick={() => setShowKanaPractice(true)}

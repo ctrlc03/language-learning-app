@@ -889,6 +889,31 @@
         { "word": "告诉", "reading": "gàosu", "meaning": "to tell", "partOfSpeech": "verb", "topic": "social", "exampleSentence": "请告诉我。", "examplePinyin": "Qǐng gàosu wǒ.", "exampleTranslation": "Please tell me." },
         { "word": "真", "reading": "zhēn", "meaning": "really, truly", "partOfSpeech": "adverb", "topic": "grammar", "exampleSentence": "你真好！", "examplePinyin": "Nǐ zhēn hǎo!", "exampleTranslation": "You're so kind!" }
       ]
+    },
+    {
+      "lesson": 19,
+      "title": "Body, Food & Grammar",
+      "titleChinese": "身体、食物和语法",
+      "vocabulary": [
+        { "word": "照片", "reading": "zhào piàn", "meaning": "photo, picture", "partOfSpeech": "noun", "topic": "daily life", "exampleSentence": "你能帮我拍张照片吗？", "examplePinyin": "Nǐ néng bāng wǒ pāi zhāng zhàopiàn ma?", "exampleTranslation": "Can you take a photo for me?" },
+        { "word": "教练", "reading": "jiào liàn", "meaning": "coach, trainer", "partOfSpeech": "noun", "topic": "daily life", "exampleSentence": "教练说要多休息。", "examplePinyin": "Jiàoliàn shuō yào duō xiūxi.", "exampleTranslation": "The coach says to rest more." },
+        { "word": "放心", "reading": "fàng xīn", "meaning": "to rest assured, be at ease", "partOfSpeech": "verb", "topic": "emotions", "exampleSentence": "放心吧，没问题。", "examplePinyin": "Fàngxīn ba, méi wèntí.", "exampleTranslation": "Don't worry, no problem." },
+        { "word": "健身", "reading": "jiàn shēn", "meaning": "to work out, fitness", "partOfSpeech": "verb", "topic": "daily life", "exampleSentence": "我周末去健身。", "examplePinyin": "Wǒ zhōumò qù jiànshēn.", "exampleTranslation": "I go work out on weekends." },
+        { "word": "肉", "reading": "ròu", "meaning": "meat", "partOfSpeech": "noun", "topic": "food", "exampleSentence": "你最喜欢吃什么肉？", "examplePinyin": "Nǐ zuì xǐhuān chī shénme ròu?", "exampleTranslation": "What meat do you like most?" },
+        { "word": "猪肉", "reading": "zhū ròu", "meaning": "pork", "partOfSpeech": "noun", "topic": "food", "exampleSentence": "饺子里面是猪肉。", "examplePinyin": "Jiǎozi lǐmiàn shì zhūròu.", "exampleTranslation": "The dumplings have pork inside." },
+        { "word": "牛肉", "reading": "niú ròu", "meaning": "beef", "partOfSpeech": "noun", "topic": "food", "exampleSentence": "牛肉面很好吃。", "examplePinyin": "Niúròu miàn hěn hǎochī.", "exampleTranslation": "Beef noodles are delicious." },
+        { "word": "鸡肉", "reading": "jī ròu", "meaning": "chicken", "partOfSpeech": "noun", "topic": "food", "exampleSentence": "我想吃鸡肉。", "examplePinyin": "Wǒ xiǎng chī jīròu.", "exampleTranslation": "I want to eat chicken." },
+        { "word": "鱼肉", "reading": "yú ròu", "meaning": "fish (meat)", "partOfSpeech": "noun", "topic": "food", "exampleSentence": "鱼肉很新鲜。", "examplePinyin": "Yúròu hěn xīnxiān.", "exampleTranslation": "The fish is very fresh." },
+        { "word": "蔬菜", "reading": "shū cài", "meaning": "vegetables", "partOfSpeech": "noun", "topic": "food", "exampleSentence": "有面条、面包，还有蔬菜。", "examplePinyin": "Yǒu miàntiáo, miànbāo, hái yǒu shūcài.", "exampleTranslation": "There are noodles, bread, and vegetables." },
+        { "word": "意大利面", "reading": "yìdàlì miàn", "meaning": "pasta, Italian noodles", "partOfSpeech": "noun", "topic": "food", "exampleSentence": "晚上吃意大利面怎么样？", "examplePinyin": "Wǎnshàng chī yìdàlì miàn zěnmeyàng?", "exampleTranslation": "How about eating pasta tonight?" },
+        { "word": "拍", "reading": "pāi", "meaning": "to take (a photo), to clap", "partOfSpeech": "verb", "topic": "daily life", "exampleSentence": "你能帮我拍张照片吗？", "examplePinyin": "Nǐ néng bāng wǒ pāi zhāng zhàopiàn ma?", "exampleTranslation": "Can you take a photo for me?" },
+        { "word": "电影院", "reading": "diàn yǐng yuàn", "meaning": "cinema", "partOfSpeech": "noun", "topic": "places", "exampleSentence": "这里有一家很大的电影院。", "examplePinyin": "Zhèlǐ yǒu yī jiā hěn dà de diànyǐngyuàn.", "exampleTranslation": "There is a very big cinema here." },
+        { "word": "住户", "reading": "zhù hù", "meaning": "resident, tenant", "partOfSpeech": "noun", "topic": "social", "exampleSentence": "住户有折扣！", "examplePinyin": "Zhùhù yǒu zhékòu!", "exampleTranslation": "Residents get a discount!" },
+        { "word": "折扣", "reading": "zhé kòu", "meaning": "discount", "partOfSpeech": "noun", "topic": "shopping", "exampleSentence": "住户有折扣！", "examplePinyin": "Zhùhù yǒu zhékòu!", "exampleTranslation": "Residents get a discount!" },
+        { "word": "好玩", "reading": "hǎo wán", "meaning": "fun, interesting", "partOfSpeech": "adjective", "topic": "descriptions", "exampleSentence": "这里有什么好玩的吗？", "examplePinyin": "Zhèlǐ yǒu shénme hǎowán de ma?", "exampleTranslation": "Is there anything fun around here?" },
+        { "word": "疯狂", "reading": "fēng kuáng", "meaning": "crazy, wild", "partOfSpeech": "adjective", "topic": "descriptions", "exampleSentence": "他很疯狂。", "examplePinyin": "Tā hěn fēngkuáng.", "exampleTranslation": "He is crazy." },
+        { "word": "奇怪", "reading": "qí guài", "meaning": "strange, weird", "partOfSpeech": "adjective", "topic": "descriptions", "exampleSentence": "这个人很奇怪。", "examplePinyin": "Zhège rén hěn qíguài.", "exampleTranslation": "This person is very strange." }
+      ]
     }
   ]
 }
