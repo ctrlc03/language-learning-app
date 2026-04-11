@@ -186,16 +186,8 @@ function generateMultipleChoice(
   let explanation = `${target.word} (${target.reading}) — ${target.meaning}`;
   if (target.exampleSentence) {
     explanation += `\n\nExample: ${target.exampleSentence}`;
-    // Build pinyin line from known words found in the example sentence
-    const sentenceReadings: string[] = [];
-    for (const v of allVocab) {
-      if (v.word.length > 1 && target.exampleSentence.includes(v.word)) {
-        sentenceReadings.push(`${v.word} = ${v.reading}`);
-        if (sentenceReadings.length >= 5) break;
-      }
-    }
-    if (sentenceReadings.length > 0) {
-      explanation += `\nPinyin: ${sentenceReadings.join(', ')}`;
+    if (target.examplePinyin) {
+      explanation += `\n${target.examplePinyin}`;
     }
     if (target.exampleTranslation) {
       explanation += `\n${target.exampleTranslation}`;

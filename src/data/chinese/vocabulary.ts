@@ -59,6 +59,7 @@ function buildLessonVocabulary(): VocabularyItem[] {
         level: lesson.title,
         topic: entry.topic,
         exampleSentence: entry.exampleSentence,
+        examplePinyin: (entry as Record<string, string>).examplePinyin,
         exampleTranslation: entry.exampleTranslation,
       });
     }
