@@ -253,6 +253,32 @@ export const chineseGrammarRules: GrammarRule[] = [
     ],
   },
   {
+    id: 'gr-21',
+    title: 'Chinese Discounts with 折',
+    titleChinese: '打折',
+    pattern: 'Number + 折 = "you pay X0%"',
+    explanation: 'Chinese discounts work opposite to English! The number refers to how much you PAY, not how much you save. 8折 = you pay 80% = 20% off. Use 打X折 dǎ X zhé as the verb.',
+    examples: [
+      { chinese: '今天打8折。', pinyin: 'Jīntiān dǎ bā zhé.', english: "Today it's 20% off.", note: '8折 = pay 80%' },
+      { chinese: '这件衣服9折。', pinyin: 'Zhè jiàn yīfu jiǔ zhé.', english: '10% off this piece of clothing.', note: '9折 = pay 90%' },
+      { chinese: '5折！', pinyin: 'Wǔ zhé!', english: 'Half price!', note: '5折 = pay 50%' },
+      { chinese: '你能给我个折扣吗？', pinyin: 'Nǐ néng gěi wǒ ge zhékòu ma?', english: 'Can you give me a discount?' },
+    ],
+  },
+  {
+    id: 'gr-22',
+    title: 'Bargaining with 行',
+    titleChinese: '行字议价',
+    pattern: '行 / 不行 / 行吗？',
+    explanation: '行 xíng = "okay / that works / fine". Used frequently in bargaining and everyday agreement. 不行 = not okay.',
+    examples: [
+      { chinese: '10块行吗？', pinyin: 'Shí kuài xíng ma?', english: 'Is 10 kuai okay?' },
+      { chinese: '行！', pinyin: 'Xíng!', english: 'Okay!' },
+      { chinese: '不行，太贵了。', pinyin: 'Bù xíng, tài guì le.', english: 'No way, too expensive.' },
+      { chinese: '行，没问题！', pinyin: 'Xíng, méi wèntí!', english: 'Sure, no problem!' },
+    ],
+  },
+  {
     id: 'gr-20',
     title: 'Measure Words',
     titleChinese: '量词',
