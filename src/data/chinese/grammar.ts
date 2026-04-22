@@ -292,4 +292,42 @@ export const chineseGrammarRules: GrammarRule[] = [
       { chinese: '三层', pinyin: 'sān céng', english: '3rd floor', note: '层 for floors/levels' },
     ],
   },
+  {
+    id: 'gr-23',
+    title: 'Taking Transport with 坐',
+    titleChinese: '坐交通',
+    pattern: '坐 + Transport',
+    explanation: '坐 zuò (to sit) is used to mean "to take" a form of transport. It works for subway, bus, taxi, and more. Pair it with 多少路 to ask which bus line.',
+    examples: [
+      { chinese: '坐地铁二十分钟。', pinyin: 'Zuò dìtiě èrshí fēnzhōng.', english: '20 minutes by subway.' },
+      { chinese: '坐出租车多少钱？', pinyin: 'Zuò chūzūchē duōshao qián?', english: 'How much is a taxi?' },
+      { chinese: '我应该坐多少路车？', pinyin: 'Wǒ yīnggāi zuò duōshao lù chē?', english: 'Which bus line should I take?' },
+      { chinese: '去长城坐多少路车？', pinyin: 'Qù Chángchéng zuò duōshao lù chē?', english: 'Which bus goes to the Great Wall?' },
+    ],
+  },
+  {
+    id: 'gr-24',
+    title: 'Half with 一半',
+    titleChinese: '一半',
+    pattern: '一半 / 一半的 + Noun',
+    explanation: '一半 yī bàn means "half". Use it before a noun (with 的) to mean "half of something". 半价 bànjià = half price.',
+    examples: [
+      { chinese: '一半的人不吃辣。', pinyin: 'Yī bàn de rén bù chī là.', english: "Half of the people don't eat spicy food." },
+      { chinese: '学生半价。', pinyin: 'Xuésheng bànjià.', english: 'Students pay half price.', note: '半价 = half price' },
+      { chinese: '5折是一半的价格。', pinyin: 'Wǔ zhé shì yī bàn de jiàgé.', english: '5折 is half the price.', note: '5折 = 50% off' },
+    ],
+  },
+  {
+    id: 'gr-25',
+    title: 'Stopped Doing with 不 + V + 了',
+    titleChinese: '不…了',
+    pattern: 'Subject + 不 + Verb + 了',
+    explanation: '不…了 signals that someone has stopped or is no longer doing something, or that a situation has changed. Different from simple negation — it implies a change from before.',
+    examples: [
+      { chinese: '我不吃了。', pinyin: 'Wǒ bù chī le.', english: "I'm done eating / I won't eat anymore." },
+      { chinese: '他不来了。', pinyin: 'Tā bù lái le.', english: "He's not coming anymore." },
+      { chinese: '我不等了。', pinyin: 'Wǒ bù děng le.', english: "I'm not waiting anymore." },
+      { chinese: '不下雨了。', pinyin: 'Bù xià yǔ le.', english: "It's not raining anymore.", note: 'Change of situation' },
+    ],
+  },
 ];

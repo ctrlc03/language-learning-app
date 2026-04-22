@@ -925,6 +925,50 @@
         { "word": "不行", "reading": "bù xíng", "meaning": "not okay, no way", "partOfSpeech": "expression", "topic": "basic", "exampleSentence": "不行，太贵了。", "examplePinyin": "Bù xíng, tài guì le.", "exampleTranslation": "No way, too expensive." },
         { "word": "没问题", "reading": "méi wèn tí", "meaning": "no problem", "partOfSpeech": "expression", "topic": "basic", "exampleSentence": "行，没问题！", "examplePinyin": "Xíng, méi wèntí!", "exampleTranslation": "Sure, no problem!" }
       ]
+    },
+    {
+      "lesson": 20,
+      "title": "Travel Phrases",
+      "titleChinese": "常用旅行短语",
+      "vocabulary": [
+        { "word": "故宫", "reading": "Gù gōng", "meaning": "Forbidden City", "partOfSpeech": "noun", "topic": "travel", "exampleSentence": "故宫怎么走？", "examplePinyin": "Gùgōng zěnme zǒu?", "exampleTranslation": "How do I get to the Forbidden City?" },
+        { "word": "长城", "reading": "Cháng chéng", "meaning": "Great Wall", "partOfSpeech": "noun", "topic": "travel", "exampleSentence": "去长城要多长时间？", "examplePinyin": "Qù Chángchéng yào duō cháng shíjiān?", "exampleTranslation": "How long does it take to get to the Great Wall?" },
+        { "word": "路", "reading": "lù", "meaning": "route, line (bus)", "partOfSpeech": "measure word", "topic": "transport", "exampleSentence": "去长城坐多少路车？", "examplePinyin": "Qù Chángchéng zuò duōshao lù chē?", "exampleTranslation": "Which bus line goes to the Great Wall?" },
+        { "word": "出租车", "reading": "chū zū chē", "meaning": "taxi", "partOfSpeech": "noun", "topic": "transport", "exampleSentence": "坐出租车多少钱？", "examplePinyin": "Zuò chūzūchē duōshao qián?", "exampleTranslation": "How much is a taxi?" },
+        { "word": "打车", "reading": "dǎ chē", "meaning": "to take a taxi", "partOfSpeech": "verb", "topic": "transport", "exampleSentence": "在哪儿打车？", "examplePinyin": "Zài nǎr dǎ chē?", "exampleTranslation": "Where can I take a taxi?" },
+        { "word": "应该", "reading": "yīng gāi", "meaning": "should, ought to", "partOfSpeech": "modal verb", "topic": "grammar", "exampleSentence": "我应该坐多少路车？", "examplePinyin": "Wǒ yīnggāi zuò duōshao lù chē?", "exampleTranslation": "Which bus should I take?" },
+        { "word": "市中心", "reading": "shì zhōng xīn", "meaning": "city centre", "partOfSpeech": "noun", "topic": "places", "exampleSentence": "离市中心多远？", "examplePinyin": "Lí shì zhōngxīn duō yuǎn?", "exampleTranslation": "How far is it from the city centre?" },
+        { "word": "多远", "reading": "duō yuǎn", "meaning": "how far", "partOfSpeech": "expression", "topic": "directions", "exampleSentence": "离这里多远？", "examplePinyin": "Lí zhèlǐ duō yuǎn?", "exampleTranslation": "How far from here?" },
+        { "word": "辣", "reading": "là", "meaning": "spicy", "partOfSpeech": "adjective", "topic": "food", "exampleSentence": "这个辣吗？", "examplePinyin": "Zhège là ma?", "exampleTranslation": "Is this spicy?" },
+        { "word": "素食", "reading": "sù shí", "meaning": "vegetarian food", "partOfSpeech": "noun", "topic": "food", "exampleSentence": "有素食吗？", "examplePinyin": "Yǒu sùshí ma?", "exampleTranslation": "Do you have vegetarian food?" },
+        { "word": "菜单", "reading": "cài dān", "meaning": "menu", "partOfSpeech": "noun", "topic": "food", "exampleSentence": "能给我菜单吗？", "examplePinyin": "Néng gěi wǒ càidān ma?", "exampleTranslation": "Can I have the menu?" },
+        { "word": "打包", "reading": "dǎ bāo", "meaning": "to take away, pack up", "partOfSpeech": "verb", "topic": "food", "exampleSentence": "我可以打包吗？", "examplePinyin": "Wǒ kěyǐ dǎbāo ma?", "exampleTranslation": "Can I get this to go?" },
+        { "word": "服务员", "reading": "fú wù yuán", "meaning": "waiter, service staff", "partOfSpeech": "noun", "topic": "food", "exampleSentence": "服务员，结账！", "examplePinyin": "Fúwùyuán, jiézhàng!", "exampleTranslation": "Waiter, bill please!" },
+        { "word": "结账", "reading": "jié zhàng", "meaning": "to pay the bill", "partOfSpeech": "verb", "topic": "food", "exampleSentence": "请帮我结账。", "examplePinyin": "Qǐng bāng wǒ jiézhàng.", "exampleTranslation": "Please help me pay the bill." },
+        { "word": "每人", "reading": "měi rén", "meaning": "per person, each person", "partOfSpeech": "expression", "topic": "food", "exampleSentence": "每人多少钱？", "examplePinyin": "Měi rén duōshao qián?", "exampleTranslation": "How much is it per person?" },
+        { "word": "刷卡", "reading": "shuā kǎ", "meaning": "to pay by card", "partOfSpeech": "verb", "topic": "shopping", "exampleSentence": "能刷卡吗？", "examplePinyin": "Néng shuā kǎ ma?", "exampleTranslation": "Can I pay by card?" },
+        { "word": "付款", "reading": "fù kuǎn", "meaning": "to pay, payment", "partOfSpeech": "verb", "topic": "shopping", "exampleSentence": "在哪儿付款？", "examplePinyin": "Zài nǎr fùkuǎn?", "exampleTranslation": "Where do I pay?" },
+        { "word": "号", "reading": "hào", "meaning": "size, number", "partOfSpeech": "measure word", "topic": "shopping", "exampleSentence": "有大一点儿的号吗？", "examplePinyin": "Yǒu dà yīdiǎnr de hào ma?", "exampleTranslation": "Do you have a bigger size?" },
+        { "word": "空", "reading": "kōng", "meaning": "empty, available", "partOfSpeech": "adjective", "topic": "hotel", "exampleSentence": "有空房间吗？", "examplePinyin": "Yǒu kōng fángjiān ma?", "exampleTranslation": "Do you have any rooms available?" },
+        { "word": "一晚", "reading": "yī wǎn", "meaning": "one night", "partOfSpeech": "expression", "topic": "hotel", "exampleSentence": "一晚多少钱？", "examplePinyin": "Yī wǎn duōshao qián?", "exampleTranslation": "How much is it for one night?" },
+        { "word": "入住", "reading": "rù zhù", "meaning": "to check in", "partOfSpeech": "verb", "topic": "hotel", "exampleSentence": "几点可以入住？", "examplePinyin": "Jǐ diǎn kěyǐ rùzhù?", "exampleTranslation": "What time can I check in?" },
+        { "word": "退房", "reading": "tuì fáng", "meaning": "to check out", "partOfSpeech": "verb", "topic": "hotel", "exampleSentence": "几点需要退房？", "examplePinyin": "Jǐ diǎn xūyào tuìfáng?", "exampleTranslation": "What time do I need to check out?" },
+        { "word": "浴室", "reading": "yù shì", "meaning": "bathroom, shower room", "partOfSpeech": "noun", "topic": "hotel", "exampleSentence": "浴室在哪儿？", "examplePinyin": "Yùshì zài nǎr?", "exampleTranslation": "Where is the bathroom?" },
+        { "word": "寄存", "reading": "jì cún", "meaning": "to store, check in luggage", "partOfSpeech": "verb", "topic": "hotel", "exampleSentence": "可以寄存行李吗？", "examplePinyin": "Kěyǐ jìcún xíngli ma?", "exampleTranslation": "Can I store my luggage?" },
+        { "word": "行李", "reading": "xíng li", "meaning": "luggage", "partOfSpeech": "noun", "topic": "hotel", "exampleSentence": "我的行李太多了。", "examplePinyin": "Wǒ de xíngli tài duō le.", "exampleTranslation": "I have too much luggage." },
+        { "word": "早餐", "reading": "zǎo cān", "meaning": "breakfast", "partOfSpeech": "noun", "topic": "hotel", "exampleSentence": "早餐几点开始？", "examplePinyin": "Zǎocān jǐ diǎn kāishǐ?", "exampleTranslation": "What time does breakfast start?" },
+        { "word": "门票", "reading": "mén piào", "meaning": "entrance ticket", "partOfSpeech": "noun", "topic": "travel", "exampleSentence": "门票多少钱？", "examplePinyin": "Ménpiào duōshao qián?", "exampleTranslation": "How much is the entrance ticket?" },
+        { "word": "开门", "reading": "kāi mén", "meaning": "to open (shop or attraction)", "partOfSpeech": "verb", "topic": "travel", "exampleSentence": "几点开门？", "examplePinyin": "Jǐ diǎn kāimén?", "exampleTranslation": "What time does it open?" },
+        { "word": "关门", "reading": "guān mén", "meaning": "to close (shop or attraction)", "partOfSpeech": "verb", "topic": "travel", "exampleSentence": "几点关门？", "examplePinyin": "Jǐ diǎn guānmén?", "exampleTranslation": "What time does it close?" },
+        { "word": "拍照", "reading": "pāi zhào", "meaning": "to take photos", "partOfSpeech": "verb", "topic": "travel", "exampleSentence": "这里能拍照吗？", "examplePinyin": "Zhèlǐ néng pāizhào ma?", "exampleTranslation": "Can I take photos here?" },
+        { "word": "厕所", "reading": "cè suǒ", "meaning": "toilet, WC", "partOfSpeech": "noun", "topic": "places", "exampleSentence": "厕所在哪儿？", "examplePinyin": "Cèsuǒ zài nǎr?", "exampleTranslation": "Where is the toilet?" },
+        { "word": "等", "reading": "děng", "meaning": "to wait", "partOfSpeech": "verb", "topic": "basic", "exampleSentence": "我们要等多长时间？", "examplePinyin": "Wǒmen yào děng duō cháng shíjiān?", "exampleTranslation": "How long do we have to wait?" },
+        { "word": "药店", "reading": "yào diàn", "meaning": "pharmacy", "partOfSpeech": "noun", "topic": "places", "exampleSentence": "最近的药店在哪儿？", "examplePinyin": "Zuì jìn de yàodiàn zài nǎr?", "exampleTranslation": "Where is the nearest pharmacy?" },
+        { "word": "丢", "reading": "diū", "meaning": "to lose (something)", "partOfSpeech": "verb", "topic": "basic", "exampleSentence": "我丢东西了。", "examplePinyin": "Wǒ diū dōngxi le.", "exampleTranslation": "I lost my things." },
+        { "word": "英语", "reading": "Yīng yǔ", "meaning": "English language", "partOfSpeech": "noun", "topic": "language", "exampleSentence": "你说英语吗？", "examplePinyin": "Nǐ shuō Yīngyǔ ma?", "exampleTranslation": "Do you speak English?" },
+        { "word": "一下", "reading": "yī xià", "meaning": "a bit, a moment (softener)", "partOfSpeech": "expression", "topic": "grammar", "exampleSentence": "能帮我一下吗？", "examplePinyin": "Néng bāng wǒ yīxià ma?", "exampleTranslation": "Can you help me for a moment?" },
+        { "word": "一半", "reading": "yī bàn", "meaning": "half", "partOfSpeech": "expression", "topic": "grammar", "exampleSentence": "一半的人不吃辣。", "examplePinyin": "Yī bàn de rén bù chī là.", "exampleTranslation": "Half of the people don't eat spicy food." }
+      ]
     }
   ]
 }
