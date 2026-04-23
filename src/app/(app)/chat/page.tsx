@@ -59,7 +59,7 @@ export default function ChatPage() {
         showHistory ? 'flex' : 'hidden md:flex'
       )}>
         <div className="p-3 border-b border-border flex items-center justify-between">
-          <h2 className="font-semibold text-sm">Conversations</h2>
+          <h2 className="font-medium text-[10px] tracking-[0.15em] uppercase">/// TRANSMIT·LOG</h2>
           <Button variant="ghost" size="sm" onClick={handleNewChat}>
             + New
           </Button>

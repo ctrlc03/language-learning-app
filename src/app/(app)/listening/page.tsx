@@ -121,9 +121,14 @@ export default function ListeningPage() {
   if (mode === 'select') {
     return (
       <div className="p-5 md:p-8 max-w-2xl mx-auto space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Listening Practice</h1>
-          <p className="text-muted-foreground mt-1">
+        <div className="border-b border-dashed border-border pb-5">
+          <div className="text-[10px] tracking-[0.2em] text-muted-foreground mb-1.5">
+            KOTOBA.EXE / <span className="text-primary font-medium">LISTEN</span> / DRILL
+          </div>
+          <h1 className="font-display text-2xl font-bold tracking-[0.08em]">
+            LISTEN<span className="text-muted-foreground font-medium">·DRILL</span>
+          </h1>
+          <p className="text-xs text-muted-foreground mt-1 tracking-[0.05em]">
             Train your ear for {language === 'chinese' ? 'Chinese' : 'Japanese'}
           </p>
         </div>

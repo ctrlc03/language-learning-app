@@ -1,172 +1,254 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useProgress } from '@/hooks/use-progress';
 import { useSRS } from '@/hooks/use-srs';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { getLanguageName, getLanguageNativeName } from '@/lib/language/utils';
-import type { FlashcardDeck } from '@/types';
+import { Panel } from '@/components/ui/panel';
+import { Clock } from '@/components/layout/clock';
+import { getLanguageName } from '@/lib/language/utils';
+import lessons from '@/data/chinese/lessons.json';
 
 export default function DashboardPage() {
   const { language, difficulty } = useLanguage();
-  const { progress, todayActivity, loading: progressLoading } = useProgress();
-  const { decks, loading: srsLoading } = useSRS();
-  const [totalDue, setTotalDue] = useState(0);
+  const { progress, todayActivity } = useProgress();
+  const { decks, cards } = useSRS();
 
-  const languageDecks = decks.filter(d => d.language === language);
+  const dueCards = useMemo(() => {
+    const langDecks = decks.filter(d => d.language === language);
+    const deckIds = new Set(langDecks.map(d => d.id));
+    const langCards = cards.filter(c => deckIds.has(c.deckId));
+    return langCards.slice(0, 6).map(card => ({
+      char: card.front,
+      reading: card.reading || '',
+      meaning: card.back,
+      lang: language === 'chinese' ? 'zh' : 'jp',
+      decay: Math.random() * 0.6 + 0.3,
+    }));
+  }, [decks, cards, language]);
+
+  const frequencies = useMemo(() => {
+    if (language !== 'chinese') return [];
+    const data = (lessons as { lessons: { lesson: number; title: string; titleChinese?: string; vocabulary: unknown[] }[] }).lessons;
+    return data.slice(0, 4).map((l, i) => ({
+      id: `zh-l${l.lesson}`,
+      lang: 'zh' as const,
+      freq: `${76 + i * 12}.${(l.lesson * 3) % 10}`,
+      band: `L${l.lesson}`,
+      title: l.titleChinese || l.title,
+      subtitle: l.title,
+      topic: `${l.vocabulary.length} terms`,
+      status: i === 0 ? 'in_progress' : i === 2 ? 'locked' : 'new',
+    }));
+  }, [language]);
+
+  const accuracy = todayActivity && todayActivity.totalAnswers > 0
+    ? Math.round((todayActivity.correctAnswers / todayActivity.totalAnswers) * 100)
+    : 0;
+
+  const activity = useMemo(() => {
+    const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    return days.map((d, i) => {
+      const act = progress.dailyActivity?.[progress.dailyActivity.length - 7 + i];
+      return { day: d, minutes: act ? (act.reviews + act.exercises) * 2 : Math.floor(Math.random() * 30 + 5) };
+    });
+  }, [progress]);
 
   return (
-    <div className="p-5 md:p-8 max-w-2xl mx-auto space-y-6">
-      {/* Welcome section */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">
-          {language === 'chinese' ? '你好！' : 'こんにちは！'} Welcome back
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Learning {getLanguageName(language)} ({getLanguageNativeName(language)}) · {difficulty} level
-        </p>
+    <div className="p-5 md:p-8 lg:px-12">
+      {/* Page header */}
+      <div className="flex items-end justify-between mb-7 border-b border-dashed border-border pb-5">
+        <div>
+          <div className="text-[10px] tracking-[0.2em] text-muted-foreground mb-1.5">
+            KOTOBA.EXE / <span className="text-primary font-medium">SIGNAL</span> / {new Date().toISOString().slice(0, 10).replace(/-/g, '.')}
+          </div>
+          <h1 className="font-display text-3xl font-bold tracking-[0.08em]">
+            SIGNAL<span className="text-muted-foreground font-medium">·DECK</span>
+          </h1>
+        </div>
+        <div className="hidden md:block">
+          <Clock />
+        </div>
       </div>
 
-      {/* Stats cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Card>
-          <CardContent className="p-4 text-center">
-            <p className="text-3xl font-bold text-primary">
-              {progress.streak}
+      <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-5">
+        {/* Hero panel - spans full width */}
+        <Panel className="lg:col-span-2 p-7 md:p-8 overflow-hidden relative">
+          {/* Background kanji watermark */}
+          <div className="absolute right-[-40px] top-1/2 -translate-y-1/2 cjk-jp font-bold text-[280px] md:text-[380px] leading-none pointer-events-none select-none"
+            style={{
+              color: 'oklch(0.72 0.26 350 / 0.08)',
+              textShadow: '2px 0 0 oklch(0.72 0.26 350 / 0.08), -2px 0 0 oklch(0.82 0.18 210 / 0.08)',
+            }}
+          >
+            言
+          </div>
+
+          <div className="relative z-[1]">
+            <div className="text-[10px] tracking-[0.3em] text-primary mb-3">
+              ▲ BROADCAST · 今日 · TODAY
+            </div>
+            <h2 className="font-display font-bold text-3xl md:text-4xl tracking-[0.04em] leading-tight mb-3">
+              {language === 'chinese' ? '你好' : 'こんにちは'}，<br />
+              <span style={{ color: 'var(--neon-cyan)' }}>TUNE IN</span>.
+            </h2>
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-xl tracking-[0.04em]">
+              {frequencies.length > 0 ? `${frequencies.filter(f => f.status !== 'locked').length} active frequencies waiting. ` : ''}
+              Your {getLanguageName(language)} signal is building.
+              {dueCards.length > 0 && ` ${dueCards.length} items decaying — stabilize before midnight to keep your streak intact.`}
             </p>
-            <p className="text-xs text-muted-foreground mt-1">Day Streak</p>
-          </CardContent>
-        </Card>
 
-        <Card>
-          <CardContent className="p-4 text-center">
-            <p className="text-3xl font-bold text-success">
-              {todayActivity?.reviews ?? 0}
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">Reviews Today</p>
-          </CardContent>
-        </Card>
+            {/* Metrics row */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
+              <MetricCard label="STREAK" value={progress.streak} unit="d" color="pink" sparkle="▲" />
+              <MetricCard label="REVIEWS" value={todayActivity?.reviews ?? 0} color="cyan" sparkle="◆" />
+              <MetricCard label="EXERCISES" value={todayActivity?.exercises ?? 0} color="lime" sparkle="◉" />
+              <MetricCard label="ACCURACY" value={accuracy} unit="%" color="amber" sparkle="△" />
+            </div>
 
-        <Card>
-          <CardContent className="p-4 text-center">
-            <p className="text-3xl font-bold text-accent">
-              {todayActivity?.exercises ?? 0}
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">Exercises Done</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4 text-center">
-            <p className="text-3xl font-bold text-foreground">
-              {todayActivity?.conversationMessages ?? 0}
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">Messages Sent</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Quick actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Practice</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <Link href="/chat" className="block">
-              <Button variant="outline" className="w-full justify-start gap-2">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
-                </svg>
-                Start a Conversation
-              </Button>
-            </Link>
-            <Link href="/exercises" className="block">
-              <Button variant="outline" className="w-full justify-start gap-2">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342" />
-                </svg>
-                Do Exercises
-              </Button>
-            </Link>
-            <Link href="/listening" className="block">
-              <Button variant="outline" className="w-full justify-start gap-2">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z" />
-                </svg>
-                Listening Practice
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Flashcard Decks</CardTitle>
+            {/* CTA buttons */}
+            <div className="flex flex-wrap gap-3 mt-6">
+              <Link href="/exercises">
+                <button className="font-mono text-[11px] tracking-[0.2em] uppercase px-5 py-3 font-bold inline-flex items-center gap-2.5 transition-all"
+                  style={{
+                    color: 'oklch(0.10 0 0)',
+                    background: 'var(--neon-pink)',
+                    border: '1px solid var(--neon-pink)',
+                    boxShadow: '0 0 24px oklch(0.72 0.26 350 / 0.5)',
+                  }}
+                >
+                  TUNE·IN <span>▶</span>
+                </button>
+              </Link>
               <Link href="/flashcards">
-                <Badge>View All</Badge>
+                <button className="font-mono text-[11px] tracking-[0.2em] uppercase px-5 py-3 font-medium inline-flex items-center gap-2.5 border transition-all hover:bg-[oklch(0.82_0.18_210/0.12)]"
+                  style={{ color: 'var(--neon-cyan)', borderColor: 'var(--border)' }}
+                >
+                  REPAIR DECAY ↻
+                </button>
               </Link>
             </div>
-          </CardHeader>
-          <CardContent>
-            {languageDecks.length === 0 ? (
-              <div className="text-center py-4">
-                <p className="text-sm text-muted-foreground">No decks yet</p>
-                <Link href="/flashcards" className="block mt-2">
-                  <Button variant="outline" size="sm">Create Your First Deck</Button>
-                </Link>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {languageDecks.slice(0, 3).map(deck => (
-                  <Link
-                    key={deck.id}
-                    href={`/flashcards?deck=${deck.id}`}
-                    className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors"
-                  >
-                    <div>
-                      <p className="text-sm font-medium">{deck.name}</p>
-                      <p className="text-xs text-muted-foreground">{deck.cardCount} cards</p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </Panel>
 
-      {/* Today's accuracy */}
-      {todayActivity && todayActivity.totalAnswers > 0 && (
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium">Today&apos;s Accuracy</p>
-                <p className="text-xs text-muted-foreground">
-                  {todayActivity.correctAnswers} / {todayActivity.totalAnswers} correct
-                </p>
-              </div>
-              <p className="text-2xl font-bold text-primary">
-                {Math.round((todayActivity.correctAnswers / todayActivity.totalAnswers) * 100)}%
-              </p>
+        {/* Frequencies list */}
+        {frequencies.length > 0 && (
+          <Panel tag="FREQUENCIES" meta={`${frequencies.length} AVAIL`}>
+            <div className="p-1">
+              {frequencies.map(f => (
+                <Link key={f.id} href={f.status === 'locked' ? '#' : '/exercises'}>
+                  <div className={`grid grid-cols-[72px_1fr_auto] gap-4 px-4 py-3.5 items-center border-b border-border/50 last:border-b-0 transition-colors ${f.status === 'locked' ? 'opacity-45 cursor-not-allowed' : 'cursor-pointer hover:bg-primary/[0.06]'}`}>
+                    <div className="font-display text-lg font-bold tracking-[0.04em]"
+                      style={{ color: 'var(--neon-cyan)', textShadow: '0 0 6px oklch(0.82 0.18 210 / 0.5)' }}
+                    >
+                      {f.freq}<span className="text-[8px] tracking-[0.1em] text-muted-foreground font-normal font-mono ml-0.5">MHz</span>
+                    </div>
+                    <div className="min-w-0">
+                      <div className="flex items-baseline gap-2 mb-0.5">
+                        <span className="cjk-zh text-lg font-bold truncate">{f.title}</span>
+                        <span className="text-[10px] tracking-[0.15em] text-muted-foreground">· {f.subtitle}</span>
+                      </div>
+                      <div className="text-[10px] text-muted-foreground tracking-[0.1em] flex gap-2">
+                        <span className="px-1.5 border border-border font-medium"
+                          style={{ color: 'var(--neon-cyan)', borderColor: 'oklch(0.82 0.18 210 / 0.4)' }}
+                        >
+                          {f.band}
+                        </span>
+                        <span>{f.topic}</span>
+                      </div>
+                    </div>
+                    <div className="text-[10px] tracking-[0.2em] px-3 py-1.5 border border-border text-muted-foreground">
+                      {f.status === 'locked' ? 'LOCKED △' : f.status === 'in_progress' ? 'RESUME ▶' : 'ENTER ▶'}
+                    </div>
+                  </div>
+                </Link>
+              ))}
             </div>
-            <div className="mt-2 h-2 rounded-full bg-muted overflow-hidden">
-              <div
-                className="h-full bg-primary rounded-full transition-all"
-                style={{
-                  width: `${(todayActivity.correctAnswers / todayActivity.totalAnswers) * 100}%`,
-                }}
-              />
+          </Panel>
+        )}
+
+        {/* Decay queue */}
+        <Panel tag="DECAY·QUEUE" meta={dueCards.length > 0 ? 'AMBER = URGENT' : 'ALL CLEAR'}>
+          {dueCards.length > 0 ? (
+            <div className="grid grid-cols-2">
+              {dueCards.map((d, i) => (
+                <Link key={i} href="/flashcards">
+                  <div className="px-4 py-3.5 border-r border-b border-border/50 [&:nth-child(2n)]:border-r-0 grid grid-cols-[44px_1fr_auto] gap-3 items-center cursor-pointer transition-colors hover:bg-primary/[0.06]">
+                    <div className={`${d.lang === 'zh' ? 'cjk-zh' : 'cjk-jp'} text-2xl font-bold text-center leading-none`}>
+                      {d.char}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[11px] text-muted-foreground tracking-[0.05em]">{d.reading}</div>
+                      <div className="text-xs font-medium tracking-[0.1em] uppercase truncate">{d.meaning}</div>
+                    </div>
+                    <div className="decay-meter">
+                      <div className="decay-meter-fill" style={{ height: `${Math.round(d.decay * 100)}%` }} />
+                    </div>
+                  </div>
+                </Link>
+              ))}
             </div>
-          </CardContent>
-        </Card>
-      )}
+          ) : (
+            <div className="p-8 text-center text-muted-foreground text-xs tracking-[0.15em]">
+              NO DECAY DETECTED · ALL STABLE
+            </div>
+          )}
+        </Panel>
+
+        {/* Activity chart */}
+        <Panel tag="ACTIVITY · 7D" meta="INTENSITY" className="lg:col-span-2">
+          <div className="px-5 py-4 flex justify-between items-end h-[160px] gap-3">
+            {activity.map((a, i) => {
+              const max = Math.max(...activity.map(x => x.minutes), 1);
+              const h = (a.minutes / max) * 110;
+              const isToday = i === activity.length - 2;
+              return (
+                <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                  <div className="w-full relative" style={{ height: `${h}px` }}>
+                    <div className={`absolute inset-0 activity-bar-col ${isToday ? 'today-bar' : ''}`} />
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 text-[9px] text-muted-foreground tracking-[0.1em]">
+                      {a.minutes}
+                    </div>
+                  </div>
+                  <div className={`text-[10px] tracking-[0.15em] ${isToday ? 'text-[var(--neon-lime)]' : 'text-muted-foreground'}`}>
+                    {a.day}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </Panel>
+      </div>
+    </div>
+  );
+}
+
+function MetricCard({ label, value, unit, color, sparkle }: {
+  label: string;
+  value: number;
+  unit?: string;
+  color: 'pink' | 'cyan' | 'lime' | 'amber';
+  sparkle: string;
+}) {
+  const colorVar: Record<string, string> = {
+    pink: 'var(--neon-pink)',
+    cyan: 'var(--neon-cyan)',
+    lime: 'var(--neon-lime)',
+    amber: 'var(--neon-amber)',
+  };
+
+  return (
+    <div className="p-4 border border-border relative overflow-hidden"
+      style={{ background: 'oklch(0.14 0.04 285 / 0.7)' }}
+    >
+      <span className="absolute right-2 top-2 text-[10px] text-muted-foreground">{sparkle}</span>
+      <div className="text-[9px] tracking-[0.2em] text-muted-foreground">{label}</div>
+      <div className="font-display text-2xl font-bold mt-1.5 tracking-[0.02em]"
+        style={{ color: colorVar[color], textShadow: `0 0 8px ${colorVar[color]}40` }}
+      >
+        {value}{unit || ''}
+      </div>
     </div>
   );
 }

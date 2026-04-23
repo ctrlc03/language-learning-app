@@ -1,19 +1,36 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { JetBrains_Mono, Orbitron, Noto_Serif_JP, Noto_Serif_SC } from 'next/font/google';
 import './globals.css';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const jetbrainsMono = JetBrains_Mono({
+  variable: '--font-jetbrains',
   subsets: ['latin'],
+  display: 'swap',
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const orbitron = Orbitron({
+  variable: '--font-orbitron',
   subsets: ['latin'],
+  display: 'swap',
+  weight: ['500', '700', '900'],
+});
+
+const notoSerifJP = Noto_Serif_JP({
+  variable: '--font-noto-serif-jp',
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['400', '700', '900'],
+});
+
+const notoSerifSC = Noto_Serif_SC({
+  variable: '--font-noto-serif-sc',
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['400', '700', '900'],
 });
 
 export const metadata: Metadata = {
-  title: 'LangBot - Learn Chinese & Japanese',
+  title: 'KOTOBA.EXE · Neon Language Deck',
   description: 'AI-powered language learning for Chinese and Japanese',
 };
 
@@ -23,8 +40,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <html lang="en" className="dark" suppressHydrationWarning>
+      <body className={`${jetbrainsMono.variable} ${orbitron.variable} ${notoSerifJP.variable} ${notoSerifSC.variable} antialiased scanlines`}>
         {children}
       </body>
     </html>

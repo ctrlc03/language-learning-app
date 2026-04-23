@@ -1,0 +1,256 @@
+/* KOTOBA.EXE — Neon Tokyo Effects */
+
+/* ---- Scanline overlay ---- */
+body.scanlines::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    oklch(0 0 0 / 0.12) 3px,
+    transparent 4px
+  );
+  z-index: 9999;
+  mix-blend-mode: multiply;
+  opacity: var(--scanline-opacity, 0.35);
+}
+
+body.scanlines::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 50%, oklch(0 0 0 / 0.35) 100%);
+  z-index: 9998;
+}
+
+/* ---- Grid background ---- */
+.kotoba-grid-bg {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(oklch(0.22 0.05 285 / 0.4) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(0.22 0.05 285 / 0.4) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at center, black 0%, transparent 80%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ---- Body gradient background ---- */
+body {
+  background-image:
+    radial-gradient(ellipse at 20% 0%, oklch(0.32 0.18 350 / 0.18), transparent 50%),
+    radial-gradient(ellipse at 80% 100%, oklch(0.32 0.18 210 / 0.14), transparent 50%),
+    linear-gradient(to bottom, var(--background) 0%, oklch(0.10 0.04 285) 100%);
+}
+
+/* ---- Panel corners ---- */
+.panel-corners {
+  position: relative;
+}
+
+.panel-corner {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-color: var(--neon-pink);
+  border-style: solid;
+  border-width: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.panel-corner-tl { top: -1px; left: -1px; border-top-width: 1px; border-left-width: 1px; }
+.panel-corner-tr { top: -1px; right: -1px; border-top-width: 1px; border-right-width: 1px; }
+.panel-corner-bl { bottom: -1px; left: -1px; border-bottom-width: 1px; border-left-width: 1px; }
+.panel-corner-br { bottom: -1px; right: -1px; border-bottom-width: 1px; border-right-width: 1px; }
+
+/* ---- Neon glow utilities ---- */
+.neon-glow-pink {
+  box-shadow: 0 0 12px oklch(0.72 0.26 350 / 0.4);
+}
+.neon-glow-cyan {
+  box-shadow: 0 0 12px oklch(0.82 0.18 210 / 0.4);
+}
+.neon-glow-lime {
+  box-shadow: 0 0 12px oklch(0.88 0.22 140 / 0.4);
+}
+.neon-glow-amber {
+  box-shadow: 0 0 12px oklch(0.80 0.18 75 / 0.4);
+}
+
+.neon-text-pink {
+  text-shadow: 0 0 8px oklch(0.72 0.26 350 / 0.6);
+}
+.neon-text-cyan {
+  text-shadow: 0 0 8px oklch(0.82 0.18 210 / 0.6);
+}
+.neon-text-lime {
+  text-shadow: 0 0 8px oklch(0.88 0.22 140 / 0.6);
+}
+
+/* ---- CJK font helpers ---- */
+.cjk-jp { font-family: var(--font-noto-serif-jp), 'Noto Serif JP', serif; }
+.cjk-zh { font-family: var(--font-noto-serif-sc), 'Noto Serif SC', serif; }
+
+/* ---- Keyframes ---- */
+@keyframes neon-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes rotate {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes char-in {
+  0% { opacity: 0; transform: scale(1.1); filter: blur(8px); }
+  100% { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+
+@keyframes slide-fill {
+  0% { transform: scaleX(0); }
+  100% { transform: scaleX(1); }
+}
+
+/* ---- Display font utility ---- */
+.font-display {
+  font-family: var(--font-orbitron), 'Orbitron', ui-monospace, monospace;
+}
+
+/* ---- Brand mark ---- */
+.brand-mark {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  font-size: 18px;
+  color: var(--neon-pink);
+  border: 1px solid var(--neon-pink);
+  box-shadow: 0 0 12px oklch(0.72 0.26 350 / 0.6), inset 0 0 6px oklch(0.72 0.26 350 / 0.3);
+  text-shadow: 0 0 8px var(--neon-pink);
+}
+
+/* ---- Status dot ---- */
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--neon-lime);
+  box-shadow: 0 0 8px var(--neon-lime);
+  animation: neon-pulse 1.8s infinite;
+}
+
+/* ---- Streak tower blocks ---- */
+.streak-blocks {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+.streak-block {
+  height: 8px;
+  background: oklch(0.20 0.04 285);
+  border-radius: 1px;
+}
+.streak-block.on {
+  background: var(--neon-pink);
+  box-shadow: 0 0 6px oklch(0.72 0.26 350 / 0.8);
+}
+.streak-block.today {
+  background: var(--neon-lime);
+  box-shadow: 0 0 8px var(--neon-lime);
+  animation: neon-pulse 1.5s infinite;
+}
+
+/* ---- Decay meter (vertical bar) ---- */
+.decay-meter {
+  width: 8px;
+  height: 40px;
+  background: oklch(0.20 0.04 285);
+  border-radius: 1px;
+  position: relative;
+  overflow: hidden;
+}
+.decay-meter-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, var(--neon-amber), oklch(0.80 0.22 30));
+  box-shadow: 0 0 6px oklch(0.80 0.18 75 / 0.8);
+}
+
+/* ---- Activity chart bars ---- */
+.activity-bar-col {
+  width: 100%;
+  background: linear-gradient(to top, var(--neon-pink), var(--neon-cyan));
+  border-top: 2px solid oklch(0.88 0.22 205);
+  box-shadow: 0 0 8px oklch(0.72 0.26 350 / 0.4);
+  position: relative;
+}
+.activity-bar-col.today-bar {
+  background: linear-gradient(to top, var(--neon-lime), var(--neon-cyan));
+  box-shadow: 0 0 12px var(--neon-lime);
+}
+
+/* ---- Reactor rings ---- */
+.reactor-ring {
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+}
+.reactor-ring-1 {
+  border-color: oklch(0.80 0.18 75 / 0.4);
+  animation: rotate 18s linear infinite;
+  border-top-color: var(--neon-amber);
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+}
+.reactor-ring-2 {
+  inset: 22px;
+  border-color: oklch(0.72 0.26 350 / 0.4);
+  animation: rotate 12s linear infinite reverse;
+  border-top-color: transparent;
+  border-right-color: var(--neon-pink);
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+}
+.reactor-ring-3 {
+  inset: 44px;
+  border-color: oklch(0.82 0.18 210 / 0.4);
+  animation: rotate 8s linear infinite;
+  border-top-color: transparent;
+  border-right-color: transparent;
+  border-bottom-color: var(--neon-cyan);
+  border-left-color: transparent;
+}
+
+/* ---- Signal bars ---- */
+.signal-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 16px;
+}
+.signal-bar {
+  width: 3px;
+  background: oklch(0.25 0.05 285);
+  border-radius: 1px;
+}
+.signal-bar.on {
+  background: var(--neon-pink);
+  box-shadow: 0 0 4px oklch(0.72 0.26 350 / 0.8);
+}
+
+/* ---- Scrollbar override ---- */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: oklch(0.10 0.04 285); }
+::-webkit-scrollbar-thumb { background: var(--border); }
+::-webkit-scrollbar-thumb:hover { background: var(--neon-pink); }

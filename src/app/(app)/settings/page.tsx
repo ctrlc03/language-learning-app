@@ -79,7 +79,14 @@ export default function SettingsPage() {
 
   return (
     <div className="p-5 md:p-8 max-w-2xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
+      <div className="border-b border-dashed border-border pb-5">
+        <div className="text-[10px] tracking-[0.2em] text-muted-foreground mb-1.5">
+          KOTOBA.EXE / <span className="text-primary font-medium">SETTINGS</span> / CONFIG
+        </div>
+        <h1 className="font-display text-2xl font-bold tracking-[0.08em]">
+          NEURAL<span className="text-muted-foreground font-medium">·CONFIG</span>
+        </h1>
+      </div>
 
       {/* Language & Difficulty */}
       <Card>

@@ -6,6 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useProgress } from '@/hooks/use-progress';
 import { ExerciseShell } from '@/components/exercises/exercise-shell';
 import { Card, CardContent } from '@/components/ui/card';
+import { Panel } from '@/components/ui/panel';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { TopicReview } from '@/components/exercises/topic-review';
@@ -143,8 +144,8 @@ export default function ExercisesPage() {
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="sm" onClick={() => setShowLessonPicker(false)}>&larr; Back</Button>
           <div>
-            <h1 className="text-xl font-bold tracking-tight">Lesson Practice</h1>
-            <p className="text-muted-foreground text-xs mt-0.5">Choose a lesson to practice with multiple choice</p>
+            <div className="text-[10px] tracking-[0.2em] text-muted-foreground mb-0.5">KOTOBA.EXE / FREQUENCY / <span className="text-primary">SELECT</span></div>
+            <h1 className="font-display text-lg font-bold tracking-[0.08em]">LESSON·SELECT</h1>
           </div>
         </div>
         <div className="space-y-2">
@@ -218,191 +219,148 @@ export default function ExercisesPage() {
           <Button variant="ghost" size="sm" onClick={() => { setCurrentExercise(null); setLessonFilter(undefined); }}>
             &larr; Back
           </Button>
-          {lessonFilter && (
-            <Badge variant="outline" className="text-[10px]">
-              {lessonFilter.includes('|')
-                ? irodoriLessonTitles[lessonFilter]?.title ?? lessonFilter
-                : lessonFilter}
-            </Badge>
-          )}
-          {sessionCount > 0 && (
-            <Badge variant={correctCount / sessionCount >= 0.7 ? 'success' : 'warning'}>
-              {correctCount}/{sessionCount} correct
-            </Badge>
-          )}
+          <div className="flex items-center gap-2">
+            {lessonFilter && (
+              <span className="text-[10px] tracking-[0.15em] px-2 py-1 border border-border text-muted-foreground">
+                {lessonFilter.includes('|')
+                  ? irodoriLessonTitles[lessonFilter]?.title ?? lessonFilter
+                  : lessonFilter}
+              </span>
+            )}
+            {sessionCount > 0 && (
+              <span className="text-[10px] tracking-[0.15em] px-2 py-1 border font-display font-bold"
+                style={{
+                  borderColor: correctCount / sessionCount >= 0.7 ? 'var(--neon-lime)' : 'var(--neon-amber)',
+                  color: correctCount / sessionCount >= 0.7 ? 'var(--neon-lime)' : 'var(--neon-amber)',
+                }}
+              >
+                {correctCount}/{sessionCount}
+              </span>
+            )}
+          </div>
         </div>
-        <ExerciseShell
-          exercise={currentExercise}
-          onComplete={handleComplete}
-          onNext={handleNext}
-        />
+        <Panel>
+          <div className="p-1">
+            <ExerciseShell
+              exercise={currentExercise}
+              onComplete={handleComplete}
+              onNext={handleNext}
+            />
+          </div>
+        </Panel>
       </div>
     );
   }
 
   return (
     <div className="p-5 md:p-8 max-w-xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Exercises</h1>
-        <p className="text-muted-foreground mt-1.5 text-sm">
-          Practice your {language === 'chinese' ? 'Chinese' : 'Japanese'}
+      {/* Page header */}
+      <div className="border-b border-dashed border-border pb-5">
+        <div className="text-[10px] tracking-[0.2em] text-muted-foreground mb-1.5">
+          KOTOBA.EXE / <span className="text-primary font-medium">FREQUENCY</span> / DRILL
+        </div>
+        <h1 className="font-display text-2xl font-bold tracking-[0.08em]">
+          FREQUENCY<span className="text-muted-foreground font-medium">·DRILL</span>
+        </h1>
+        <p className="text-xs text-muted-foreground mt-1 tracking-[0.05em]">
+          Practice your {language === 'chinese' ? 'Chinese' : 'Japanese'} signal
         </p>
       </div>
 
       {error && (
-        <Card>
-          <CardContent className="p-5 text-center space-y-3">
-            <p className="text-destructive font-medium text-sm">Failed to generate exercise</p>
+        <Panel glow="amber">
+          <div className="p-5 text-center space-y-3">
+            <p className="text-destructive font-medium text-sm tracking-[0.1em]">▲ SIGNAL ERROR</p>
             <p className="text-xs text-muted-foreground">{error}</p>
             <Button variant="outline" size="sm" onClick={() => setError(null)}>
-              Dismiss
+              DISMISS
             </Button>
-          </CardContent>
-        </Card>
+          </div>
+        </Panel>
       )}
 
       {loading && (
         <div className="text-center py-12">
           <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full mx-auto" />
-          <p className="text-xs text-muted-foreground mt-3">Generating exercise...</p>
+          <p className="text-[10px] text-muted-foreground mt-3 tracking-[0.2em]">GENERATING SIGNAL...</p>
         </div>
       )}
 
       {!loading && !error && (
         <>
           {/* Study modes */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <button
-              onClick={() => setShowTopicReview(true)}
-              className="text-left active:scale-[0.98] transition-all"
-            >
-              <Card className="p-4 hover:border-primary/40 hover:bg-primary/[0.03] transition-all border-dashed h-full">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="space-y-1">
-                    <h3 className="font-semibold text-sm">Study & Review</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      Review vocabulary, sentences & dialogues by topic
-                    </p>
-                  </div>
-                  <Badge variant="outline" className="text-[10px] shrink-0 mt-0.5">
-                    Study
-                  </Badge>
-                </div>
-              </Card>
-            </button>
-            <button
-              onClick={() => setShowDialogues(true)}
-              className="text-left active:scale-[0.98] transition-all"
-            >
-              <Card className="p-4 hover:border-primary/40 hover:bg-primary/[0.03] transition-all border-dashed h-full">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="space-y-1">
-                    <h3 className="font-semibold text-sm">Dialogues</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      Read & listen to full conversations by topic
-                    </p>
-                  </div>
-                  <Badge variant="outline" className="text-[10px] shrink-0 mt-0.5">
-                    Study
-                  </Badge>
-                </div>
-              </Card>
-            </button>
-            <button
-              onClick={() => setShowLessonPicker(true)}
-              className="text-left active:scale-[0.98] transition-all"
-            >
-              <Card className="p-4 hover:border-primary/40 hover:bg-primary/[0.03] transition-all border-dashed h-full">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="space-y-1">
-                    <h3 className="font-semibold text-sm">Lesson Practice</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      Multiple choice quizzes by lesson
-                    </p>
-                  </div>
-                  <Badge variant="outline" className="text-[10px] shrink-0 mt-0.5">
-                    Quiz
-                  </Badge>
-                </div>
-              </Card>
-            </button>
-            {language === 'chinese' && (
-              <button
-                onClick={() => setShowGrammar(true)}
-                className="text-left active:scale-[0.98] transition-all"
-              >
-                <Card className="p-4 hover:border-primary/40 hover:bg-primary/[0.03] transition-all border-dashed h-full">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="space-y-1">
-                      <h3 className="font-semibold text-sm">Grammar Patterns</h3>
-                      <p className="text-xs text-muted-foreground leading-relaxed">
-                        Rules, structures & example sentences
-                      </p>
-                    </div>
-                    <Badge variant="outline" className="text-[10px] shrink-0 mt-0.5">
-                      Reference
-                    </Badge>
-                  </div>
-                </Card>
-              </button>
-            )}
-            {language === 'japanese' && (
-              <button
-                onClick={() => setShowKanaPractice(true)}
-                className="text-left active:scale-[0.98] transition-all"
-              >
-                <Card className="p-4 hover:border-primary/40 hover:bg-primary/[0.03] transition-all border-dashed h-full">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="space-y-1">
-                      <h3 className="font-semibold text-sm">Kana Practice</h3>
-                      <p className="text-xs text-muted-foreground leading-relaxed">
-                        Learn & quiz hiragana and katakana
-                      </p>
-                    </div>
-                    <Badge variant="outline" className="text-[10px] shrink-0 mt-0.5">
-                      Study
-                    </Badge>
-                  </div>
-                </Card>
-              </button>
-            )}
-          </div>
+          <Panel tag="STUDY·MODES" meta="SELECT">
+            <div className="grid grid-cols-1 sm:grid-cols-2">
+              <StudyModeButton label="Study & Review" desc="Vocabulary, sentences & dialogues" badge="STUDY" onClick={() => setShowTopicReview(true)} />
+              <StudyModeButton label="Dialogues" desc="Full conversations by topic" badge="STUDY" onClick={() => setShowDialogues(true)} />
+              <StudyModeButton label="Lesson Practice" desc="Multiple choice by lesson" badge="QUIZ" onClick={() => setShowLessonPicker(true)} />
+              {language === 'chinese' && (
+                <StudyModeButton label="Grammar Patterns" desc="Rules & example sentences" badge="REF" onClick={() => setShowGrammar(true)} />
+              )}
+              {language === 'japanese' && (
+                <StudyModeButton label="Kana Practice" desc="Hiragana & katakana drill" badge="STUDY" onClick={() => setShowKanaPractice(true)} />
+              )}
+            </div>
+          </Panel>
 
           {/* Exercise types */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {EXERCISE_TYPES.map(({ type, label, description, offline }) => (
-              <button
-                key={type}
-                onClick={() => generateExercise(type)}
-                className="text-left group active:scale-[0.98] transition-all"
-              >
-                <Card className="p-4 hover:border-primary/40 hover:bg-primary/[0.03] transition-all h-full">
+          <Panel tag="EXERCISE·TYPES" meta={`${EXERCISE_TYPES.length} AVAIL`}>
+            <div className="grid grid-cols-1 sm:grid-cols-2">
+              {EXERCISE_TYPES.map(({ type, label, description, offline }) => (
+                <button
+                  key={type}
+                  onClick={() => generateExercise(type)}
+                  className="text-left px-4 py-3.5 border-b border-r border-border/50 [&:nth-child(2n)]:border-r-0 last:border-b-0 [&:nth-last-child(2):nth-child(odd)]:border-b-0 transition-colors hover:bg-primary/[0.06] active:scale-[0.98]"
+                >
                   <div className="flex items-start justify-between gap-2">
-                    <div className="space-y-1">
-                      <h3 className="font-semibold text-sm">{label}</h3>
-                      <p className="text-xs text-muted-foreground leading-relaxed">{description}</p>
+                    <div className="space-y-0.5">
+                      <h3 className="font-medium text-xs tracking-[0.05em] uppercase">{label}</h3>
+                      <p className="text-[10px] text-muted-foreground tracking-[0.03em]">{description}</p>
                     </div>
-                    <Badge variant="outline" className="text-[10px] shrink-0 mt-0.5">
-                      {offline ? 'Instant' : 'AI'}
-                    </Badge>
+                    <span className="text-[9px] tracking-[0.15em] px-1.5 py-0.5 border border-border text-muted-foreground shrink-0 mt-0.5">
+                      {offline ? 'INSTANT' : 'AI'}
+                    </span>
                   </div>
-                </Card>
-              </button>
-            ))}
-          </div>
+                </button>
+              ))}
+            </div>
+          </Panel>
         </>
       )}
 
       {sessionCount > 0 && !currentExercise && (
-        <Card>
-          <CardContent className="p-5 text-center space-y-1">
-            <p className="font-semibold text-sm">Session Stats</p>
-            <p className="text-xs text-muted-foreground">
-              {correctCount} correct out of {sessionCount} ({Math.round((correctCount / sessionCount) * 100)}%)
+        <Panel tag="SESSION·STATS">
+          <div className="p-5 text-center space-y-1">
+            <p className="font-display text-lg font-bold" style={{ color: 'var(--neon-cyan)' }}>
+              {correctCount}/{sessionCount}
             </p>
-          </CardContent>
-        </Card>
+            <p className="text-[10px] text-muted-foreground tracking-[0.15em]">
+              {Math.round((correctCount / sessionCount) * 100)}% ACCURACY
+            </p>
+          </div>
+        </Panel>
       )}
     </div>
+  );
+}
+
+function StudyModeButton({ label, desc, badge, onClick }: {
+  label: string; desc: string; badge: string; onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="text-left px-4 py-3.5 border-b border-r border-border/50 [&:nth-child(2n)]:border-r-0 last:border-b-0 transition-colors hover:bg-primary/[0.06] active:scale-[0.98]"
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div className="space-y-0.5">
+          <h3 className="font-medium text-xs tracking-[0.05em] uppercase">{label}</h3>
+          <p className="text-[10px] text-muted-foreground tracking-[0.03em]">{desc}</p>
+        </div>
+        <span className="text-[9px] tracking-[0.15em] px-1.5 py-0.5 border border-dashed border-border text-muted-foreground shrink-0 mt-0.5">
+          {badge}
+        </span>
+      </div>
+    </button>
   );
 }

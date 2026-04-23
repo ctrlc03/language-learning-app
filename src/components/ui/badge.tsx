@@ -7,18 +7,18 @@ interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 }
 
 const variantStyles: Record<BadgeVariant, string> = {
-  default: 'bg-primary/10 text-primary',
-  success: 'bg-success/10 text-success',
-  warning: 'bg-accent/10 text-accent',
-  destructive: 'bg-destructive/10 text-destructive',
-  outline: 'border border-border text-foreground',
+  default: 'bg-primary/15 text-primary border-primary/30',
+  success: 'bg-success/15 text-success border-success/30',
+  warning: 'bg-accent/15 text-accent border-accent/30',
+  destructive: 'bg-destructive/15 text-destructive border-destructive/30',
+  outline: 'border-border text-foreground',
 };
 
 export function Badge({ className, variant = 'default', ...props }: BadgeProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
+        'inline-flex items-center px-2 py-0.5 text-[10px] tracking-[0.1em] font-medium border',
         variantStyles[variant],
         className
       )}
