@@ -1,19 +1,47 @@
 // Bump this to invalidate old caches on deploy.
-const VERSION = 'v1';
+const VERSION = 'v2';
 const STATIC_CACHE = `kotoba-static-${VERSION}`;
 const PAGES_CACHE = `kotoba-pages-${VERSION}`;
 const OFFLINE_URL = '/offline';
 
-const PRECACHE_URLS = [
-  OFFLINE_URL,
-  '/manifest.webmanifest',
+// Must-have for offline shell.
+const CRITICAL_URLS = [OFFLINE_URL, '/manifest.webmanifest'];
+
+// Main app routes — warmed on install so first home-screen launch works even offline.
+const WARM_URLS = [
+  '/',
+  '/dashboard',
+  '/vocabulary',
+  '/flashcards',
+  '/listening',
+  '/exercises',
+  '/settings',
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(STATIC_CACHE).then((cache) => cache.addAll(PRECACHE_URLS)),
+    (async () => {
+      const staticCache = await caches.open(STATIC_CACHE);
+      // Critical: if any of these fail, install fails and we retry.
+      await staticCache.addAll(CRITICAL_URLS);
+
+      // Warm: best-effort. A flaky route shouldn't block install.
+      const pagesCache = await caches.open(PAGES_CACHE);
+      await Promise.allSettled(
+        WARM_URLS.map(async (url) => {
+          try {
+            const res = await fetch(url, { credentials: 'same-origin' });
+            if (res.ok) await pagesCache.put(url, res);
+          } catch {}
+        }),
+      );
+    })(),
   );
   self.skipWaiting();
+});
+
+self.addEventListener('message', (event) => {
+  if (event.data === 'SKIP_WAITING') self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
@@ -45,8 +73,10 @@ self.addEventListener('fetch', (event) => {
       (async () => {
         try {
           const fresh = await fetch(request);
-          const cache = await caches.open(PAGES_CACHE);
-          cache.put(request, fresh.clone());
+          if (fresh.ok) {
+            const cache = await caches.open(PAGES_CACHE);
+            cache.put(request, fresh.clone());
+          }
           return fresh;
         } catch {
           const cached = await caches.match(request);
