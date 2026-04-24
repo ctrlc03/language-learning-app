@@ -1,6 +1,7 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { JetBrains_Mono, Orbitron, Noto_Serif_JP, Noto_Serif_SC } from 'next/font/google';
 import './globals.css';
+import { PWARegister } from '@/components/pwa-register';
 
 const jetbrainsMono = JetBrains_Mono({
   variable: '--font-jetbrains',
@@ -32,6 +33,16 @@ const notoSerifSC = Noto_Serif_SC({
 export const metadata: Metadata = {
   title: 'KOTOBA.EXE · Neon Language Deck',
   description: 'AI-powered language learning for Chinese and Japanese',
+  manifest: '/manifest.webmanifest',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'KOTOBA.EXE',
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#0a0a0f',
 };
 
 export default function RootLayout({
@@ -43,6 +54,7 @@ export default function RootLayout({
     <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${jetbrainsMono.variable} ${orbitron.variable} ${notoSerifJP.variable} ${notoSerifSC.variable} antialiased scanlines`}>
         {children}
+        <PWARegister />
       </body>
     </html>
   );
