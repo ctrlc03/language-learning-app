@@ -49,15 +49,22 @@ export default function ExercisesPage() {
 
   const availableExerciseTypes = EXERCISE_TYPES.filter(t => !t.langs || t.langs.includes(language));
 
+  const chapterLabel = lessonFilter
+    ? (lessonFilter.includes('|') ? (irodoriLessonTitles[lessonFilter]?.title ?? lessonFilter) : lessonFilter)
+    : 'All chapters';
+
   const generateExercise = useCallback(async (type: ExerciseType, lesson?: string) => {
     setLoading(true);
     setError(null);
 
     try {
       if (isOfflineExerciseType(type)) {
-        const exercise = getOfflineExercise(language, difficulty, type, seenIds, lesson ?? lessonFilter);
+        const effectiveLesson = lesson ?? lessonFilter;
+        const exercise = getOfflineExercise(language, difficulty, type, seenIds, effectiveLesson);
         if (!exercise) {
-          throw new Error('Not enough vocabulary data for this exercise type.');
+          throw new Error(effectiveLesson
+            ? 'No exercises of this type are available for the selected chapter. Try another type or pick a different chapter.'
+            : 'Not enough vocabulary data for this exercise type.');
         }
         setCurrentExercise(exercise);
         setSeenIds(prev => [...prev, exercise.id].slice(-50));
@@ -133,13 +140,14 @@ export default function ExercisesPage() {
   }
 
   if (showLessonPicker) {
+    // Selecting a chapter scopes every exercise type to it; the user then picks
+    // which exercise to run from the main grid.
     const startLesson = (filterKey: string) => {
       setLessonFilter(filterKey);
       setShowLessonPicker(false);
       setSessionCount(0);
       setCorrectCount(0);
       setSeenIds([]);
-      generateExercise('multiple-choice', filterKey);
     };
 
     return (
@@ -219,7 +227,7 @@ export default function ExercisesPage() {
     return (
       <div className="p-5 md:p-8 max-w-xl mx-auto space-y-5">
         <div className="flex items-center justify-between">
-          <Button variant="ghost" size="sm" onClick={() => { setCurrentExercise(null); setLessonFilter(undefined); }}>
+          <Button variant="ghost" size="sm" onClick={() => setCurrentExercise(null)}>
             &larr; Back
           </Button>
           <div className="flex items-center gap-2">
@@ -296,7 +304,7 @@ export default function ExercisesPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2">
               <StudyModeButton label="Study & Review" desc="Vocabulary, sentences & dialogues" badge="STUDY" onClick={() => setShowTopicReview(true)} />
               <StudyModeButton label="Dialogues" desc="Full conversations by topic" badge="STUDY" onClick={() => setShowDialogues(true)} />
-              <StudyModeButton label="Lesson Practice" desc="Multiple choice by lesson" badge="QUIZ" onClick={() => setShowLessonPicker(true)} />
+              <StudyModeButton label="Pick a Chapter" desc="Scope all exercises to one lesson" badge="QUIZ" onClick={() => setShowLessonPicker(true)} />
               {language === 'chinese' && (
                 <StudyModeButton label="Grammar Patterns" desc="Rules & example sentences" badge="REF" onClick={() => setShowGrammar(true)} />
               )}
@@ -308,6 +316,28 @@ export default function ExercisesPage() {
 
           {/* Exercise types */}
           <Panel tag="EXERCISE·TYPES" meta={`${availableExerciseTypes.length} AVAIL`}>
+            {/* Chapter scope — applies to every exercise type below */}
+            <div className="flex items-center justify-between gap-2 px-4 py-2.5 border-b border-border/50">
+              <div className="text-[10px] tracking-[0.15em] text-muted-foreground min-w-0 truncate">
+                CHAPTER: <span className="text-primary">{chapterLabel}</span>
+              </div>
+              <div className="flex gap-1.5 shrink-0">
+                {lessonFilter && (
+                  <button
+                    onClick={() => setLessonFilter(undefined)}
+                    className="text-[9px] tracking-[0.15em] px-1.5 py-0.5 border border-border text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors"
+                  >
+                    ✕ ALL
+                  </button>
+                )}
+                <button
+                  onClick={() => setShowLessonPicker(true)}
+                  className="text-[9px] tracking-[0.15em] px-1.5 py-0.5 border border-primary/40 text-primary hover:bg-primary/[0.06] transition-colors"
+                >
+                  CHANGE
+                </button>
+              </div>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2">
               {availableExerciseTypes.map(({ type, label, description, offline }) => (
                 <button

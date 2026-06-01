@@ -162,9 +162,9 @@ export function getOfflineExercise(
     case 'grammar-drill':
       return generateGrammarDrill(pool, language, difficulty, rng);
     case 'dialogue-reading':
-      return generateDialogueReading(language, difficulty, rng, seenSet);
+      return generateDialogueReading(language, difficulty, rng, seenSet, lessonFilter);
     case 'dialogue-comprehension':
-      return generateDialogueComprehension(language, difficulty, rng, seenSet);
+      return generateDialogueComprehension(language, difficulty, rng, seenSet, lessonFilter);
     default:
       return null;
   }
@@ -925,6 +925,8 @@ interface DialogueSource {
   title: string;
   titleNative: string;
   setting: string;
+  level?: string;
+  lesson?: number;
   lines: DialogueLine[];
   questions: { question: string; options: string[]; correctIndex: number; explanation?: string }[];
 }
@@ -936,34 +938,49 @@ function getDialogues(language: Language): DialogueSource[] {
       title: d.title,
       titleNative: d.titleChinese,
       setting: d.setting,
+      lesson: d.lesson,
       lines: d.lines,
       questions: [], // Chinese dialogues are reading-only for now
     }));
   }
-  // Japanese: map the line `reading` onto DialogueLine.pinyin so the shared
-  // reading-toggle UI works unchanged.
+  // Japanese: map the line `reading` onto DialogueLine.pinyin (for the reading
+  // toggle / TTS fallback) and carry furigana segments for per-kanji ruby.
   return japaneseDialogues.map(d => ({
     id: d.id,
     title: d.title,
     titleNative: d.titleJapanese,
     setting: d.setting,
+    level: d.level,
+    lesson: d.lesson,
     lines: d.lines.map(l => ({
       speaker: l.speaker,
       text: l.text,
       pinyin: l.reading,
       translation: l.translation,
+      furigana: l.furigana,
     })),
     questions: d.questions,
   }));
+}
+
+// Filter dialogues to a chapter when a lesson filter is active. Japanese
+// filters use the "<level>|<lesson>" format (e.g. "Irodori Starter|1"); when no
+// dialogue matches the chapter, returns an empty list so the caller can bail.
+function filterDialoguesByChapter(dialogues: DialogueSource[], lessonFilter?: string): DialogueSource[] {
+  if (!lessonFilter || !lessonFilter.includes('|')) return dialogues;
+  const [level, lessonNum] = lessonFilter.split('|');
+  const num = parseInt(lessonNum, 10);
+  return dialogues.filter(d => d.level === level && d.lesson === num);
 }
 
 function generateDialogueReading(
   language: Language,
   difficulty: DifficultyLevel,
   rng: () => number,
-  seenSet: Set<string>
+  seenSet: Set<string>,
+  lessonFilter?: string
 ): Exercise | null {
-  const dialogues = getDialogues(language);
+  const dialogues = filterDialoguesByChapter(getDialogues(language), lessonFilter);
   if (dialogues.length === 0) return null;
 
   const available = dialogues.filter(d => !seenSet.has(d.id));
@@ -994,10 +1011,12 @@ function generateDialogueComprehension(
   language: Language,
   difficulty: DifficultyLevel,
   rng: () => number,
-  seenSet: Set<string>
+  seenSet: Set<string>,
+  lessonFilter?: string
 ): Exercise | null {
   // Only dialogues that ship with comprehension questions qualify.
-  const dialogues = getDialogues(language).filter(d => d.questions.length > 0);
+  const dialogues = filterDialoguesByChapter(getDialogues(language), lessonFilter)
+    .filter(d => d.questions.length > 0);
   if (dialogues.length === 0) return null;
 
   // Exercise IDs carry a `_dc_<nanoid>` suffix, so dedup on the dialogue prefix.

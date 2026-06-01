@@ -202,11 +202,19 @@ export interface GrammarDrillData {
   correctIndex?: number; // index of correct option in options[]
 }
 
+// A run of text with an optional furigana reading. `r` is present only when
+// `t` contains kanji that should be annotated (hiragana rendered above it).
+export interface FuriSegment {
+  t: string;
+  r?: string;
+}
+
 export interface DialogueLine {
   speaker: string;
   text: string;
   pinyin: string;
   translation: string;
+  furigana?: FuriSegment[]; // per-kanji ruby segments (Japanese)
 }
 
 export interface DialogueReadingData {

@@ -5,6 +5,7 @@ import type { DialogueReadingData } from '@/types';
 import { speak, speakEnglish, stopSpeaking } from '@/lib/tts/speech';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { SpeakButton } from '@/components/shared/speak-button';
+import { Furigana } from '@/components/shared/furigana';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -94,7 +95,7 @@ export function DialogueReading({ data, onSubmit, disabled }: DialogueReadingPro
               : 'border-border text-muted-foreground hover:border-primary/30'
           )}
         >
-          Pinyin {showPinyin ? 'ON' : 'OFF'}
+          {language === 'japanese' ? 'Furigana' : 'Pinyin'} {showPinyin ? 'ON' : 'OFF'}
         </button>
         <button
           onClick={() => setShowTranslation(v => !v)}
@@ -166,16 +167,24 @@ export function DialogueReading({ data, onSubmit, disabled }: DialogueReadingPro
                   <SpeakButton text={line.text} size="icon" />
                 </div>
 
-                {/* Chinese text */}
-                <p className="text-base font-medium leading-relaxed">
-                  {line.text}
-                </p>
-
-                {/* Pinyin */}
-                {showPinyin && (
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    {line.pinyin}
+                {/* Line text — furigana ruby for Japanese, plain + reading below otherwise */}
+                {line.furigana && line.furigana.length > 0 ? (
+                  <p className="text-base font-medium">
+                    {showPinyin
+                      ? <Furigana segments={line.furigana} />
+                      : <span className="leading-relaxed">{line.text}</span>}
                   </p>
+                ) : (
+                  <>
+                    <p className="text-base font-medium leading-relaxed">
+                      {line.text}
+                    </p>
+                    {showPinyin && (
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        {line.pinyin}
+                      </p>
+                    )}
+                  </>
                 )}
 
                 {/* Translation */}

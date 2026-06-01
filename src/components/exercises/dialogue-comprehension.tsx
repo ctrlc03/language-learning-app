@@ -5,6 +5,7 @@ import type { DialogueComprehensionExerciseData } from '@/types';
 import { speak, stopSpeaking } from '@/lib/tts/speech';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { SpeakButton } from '@/components/shared/speak-button';
+import { Furigana } from '@/components/shared/furigana';
 import { cn } from '@/lib/utils';
 
 interface DialogueComprehensionProps {
@@ -123,9 +124,19 @@ export function DialogueComprehension({ data, onSubmit, disabled }: DialogueComp
                   <span className={cn('text-[11px] font-semibold', colorClass)}>{line.speaker}</span>
                   <SpeakButton text={line.text} size="icon" />
                 </div>
-                <p className="text-base font-medium leading-relaxed">{line.text}</p>
-                {showReading && line.pinyin && (
-                  <p className="text-xs text-muted-foreground leading-relaxed">{line.pinyin}</p>
+                {line.furigana && line.furigana.length > 0 ? (
+                  <p className="text-base font-medium">
+                    {showReading
+                      ? <Furigana segments={line.furigana} />
+                      : <span className="leading-relaxed">{line.text}</span>}
+                  </p>
+                ) : (
+                  <>
+                    <p className="text-base font-medium leading-relaxed">{line.text}</p>
+                    {showReading && line.pinyin && (
+                      <p className="text-xs text-muted-foreground leading-relaxed">{line.pinyin}</p>
+                    )}
+                  </>
                 )}
                 {showTranslation && (
                   <p className="text-xs text-muted-foreground/70 italic leading-relaxed">{line.translation}</p>
