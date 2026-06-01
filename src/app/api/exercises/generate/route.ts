@@ -86,6 +86,15 @@ function buildToolForType(exerciseType: ExerciseType) {
       },
       required: ['question', 'instruction', 'title', 'setting'],
     },
+    // Offline-only (generated from static dialogue data); not produced via the API.
+    'dialogue-comprehension': {
+      properties: {
+        ...baseProperties,
+        options: { type: 'array' as const, items: { type: 'string' as const }, description: 'Array of 4 answer choices' },
+        correctIndex: { type: 'number' as const, description: 'Zero-based index of the correct answer (0-3)' },
+      },
+      required: ['question', 'instruction', 'options', 'correctIndex'],
+    },
   };
 
   const schema = typeSchemas[exerciseType];

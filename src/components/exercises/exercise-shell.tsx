@@ -13,6 +13,7 @@ import { SentenceConstruction } from './sentence-construction';
 import { CharacterRecognition } from './character-recognition';
 import { GrammarDrill } from './grammar-drill';
 import { DialogueReading } from './dialogue-reading';
+import { DialogueComprehension } from './dialogue-comprehension';
 import { cn } from '@/lib/utils';
 
 interface ExerciseShellProps {
@@ -30,6 +31,7 @@ const TYPE_LABELS: Record<string, string> = {
   'character-recognition': 'Character Recognition',
   'grammar-drill': 'Grammar Drill',
   'dialogue-reading': 'Dialogue Reading',
+  'dialogue-comprehension': 'Dialogue Quiz',
 };
 
 export function ExerciseShell({ exercise, onComplete, onNext }: ExerciseShellProps) {
@@ -101,6 +103,8 @@ export function ExerciseShell({ exercise, onComplete, onNext }: ExerciseShellPro
         return <GrammarDrill data={exercise.data} onSubmit={handleSubmit} disabled={!!result} />;
       case 'dialogue-reading':
         return <DialogueReading data={exercise.data} onSubmit={handleSubmit} disabled={!!result} />;
+      case 'dialogue-comprehension':
+        return <DialogueComprehension data={exercise.data} onSubmit={handleSubmit} disabled={!!result} />;
       default:
         return <p className="text-sm">Unknown exercise type</p>;
     }

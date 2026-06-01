@@ -16,11 +16,12 @@ import { GrammarReference } from '@/components/exercises/grammar-reference';
 import { getOfflineExercise, isOfflineExerciseType } from '@/lib/exercises/offline';
 import lessonsData from '@/data/chinese/lessons.json';
 import { irodoriLevels, irodoriLessonIndex, irodoriLessonTitles } from '@/data/japanese/irodori-vocab';
-import type { Exercise, ExerciseType, ExerciseResult } from '@/types';
+import type { Exercise, ExerciseType, ExerciseResult, Language } from '@/types';
 
-const EXERCISE_TYPES: { type: ExerciseType; label: string; description: string; offline: boolean }[] = [
+const EXERCISE_TYPES: { type: ExerciseType; label: string; description: string; offline: boolean; langs?: Language[] }[] = [
   { type: 'multiple-choice', label: 'Multiple Choice', description: 'Choose the correct answer', offline: true },
-  { type: 'sentence-mc', label: 'Sentence Quiz', description: 'Translate full sentences', offline: true },
+  { type: 'sentence-mc', label: 'Sentence Quiz', description: 'Match full sentences to meaning', offline: true },
+  { type: 'dialogue-comprehension', label: 'Dialogue Quiz', description: 'Read a conversation, answer questions', offline: true, langs: ['japanese'] },
   { type: 'fill-in-blank', label: 'Fill in the Blank', description: 'Complete the sentence', offline: true },
   { type: 'translation', label: 'Translation', description: 'Translate between languages', offline: false },
   { type: 'sentence-construction', label: 'Sentence Building', description: 'Arrange words in order', offline: true },
@@ -45,6 +46,8 @@ export default function ExercisesPage() {
   const [showKanaPractice, setShowKanaPractice] = useState(false);
   const [showGrammar, setShowGrammar] = useState(false);
   const [lessonFilter, setLessonFilter] = useState<string | undefined>(undefined);
+
+  const availableExerciseTypes = EXERCISE_TYPES.filter(t => !t.langs || t.langs.includes(language));
 
   const generateExercise = useCallback(async (type: ExerciseType, lesson?: string) => {
     setLoading(true);
@@ -304,9 +307,9 @@ export default function ExercisesPage() {
           </Panel>
 
           {/* Exercise types */}
-          <Panel tag="EXERCISE·TYPES" meta={`${EXERCISE_TYPES.length} AVAIL`}>
+          <Panel tag="EXERCISE·TYPES" meta={`${availableExerciseTypes.length} AVAIL`}>
             <div className="grid grid-cols-1 sm:grid-cols-2">
-              {EXERCISE_TYPES.map(({ type, label, description, offline }) => (
+              {availableExerciseTypes.map(({ type, label, description, offline }) => (
                 <button
                   key={type}
                   onClick={() => generateExercise(type)}

@@ -124,7 +124,8 @@ export type ExerciseType =
   | 'sentence-construction'
   | 'character-recognition'
   | 'grammar-drill'
-  | 'dialogue-reading';
+  | 'dialogue-reading'
+  | 'dialogue-comprehension';
 
 export interface Exercise {
   id: string;
@@ -144,7 +145,8 @@ export type ExerciseData =
   | SentenceConstructionData
   | CharacterRecognitionData
   | GrammarDrillData
-  | DialogueReadingData;
+  | DialogueReadingData
+  | DialogueComprehensionExerciseData;
 
 export interface MultipleChoiceData {
   type: 'multiple-choice';
@@ -212,6 +214,20 @@ export interface DialogueReadingData {
   title: string;
   setting: string;
   lines: DialogueLine[];
+}
+
+// A reading-comprehension exercise: show a short dialogue, then ask one
+// multiple-choice question about it. Distinct from the listening-flow
+// DialogueComprehensionData (which has no readings/translations).
+export interface DialogueComprehensionExerciseData {
+  type: 'dialogue-comprehension';
+  title: string;
+  setting: string;
+  lines: DialogueLine[];
+  question: string;
+  options: string[];
+  correctIndex: number;
+  explanation?: string;
 }
 
 export interface ExerciseResult {

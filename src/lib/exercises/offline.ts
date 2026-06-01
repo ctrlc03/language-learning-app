@@ -10,6 +10,7 @@ import { japaneseVocabulary } from '@/data/japanese/vocabulary';
 import { irodoriVocabulary } from '@/data/japanese/irodori-vocab';
 import { irodoriGrammar } from '@/data/japanese/irodori-grammar';
 import { chineseDialogues } from '@/data/chinese/dialogues';
+import { japaneseDialogues } from '@/data/japanese/dialogues';
 import type {
   Exercise,
   ExerciseType,
@@ -22,6 +23,8 @@ import type {
   CharacterRecognitionData,
   GrammarDrillData,
   DialogueReadingData,
+  DialogueComprehensionExerciseData,
+  DialogueLine,
 } from '@/types';
 import type { GrammarPattern } from '@/data/japanese/irodori-grammar';
 
@@ -99,6 +102,7 @@ export const OFFLINE_EXERCISE_TYPES: ExerciseType[] = [
   'character-recognition',
   'grammar-drill',
   'dialogue-reading',
+  'dialogue-comprehension',
 ];
 
 export function isOfflineExerciseType(type: ExerciseType): boolean {
@@ -159,6 +163,8 @@ export function getOfflineExercise(
       return generateGrammarDrill(pool, language, difficulty, rng);
     case 'dialogue-reading':
       return generateDialogueReading(language, difficulty, rng, seenSet);
+    case 'dialogue-comprehension':
+      return generateDialogueComprehension(language, difficulty, rng, seenSet);
     default:
       return null;
   }
@@ -240,6 +246,12 @@ function generateSentenceMC(
     return generateMultipleChoice(pool, allVocab, language, difficulty, rng);
   }
 
+  // Half the time, flip the direction: give the English meaning and let the
+  // learner pick the matching full sentence (options are whole sentences).
+  if (rng() < 0.5) {
+    return buildReverseSentenceMC(target, distractors, allVocab, language, difficulty, rng);
+  }
+
   const correctIndex = Math.floor(rng() * 4);
   const options = [...distractors.map(d => d.exampleTranslation!)];
   options.splice(correctIndex, 0, target.exampleTranslation!);
@@ -283,6 +295,55 @@ function generateSentenceMC(
     difficulty,
     question: target.exampleSentence!,
     instruction,
+    data,
+    createdAt: Date.now(),
+  };
+}
+
+// Reverse sentence MC: show the English meaning, options are full sentences in
+// the target language. Tests recognition/production of whole sentences.
+function buildReverseSentenceMC(
+  target: VocabularyItem,
+  distractors: VocabularyItem[],
+  allVocab: VocabularyItem[],
+  language: Language,
+  difficulty: DifficultyLevel,
+  rng: () => number
+): Exercise {
+  // Distractor sentences must be distinct from the target's.
+  const sentenceDistractors = distractors
+    .filter(d => d.exampleSentence && d.exampleSentence !== target.exampleSentence)
+    .slice(0, 3);
+
+  if (sentenceDistractors.length < 3) {
+    // Not enough distinct sentences — fall back to the forward direction.
+    return generateMultipleChoice([target, ...distractors], allVocab, language, difficulty, rng);
+  }
+
+  const correctIndex = Math.floor(rng() * 4);
+  const options = sentenceDistractors.map(d => d.exampleSentence!);
+  options.splice(correctIndex, 0, target.exampleSentence!);
+
+  let explanation = `${target.exampleSentence}`;
+  if (target.examplePinyin) {
+    explanation += `\n${target.examplePinyin}`;
+  }
+  explanation += `\n${target.exampleTranslation}`;
+
+  const data: MultipleChoiceData = {
+    type: 'multiple-choice',
+    options: options.slice(0, 4),
+    correctIndex,
+    explanation,
+  };
+
+  return {
+    id: target.id + '_smcr_' + nanoid(6),
+    type: 'sentence-mc',
+    language,
+    difficulty,
+    question: `"${target.exampleTranslation}"`,
+    instruction: 'Which sentence means this?',
     data,
     createdAt: Date.now(),
   };
@@ -858,19 +919,55 @@ function generateGrammarDrillFromVocab(
   return generateMultipleChoice(pool, getVocabulary(language), language, difficulty, rng);
 }
 
+// A language-neutral view of a dialogue used by the dialogue generators below.
+interface DialogueSource {
+  id: string;
+  title: string;
+  titleNative: string;
+  setting: string;
+  lines: DialogueLine[];
+  questions: { question: string; options: string[]; correctIndex: number; explanation?: string }[];
+}
+
+function getDialogues(language: Language): DialogueSource[] {
+  if (language === 'chinese') {
+    return chineseDialogues.map(d => ({
+      id: d.id,
+      title: d.title,
+      titleNative: d.titleChinese,
+      setting: d.setting,
+      lines: d.lines,
+      questions: [], // Chinese dialogues are reading-only for now
+    }));
+  }
+  // Japanese: map the line `reading` onto DialogueLine.pinyin so the shared
+  // reading-toggle UI works unchanged.
+  return japaneseDialogues.map(d => ({
+    id: d.id,
+    title: d.title,
+    titleNative: d.titleJapanese,
+    setting: d.setting,
+    lines: d.lines.map(l => ({
+      speaker: l.speaker,
+      text: l.text,
+      pinyin: l.reading,
+      translation: l.translation,
+    })),
+    questions: d.questions,
+  }));
+}
+
 function generateDialogueReading(
   language: Language,
   difficulty: DifficultyLevel,
   rng: () => number,
   seenSet: Set<string>
 ): Exercise | null {
-  // Currently only Chinese has dialogue data
-  if (language !== 'chinese') return null;
+  const dialogues = getDialogues(language);
+  if (dialogues.length === 0) return null;
 
-  const available = chineseDialogues.filter(d => !seenSet.has(d.id));
-  const pool = available.length > 0 ? available : chineseDialogues;
-
-  if (pool.length === 0) return null;
+  const available = dialogues.filter(d => !seenSet.has(d.id));
+  const pool = available.length > 0 ? available : dialogues;
 
   const dialogue = pickRandom(pool, rng);
 
@@ -886,8 +983,50 @@ function generateDialogueReading(
     type: 'dialogue-reading',
     language,
     difficulty,
-    question: `${dialogue.title} (${dialogue.titleChinese})`,
+    question: `${dialogue.title} (${dialogue.titleNative})`,
     instruction: 'Read through the dialogue. Tap lines to reveal them one by one.',
+    data,
+    createdAt: Date.now(),
+  };
+}
+
+function generateDialogueComprehension(
+  language: Language,
+  difficulty: DifficultyLevel,
+  rng: () => number,
+  seenSet: Set<string>
+): Exercise | null {
+  // Only dialogues that ship with comprehension questions qualify.
+  const dialogues = getDialogues(language).filter(d => d.questions.length > 0);
+  if (dialogues.length === 0) return null;
+
+  // Exercise IDs carry a `_dc_<nanoid>` suffix, so dedup on the dialogue prefix.
+  const seenIds = [...seenSet];
+  const available = dialogues.filter(d => !seenIds.some(s => s.startsWith(d.id)));
+  const pool = available.length > 0 ? available : dialogues;
+
+  const dialogue = pickRandom(pool, rng);
+  const q = pickRandom(dialogue.questions, rng);
+
+  const data: DialogueComprehensionExerciseData = {
+    type: 'dialogue-comprehension',
+    title: dialogue.title,
+    setting: dialogue.setting,
+    lines: dialogue.lines,
+    question: q.question,
+    options: q.options,
+    correctIndex: q.correctIndex,
+    explanation: q.explanation,
+  };
+
+  return {
+    // Include a question marker so repeats of the same dialogue stay distinct.
+    id: dialogue.id + '_dc_' + nanoid(6),
+    type: 'dialogue-comprehension',
+    language,
+    difficulty,
+    question: `${dialogue.title} (${dialogue.titleNative})`,
+    instruction: 'Read the conversation, then answer the question.',
     data,
     createdAt: Date.now(),
   };
