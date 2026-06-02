@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SpeakButton } from '@/components/shared/speak-button';
 import { MultipleChoice } from './multiple-choice';
+import { SentenceMC } from './sentence-mc';
 import { FillInBlank } from './fill-in-blank';
 import { TranslationExercise } from './translation';
 import { SentenceConstruction } from './sentence-construction';
@@ -91,6 +92,8 @@ export function ExerciseShell({ exercise, onComplete, onNext }: ExerciseShellPro
     switch (exercise.data.type) {
       case 'multiple-choice':
         return <MultipleChoice data={exercise.data} onSubmit={handleSubmit} disabled={!!result} />;
+      case 'sentence-mc':
+        return <SentenceMC data={exercise.data} onSubmit={handleSubmit} disabled={!!result} />;
       case 'fill-in-blank':
         return <FillInBlank data={exercise.data} onSubmit={handleSubmit} disabled={!!result} />;
       case 'translation':

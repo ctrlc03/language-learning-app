@@ -140,6 +140,7 @@ export interface Exercise {
 
 export type ExerciseData =
   | MultipleChoiceData
+  | SentenceMcData
   | FillInBlankData
   | TranslationData
   | SentenceConstructionData
@@ -153,6 +154,21 @@ export interface MultipleChoiceData {
   options: string[];
   correctIndex: number;
   explanation: string;
+}
+
+// Sentence-level multiple choice. Two directions:
+//  - 'toMeaning': show the sentence (with furigana), options are translations
+//  - 'toSentence': show the meaning, options are full sentences (with furigana)
+export interface SentenceMcData {
+  type: 'sentence-mc';
+  direction: 'toMeaning' | 'toSentence';
+  sentence: string;                          // the target sentence (native script)
+  sentenceFurigana?: FuriSegment[];          // per-kanji ruby for the sentence
+  translation: string;                       // English meaning of the sentence
+  options: string[];                         // toMeaning: translations; toSentence: sentences
+  optionFurigana?: (FuriSegment[] | null)[]; // furigana for sentence options (toSentence)
+  correctIndex: number;
+  explanation?: string;
 }
 
 export interface FillInBlankData {

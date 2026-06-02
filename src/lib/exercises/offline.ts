@@ -25,6 +25,8 @@ import type {
   DialogueReadingData,
   DialogueComprehensionExerciseData,
   DialogueLine,
+  SentenceMcData,
+  FuriSegment,
 } from '@/types';
 import type { GrammarPattern } from '@/data/japanese/irodori-grammar';
 
@@ -152,7 +154,7 @@ export function getOfflineExercise(
     case 'multiple-choice':
       return generateMultipleChoice(pool, allVocab, language, difficulty, rng);
     case 'sentence-mc':
-      return generateSentenceMC(pool, allVocab, language, difficulty, rng);
+      return generateSentenceMC(pool, allVocab, language, difficulty, rng, lessonFilter);
     case 'fill-in-blank':
       return generateFillInBlank(pool, language, difficulty, rng);
     case 'sentence-construction':
@@ -219,13 +221,124 @@ function generateMultipleChoice(
   };
 }
 
+// Japanese sentence bank for sentence-mc: every dialogue line containing kanji
+// (so furigana is meaningful), with its translation and chapter, drawn from the
+// real Irodori dialogues.
+interface JpSentence {
+  id: string;
+  text: string;
+  furigana: FuriSegment[];
+  translation: string;
+  level: string;
+  lesson: number;
+}
+
+const japaneseSentenceBank: JpSentence[] = japaneseDialogues.flatMap(d =>
+  d.lines
+    .filter(l => l.furigana.some(s => s.r) && l.text.length >= 4)
+    .map((l, i) => ({
+      id: `${d.id}-L${i}`,
+      text: l.text,
+      furigana: l.furigana,
+      translation: l.translation,
+      level: d.level,
+      lesson: d.lesson,
+    }))
+);
+
+function generateJapaneseSentenceMC(
+  difficulty: DifficultyLevel,
+  rng: () => number,
+  lessonFilter?: string
+): Exercise | null {
+  if (japaneseSentenceBank.length < 4) return null;
+
+  // Scope the target to the chapter when it has sentences; distractors are
+  // always drawn from the full bank so there are enough options.
+  let targetPool = japaneseSentenceBank;
+  if (lessonFilter && lessonFilter.includes('|')) {
+    const [level, lessonNum] = lessonFilter.split('|');
+    const num = parseInt(lessonNum, 10);
+    const scoped = japaneseSentenceBank.filter(s => s.level === level && s.lesson === num);
+    if (scoped.length > 0) targetPool = scoped;
+  }
+
+  const target = pickRandom(targetPool, rng);
+  const distractors = japaneseSentenceBank
+    .filter(s => s.id !== target.id && s.translation !== target.translation)
+    .sort(() => rng() - 0.5)
+    .slice(0, 3);
+  if (distractors.length < 3) return null;
+
+  const correctIndex = Math.floor(rng() * 4);
+  const direction: 'toMeaning' | 'toSentence' = rng() < 0.5 ? 'toMeaning' : 'toSentence';
+
+  let data: SentenceMcData;
+  let question: string;
+  let instruction: string;
+
+  if (direction === 'toMeaning') {
+    const options = distractors.map(d => d.translation);
+    options.splice(correctIndex, 0, target.translation);
+    data = {
+      type: 'sentence-mc',
+      direction,
+      sentence: target.text,
+      sentenceFurigana: target.furigana,
+      translation: target.translation,
+      options,
+      correctIndex,
+    };
+    question = 'What does this sentence mean?';
+    instruction = '';
+  } else {
+    const options = distractors.map(d => d.text);
+    options.splice(correctIndex, 0, target.text);
+    const optionFurigana: (FuriSegment[] | null)[] = distractors.map(d => d.furigana);
+    optionFurigana.splice(correctIndex, 0, target.furigana);
+    data = {
+      type: 'sentence-mc',
+      direction,
+      sentence: target.text,
+      sentenceFurigana: target.furigana,
+      translation: target.translation,
+      options,
+      optionFurigana,
+      correctIndex,
+    };
+    question = `“${target.translation}”`;
+    instruction = 'Which Japanese sentence means this?';
+  }
+
+  return {
+    id: target.id + '_jsmc_' + nanoid(6),
+    type: 'sentence-mc',
+    language: 'japanese',
+    difficulty,
+    question,
+    instruction,
+    data,
+    createdAt: Date.now(),
+  };
+}
+
 function generateSentenceMC(
   pool: VocabularyItem[],
   allVocab: VocabularyItem[],
   language: Language,
   difficulty: DifficultyLevel,
-  rng: () => number
+  rng: () => number,
+  lessonFilter?: string
 ): Exercise {
+  // Japanese draws from the Irodori dialogue sentence bank — real sentences
+  // with furigana + translation, so they stay sentence-level (not single words)
+  // and render with readings even when scoped to a chapter.
+  if (language === 'japanese') {
+    const ex = generateJapaneseSentenceMC(difficulty, rng, lessonFilter);
+    if (ex) return ex;
+    // else fall through to the vocab-based path below
+  }
+
   // Find items with both example sentence and translation
   const withSentences = pool.filter(v => v.exampleSentence && v.exampleTranslation);
 
@@ -955,7 +1068,9 @@ function getDialogues(language: Language): DialogueSource[] {
     lines: d.lines.map(l => ({
       speaker: l.speaker,
       text: l.text,
-      pinyin: l.reading,
+      // Reading is derived from the furigana segments (reading where annotated,
+      // plain kana otherwise) — used only for the non-ruby fallback / TTS.
+      pinyin: l.furigana.map(s => s.r ?? s.t).join(''),
       translation: l.translation,
       furigana: l.furigana,
     })),
