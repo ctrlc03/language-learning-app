@@ -330,4 +330,42 @@ export const chineseGrammarRules: GrammarRule[] = [
       { chinese: '不下雨了。', pinyin: 'Bù xià yǔ le.', english: "It's not raining anymore.", note: 'Change of situation' },
     ],
   },
+
+  // ── Hobbies & Abilities (Lesson 21) ──
+  {
+    id: 'gr-26',
+    title: 'Ability with 会',
+    titleChinese: '能愿动词会',
+    pattern: 'Subject + 会 + Verb (+ Object)',
+    explanation: '会 huì expresses a learned ability or skill — "can / know how to". Negate with 不会. Ask with 会不会 (A-not-A) or 会…吗.',
+    examples: [
+      { chinese: '我会说汉语。', pinyin: 'Wǒ huì shuō Hànyǔ.', english: 'I can speak Chinese.' },
+      { chinese: '他不会游泳。', pinyin: 'Tā bú huì yóuyǒng.', english: "He can't swim." },
+      { chinese: '你会不会打网球？', pinyin: 'Nǐ huì bú huì dǎ wǎngqiú?', english: 'Can you play tennis?', note: '会不会 = A-not-A question' },
+    ],
+  },
+  {
+    id: 'gr-27',
+    title: 'Degree Complement with 得',
+    titleChinese: '程度补语',
+    pattern: 'Subject + (Object) + Verb + 得 + Adverb + Adjective',
+    explanation: '得 de links a verb to a complement describing how well or to what degree the action is done. When there is an object, repeat the verb before 得 (他唱歌唱得很好). Negate with 不/不太.',
+    examples: [
+      { chinese: '他唱得很好。', pinyin: 'Tā chàng de hěn hǎo.', english: 'He sings very well.' },
+      { chinese: '他跑得很快。', pinyin: 'Tā pǎo de hěn kuài.', english: 'He runs very fast.' },
+      { chinese: '他说汉语说得不太好。', pinyin: 'Tā shuō Hànyǔ shuō de bú tài hǎo.', english: "He doesn't speak Chinese very well.", note: 'Object → repeat the verb before 得' },
+    ],
+  },
+  {
+    id: 'gr-28',
+    title: 'Besides … also … with 除了…还…',
+    titleChinese: '除了…还…',
+    pattern: '除了 + A，Subject + 还 + B',
+    explanation: '除了 chúle … 还 hái … means "besides A, also B" — A is included and something more is added. With 都 instead of 还 (除了…都…) it means "except".',
+    examples: [
+      { chinese: '除了打网球，我还喜欢游泳。', pinyin: 'Chúle dǎ wǎngqiú, wǒ hái xǐhuan yóuyǒng.', english: 'Besides tennis, I also like swimming.' },
+      { chinese: '除了中文，他还会说英文。', pinyin: 'Chúle zhōngwén, tā hái huì shuō Yīngwén.', english: 'Besides Chinese, he can also speak English.' },
+      { chinese: '除了我，大家都去了。', pinyin: 'Chúle wǒ, dàjiā dōu qù le.', english: 'Everyone went except me.', note: '除了…都… = except' },
+    ],
+  },
 ];

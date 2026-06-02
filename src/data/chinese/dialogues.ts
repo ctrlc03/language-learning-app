@@ -1000,4 +1000,38 @@ export const chineseDialogues: Dialogue[] = [
       { speaker: 'B', text: '往左走，就在那儿。', pinyin: 'Wǎng zuǒ zǒu, jiù zài nàr.', translation: "Walk to the left, it's right there." },
     ],
   },
+
+  // ============================================================
+  // Lesson 21 - Hobbies & Special Skills
+  // ============================================================
+  {
+    id: 'dlg-l21-01',
+    title: 'Talking About Hobbies',
+    titleChinese: '谈爱好',
+    setting: 'Two classmates compare what they like to do.',
+    lesson: 21,
+    lines: [
+      { speaker: 'A', text: '你有什么爱好？', pinyin: 'Nǐ yǒu shénme àihào?', translation: 'What hobbies do you have?' },
+      { speaker: 'B', text: '我喜欢唱歌和打网球。你呢？', pinyin: 'Wǒ xǐhuan chànggē hé dǎ wǎngqiú. Nǐ ne?', translation: 'I like singing and playing tennis. And you?' },
+      { speaker: 'A', text: '我会打篮球，不过打得不太好。', pinyin: 'Wǒ huì dǎ lánqiú, búguò dǎ de bú tài hǎo.', translation: "I can play basketball, but not very well." },
+      { speaker: 'B', text: '你会唱歌吗？', pinyin: 'Nǐ huì chànggē ma?', translation: 'Can you sing?' },
+      { speaker: 'A', text: '会一点儿，唱得还可以。', pinyin: 'Huì yìdiǎnr, chàng de hái kěyǐ.', translation: 'A little — I sing okay.' },
+      { speaker: 'B', text: '太好了！除了唱歌，我们还可以一起打网球。', pinyin: 'Tài hǎo le! Chúle chànggē, wǒmen hái kěyǐ yìqǐ dǎ wǎngqiú.', translation: 'Great! Besides singing, we can also play tennis together.' },
+    ],
+  },
+  {
+    id: 'dlg-l21-02',
+    title: 'Special Skills',
+    titleChinese: '特长',
+    setting: 'A host welcomes a guest and asks about their talents.',
+    lesson: 21,
+    lines: [
+      { speaker: 'A', text: '请进，请坐！', pinyin: 'Qǐng jìn, qǐng zuò!', translation: 'Come in, have a seat!' },
+      { speaker: 'B', text: '谢谢。你的中文说得真好！', pinyin: 'Xièxie. Nǐ de zhōngwén shuō de zhēn hǎo!', translation: 'Thank you. You speak Chinese really well!' },
+      { speaker: 'A', text: '哪里哪里。你有什么特长？', pinyin: 'Nǎli nǎli. Nǐ yǒu shénme tècháng?', translation: 'Not at all. What special skills do you have?' },
+      { speaker: 'B', text: '我会一点儿功夫。', pinyin: 'Wǒ huì yìdiǎnr gōngfu.', translation: 'I know a little kung fu.' },
+      { speaker: 'A', text: '真的吗？太厉害了！', pinyin: 'Zhēn de ma? Tài lìhai le!', translation: "Really? That's amazing!" },
+      { speaker: 'B', text: '不过我更喜欢旅游和看电影。', pinyin: 'Búguò wǒ gèng xǐhuan lǚyóu hé kàn diànyǐng.', translation: 'But I prefer traveling and watching movies.' },
+    ],
+  },
 ];
