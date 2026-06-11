@@ -25,7 +25,8 @@ export function SentenceMC({ data, onSubmit, disabled }: SentenceMcProps) {
 
   return (
     <div className="space-y-4">
-      {/* Stimulus: the Japanese sentence (with furigana) for toMeaning */}
+      {/* Stimulus for toMeaning: the sentence with readings (furigana for
+          Japanese, per-character pinyin for Chinese) */}
       {data.direction === 'toMeaning' && (
         <div className="flex items-start justify-between gap-2 rounded-xl border border-border bg-muted/40 px-4 py-3">
           <p className="text-lg font-medium">

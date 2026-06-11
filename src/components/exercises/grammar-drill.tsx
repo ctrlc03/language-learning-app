@@ -112,6 +112,9 @@ export function GrammarDrill({ data, onSubmit, disabled }: GrammarDrillProps) {
                 {String.fromCharCode(65 + i)}
               </span>
               {option}
+              {data.optionReadings?.[i] && (
+                <span className="ml-2 text-xs text-muted-foreground">{data.optionReadings[i]}</span>
+              )}
             </button>
           ))}
         </div>
@@ -136,6 +139,9 @@ export function GrammarDrill({ data, onSubmit, disabled }: GrammarDrillProps) {
                 {String.fromCharCode(65 + i)}
               </span>
               {option}
+              {data.optionReadings?.[i] && (
+                <span className="ml-2 text-xs opacity-70">{data.optionReadings[i]}</span>
+              )}
             </div>
           ))}
         </div>

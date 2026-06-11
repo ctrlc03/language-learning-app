@@ -21,7 +21,7 @@ import type { Exercise, ExerciseType, ExerciseResult, Language } from '@/types';
 const EXERCISE_TYPES: { type: ExerciseType; label: string; description: string; offline: boolean; langs?: Language[] }[] = [
   { type: 'multiple-choice', label: 'Multiple Choice', description: 'Choose the correct answer', offline: true },
   { type: 'sentence-mc', label: 'Sentence Quiz', description: 'Match full sentences to meaning', offline: true },
-  { type: 'dialogue-comprehension', label: 'Dialogue Quiz', description: 'Read a conversation, answer questions', offline: true, langs: ['japanese'] },
+  { type: 'dialogue-comprehension', label: 'Dialogue Quiz', description: 'Read a conversation, answer questions', offline: true },
   { type: 'fill-in-blank', label: 'Fill in the Blank', description: 'Complete the sentence', offline: true },
   { type: 'translation', label: 'Translation', description: 'Translate between languages', offline: false },
   { type: 'sentence-construction', label: 'Sentence Building', description: 'Arrange words in order', offline: true },
@@ -30,10 +30,23 @@ const EXERCISE_TYPES: { type: ExerciseType; label: string; description: string; 
   { type: 'dialogue-reading', label: 'Dialogue Reading', description: 'Read through full conversations', offline: true },
 ];
 
+// Quiz-style offline types eligible for the mixed drill (dialogue-reading is
+// untimed study material, so it's excluded from the mix).
+const MIXED_POOL: ExerciseType[] = [
+  'multiple-choice',
+  'sentence-mc',
+  'fill-in-blank',
+  'sentence-construction',
+  'character-recognition',
+  'grammar-drill',
+  'dialogue-comprehension',
+];
+
 export default function ExercisesPage() {
   const { language, difficulty } = useLanguage();
   const { recordActivity } = useProgress();
   const [currentExercise, setCurrentExercise] = useState<Exercise | null>(null);
+  const [mixedMode, setMixedMode] = useState(false);
   const [loading, setLoading] = useState(false);
   const [sessionCount, setSessionCount] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
@@ -53,9 +66,33 @@ export default function ExercisesPage() {
     ? (lessonFilter.includes('|') ? (irodoriLessonTitles[lessonFilter]?.title ?? lessonFilter) : lessonFilter)
     : 'All chapters';
 
+  // Serve a random exercise type each round (respecting the chapter filter);
+  // types that can't produce an exercise for the current scope are skipped.
+  const generateMixedExercise = useCallback(() => {
+    setLoading(true);
+    setError(null);
+    setMixedMode(true);
+
+    const types = [...MIXED_POOL].sort(() => Math.random() - 0.5);
+    for (const type of types) {
+      const exercise = getOfflineExercise(language, difficulty, type, seenIds, lessonFilter);
+      if (exercise) {
+        setCurrentExercise(exercise);
+        setSeenIds(prev => [...prev, exercise.id].slice(-50));
+        setPreviousQuestions(prev => [...prev, exercise.question].slice(-10));
+        setLoading(false);
+        return;
+      }
+    }
+
+    setLoading(false);
+    setError('No exercises are available for the selected chapter. Try a different chapter.');
+  }, [language, difficulty, seenIds, lessonFilter]);
+
   const generateExercise = useCallback(async (type: ExerciseType, lesson?: string) => {
     setLoading(true);
     setError(null);
+    setMixedMode(false);
 
     try {
       if (isOfflineExerciseType(type)) {
@@ -118,7 +155,10 @@ export default function ExercisesPage() {
   };
 
   const handleNext = () => {
-    if (currentExercise) {
+    if (!currentExercise) return;
+    if (mixedMode) {
+      generateMixedExercise();
+    } else {
       generateExercise(currentExercise.type);
     }
   };
@@ -338,6 +378,23 @@ export default function ExercisesPage() {
                 </button>
               </div>
             </div>
+            {/* Mixed drill — random mix of all quiz types */}
+            <button
+              onClick={() => generateMixedExercise()}
+              className="w-full text-left px-4 py-3.5 border-b border-border/50 transition-colors hover:bg-primary/[0.06] active:scale-[0.99] bg-primary/[0.03]"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="space-y-0.5">
+                  <h3 className="font-medium text-xs tracking-[0.05em] uppercase text-primary">▶ Mixed Drill</h3>
+                  <p className="text-[10px] text-muted-foreground tracking-[0.03em]">
+                    Continuous session — a random exercise type every round
+                  </p>
+                </div>
+                <span className="text-[9px] tracking-[0.15em] px-1.5 py-0.5 border border-primary/40 text-primary shrink-0 mt-0.5">
+                  MIX
+                </span>
+              </div>
+            </button>
             <div className="grid grid-cols-1 sm:grid-cols-2">
               {availableExerciseTypes.map(({ type, label, description, offline }) => (
                 <button

@@ -15,6 +15,8 @@ import { CharacterRecognition } from './character-recognition';
 import { GrammarDrill } from './grammar-drill';
 import { DialogueReading } from './dialogue-reading';
 import { DialogueComprehension } from './dialogue-comprehension';
+import { speak, stopSpeaking } from '@/lib/tts/speech';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 
 interface ExerciseShellProps {
@@ -35,13 +37,35 @@ const TYPE_LABELS: Record<string, string> = {
   'dialogue-comprehension': 'Dialogue Quiz',
 };
 
+// The target-language text to pronounce once an exercise is answered, so the
+// learner ties sound to characters on every rep. Null = nothing to speak.
+function getAnswerSpeech(exercise: Exercise): string | null {
+  const data = exercise.data;
+  switch (data.type) {
+    case 'sentence-mc':
+      return data.sentence;
+    case 'fill-in-blank':
+    case 'grammar-drill':
+      return data.sentence.includes('___') ? data.sentence.replace('___', data.answer) : null;
+    case 'sentence-construction':
+      return data.correctOrder;
+    case 'character-recognition':
+      return data.character;
+    default:
+      return null;
+  }
+}
+
 export function ExerciseShell({ exercise, onComplete, onNext }: ExerciseShellProps) {
+  const { speechRate } = useLanguage();
   const [result, setResult] = useState<ExerciseResult | null>(null);
   const [evaluating, setEvaluating] = useState(false);
 
   useEffect(() => {
     setResult(null);
     setEvaluating(false);
+    // Cut off any still-playing pronunciation from the previous exercise
+    stopSpeaking();
   }, [exercise.id]);
 
   const handleSubmit = async (answer: string, isCorrect?: boolean) => {
@@ -83,6 +107,12 @@ export function ExerciseShell({ exercise, onComplete, onNext }: ExerciseShellPro
     setResult(exerciseResult);
     setEvaluating(false);
     onComplete(exerciseResult);
+
+    // Pronounce the correct sentence/word after answering
+    const speech = getAnswerSpeech(exercise);
+    if (speech) {
+      speak(speech, exercise.language, speechRate).catch(() => { /* TTS unavailable */ });
+    }
   };
 
   const renderExercise = () => {
@@ -127,19 +157,7 @@ export function ExerciseShell({ exercise, onComplete, onNext }: ExerciseShellPro
         {/* Question */}
         <div className="space-y-1.5">
           <p className="text-lg font-semibold leading-snug">{exercise.question}</p>
-          {exercise.instruction.includes('|||READING|||') ? (() => {
-            const readingMatch = exercise.instruction.match(/\|\|\|READING\|\|\|(.+?)\|\|\|END\|\|\|([\s\S]*)/);
-            const reading = readingMatch?.[1] ?? '';
-            const rest = readingMatch?.[2] ?? exercise.instruction;
-            return (
-              <>
-                <p className="text-sm text-muted-foreground leading-relaxed">{reading}</p>
-                {rest && <p className="text-xs text-muted-foreground">{rest}</p>}
-              </>
-            );
-          })() : (
-            <p className="text-xs text-muted-foreground whitespace-pre-line">{exercise.instruction}</p>
-          )}
+          <p className="text-xs text-muted-foreground whitespace-pre-line">{exercise.instruction}</p>
         </div>
 
         {/* Exercise body */}

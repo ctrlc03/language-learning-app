@@ -174,10 +174,13 @@ export interface SentenceMcData {
 export interface FillInBlankData {
   type: 'fill-in-blank';
   sentence: string; // with ___ for blank
+  sentencePinyin?: string; // pinyin reading of the sentence (blank preserved)
+  translation?: string; // English meaning of the full sentence
   answer: string;
   acceptableAnswers: string[];
   hint?: string;
   options?: string[]; // clickable word options (when present, renders as pick-from-options)
+  optionReadings?: (string | null)[]; // pinyin/kana reading per option
   correctIndex?: number; // index of correct option in options[]
 }
 
@@ -192,7 +195,9 @@ export interface TranslationData {
 export interface SentenceConstructionData {
   type: 'sentence-construction';
   words: string[];
+  wordReadings?: (string | null)[]; // pinyin reading per word tile (aligned with words[])
   correctOrder: string;
+  correctPinyin?: string; // pinyin reading of the full correct sentence
   translation: string;
 }
 
@@ -215,6 +220,7 @@ export interface GrammarDrillData {
   pinyin?: string; // sentence with pinyin (blank matches sentence blank)
   translation?: string; // English translation/hint
   options?: string[]; // multiple choice options (when present, renders as pick-from-options)
+  optionReadings?: (string | null)[]; // pinyin reading per option
   correctIndex?: number; // index of correct option in options[]
 }
 

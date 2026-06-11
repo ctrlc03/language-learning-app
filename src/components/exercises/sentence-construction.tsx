@@ -11,32 +11,59 @@ interface SentenceConstructionProps {
   disabled: boolean;
 }
 
-export function SentenceConstruction({ data, onSubmit, disabled }: SentenceConstructionProps) {
-  const [selected, setSelected] = useState<string[]>([]);
-  const [available, setAvailable] = useState<string[]>([...data.words].sort(() => Math.random() - 0.5));
+// A word tile paired with its (optional) pinyin reading so the two stay
+// aligned through shuffles and moves.
+interface Tile {
+  word: string;
+  reading: string | null;
+}
 
-  const handleSelect = (word: string, index: number) => {
+function buildTiles(data: SentenceConstructionData): Tile[] {
+  return data.words.map((word, i) => ({
+    word,
+    reading: data.wordReadings?.[i] ?? null,
+  }));
+}
+
+function shuffled(tiles: Tile[]): Tile[] {
+  return [...tiles].sort(() => Math.random() - 0.5);
+}
+
+export function SentenceConstruction({ data, onSubmit, disabled }: SentenceConstructionProps) {
+  const [selected, setSelected] = useState<Tile[]>([]);
+  const [available, setAvailable] = useState<Tile[]>(() => shuffled(buildTiles(data)));
+
+  const handleSelect = (tile: Tile, index: number) => {
     if (disabled) return;
-    setSelected(prev => [...prev, word]);
+    setSelected(prev => [...prev, tile]);
     setAvailable(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleDeselect = (word: string, index: number) => {
+  const handleDeselect = (tile: Tile, index: number) => {
     if (disabled) return;
-    setAvailable(prev => [...prev, word]);
+    setAvailable(prev => [...prev, tile]);
     setSelected(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = () => {
-    const answer = selected.join('');
+    const answer = selected.map(t => t.word).join('');
     const isCorrect = answer === data.correctOrder;
     onSubmit(answer, isCorrect);
   };
 
   const handleClear = () => {
-    setAvailable([...data.words].sort(() => Math.random() - 0.5));
+    setAvailable(shuffled(buildTiles(data)));
     setSelected([]);
   };
+
+  const tileLabel = (tile: Tile) => (
+    <span className="inline-flex flex-col items-center leading-tight">
+      <span>{tile.word}</span>
+      {tile.reading && (
+        <span className="text-[10px] text-muted-foreground font-normal">{tile.reading}</span>
+      )}
+    </span>
+  );
 
   return (
     <div className="space-y-4">
@@ -49,10 +76,10 @@ export function SentenceConstruction({ data, onSubmit, disabled }: SentenceConst
         {selected.length === 0 && (
           <span className="text-muted-foreground/50 text-xs">Tap words below to build the sentence...</span>
         )}
-        {selected.map((word, i) => (
+        {selected.map((tile, i) => (
           <button
             key={`s-${i}`}
-            onClick={() => handleDeselect(word, i)}
+            onClick={() => handleDeselect(tile, i)}
             disabled={disabled}
             className={cn(
               'px-3 py-1.5 rounded-lg text-sm font-medium transition-all',
@@ -61,21 +88,21 @@ export function SentenceConstruction({ data, onSubmit, disabled }: SentenceConst
                 : 'bg-primary/10 text-primary border border-primary/20 hover:bg-primary/15 active:scale-[0.98]'
             )}
           >
-            {word}
+            {tileLabel(tile)}
           </button>
         ))}
       </div>
 
       {/* Word bank */}
       <div className="flex flex-wrap gap-2">
-        {available.map((word, i) => (
+        {available.map((tile, i) => (
           <button
             key={`a-${i}`}
-            onClick={() => handleSelect(word, i)}
+            onClick={() => handleSelect(tile, i)}
             disabled={disabled}
             className="px-3 py-1.5 rounded-lg text-sm font-medium border border-border bg-background hover:border-primary/40 hover:bg-primary/[0.03] transition-all active:scale-[0.98] disabled:opacity-40"
           >
-            {word}
+            {tileLabel(tile)}
           </button>
         ))}
       </div>
@@ -92,9 +119,12 @@ export function SentenceConstruction({ data, onSubmit, disabled }: SentenceConst
       )}
 
       {disabled && (
-        <p className="text-xs text-muted-foreground pt-1">
-          Correct: <span className="font-medium text-foreground">{data.correctOrder}</span>
-        </p>
+        <div className="text-xs text-muted-foreground pt-1 space-y-0.5">
+          <p>
+            Correct: <span className="font-medium text-foreground">{data.correctOrder}</span>
+          </p>
+          {data.correctPinyin && <p className="tracking-wide">{data.correctPinyin}</p>}
+        </div>
       )}
     </div>
   );

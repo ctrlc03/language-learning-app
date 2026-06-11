@@ -36,17 +36,27 @@ export function FillInBlank({ data, onSubmit, disabled }: FillInBlankProps) {
 
   return (
     <div className="space-y-4">
-      <p className="text-base leading-relaxed">
-        {parts[0]}
-        <span className="inline-block min-w-[60px] border-b-2 border-primary/60 mx-1 pb-0.5">
-          {disabled ? (
-            <span className="text-success font-semibold">{data.answer}</span>
-          ) : selected !== null && hasOptions ? (
-            <span className="font-medium">{data.options![selected]}</span>
-          ) : '\u00A0'}
-        </span>
-        {parts[1]}
-      </p>
+      <div className="space-y-1">
+        <p className="text-base leading-relaxed">
+          {parts[0]}
+          <span className="inline-block min-w-[60px] border-b-2 border-primary/60 mx-1 pb-0.5">
+            {disabled ? (
+              <span className="text-success font-semibold">{data.answer}</span>
+            ) : selected !== null && hasOptions ? (
+              <span className="font-medium">{data.options![selected]}</span>
+            ) : '\u00A0'}
+          </span>
+          {parts[1]}
+        </p>
+        {data.sentencePinyin && (
+          <p className="text-sm text-muted-foreground leading-relaxed tracking-wide">
+            {data.sentencePinyin}
+          </p>
+        )}
+        {data.translation && disabled && (
+          <p className="text-xs text-muted-foreground">{data.translation}</p>
+        )}
+      </div>
 
       {data.hint && !disabled && !hasOptions && (
         <p className="text-xs text-muted-foreground">Hint: {data.hint}</p>
@@ -67,6 +77,11 @@ export function FillInBlank({ data, onSubmit, disabled }: FillInBlankProps) {
               )}
             >
               {option}
+              {data.optionReadings?.[i] && (
+                <span className="block text-xs text-muted-foreground font-normal mt-0.5">
+                  {data.optionReadings[i]}
+                </span>
+              )}
             </button>
           ))}
         </div>
@@ -88,6 +103,11 @@ export function FillInBlank({ data, onSubmit, disabled }: FillInBlankProps) {
                 )}
               >
                 {option}
+                {data.optionReadings?.[i] && (
+                  <span className="block text-xs font-normal mt-0.5 opacity-70">
+                    {data.optionReadings[i]}
+                  </span>
+                )}
               </div>
             );
           })}
