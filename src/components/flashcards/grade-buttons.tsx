@@ -18,7 +18,7 @@ const GRADES: { grade: SRSGrade; label: string; color: string; description: stri
 
 export function GradeButtons({ onGrade, disabled }: GradeButtonsProps) {
   return (
-    <div className="flex gap-2 justify-center">
+    <div className="flex flex-wrap gap-2 justify-center">
       {GRADES.map(({ grade, label, color, description }) => (
         <button
           key={grade}

@@ -29,7 +29,7 @@ export function MessageBubble({ message, showSpeaker = true }: MessageBubbleProp
               : 'bg-muted text-foreground rounded-bl-md'
           )}
         >
-          <p className="whitespace-pre-wrap">{message.content}</p>
+          <p className="whitespace-pre-wrap break-words">{message.content}</p>
         </div>
 
         {/* Metadata (corrections, vocab) */}

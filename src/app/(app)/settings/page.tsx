@@ -191,7 +191,7 @@ export default function SettingsPage() {
               <select
                 value={selectedVoiceName}
                 onChange={e => handleVoiceChange(e.target.value)}
-                className="flex-1 h-10 rounded-lg border border-border bg-background px-3 text-sm"
+                className="flex-1 min-w-0 h-10 rounded-lg border border-border bg-background px-3 text-sm"
               >
                 <option value="">Auto-select best voice</option>
                 {voices.map(v => (
