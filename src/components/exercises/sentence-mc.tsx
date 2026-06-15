@@ -25,14 +25,17 @@ export function SentenceMC({ data, onSubmit, disabled }: SentenceMcProps) {
 
   return (
     <div className="space-y-4">
-      {/* Stimulus for toMeaning: the sentence with readings (furigana for
-          Japanese, per-character pinyin for Chinese) */}
-      {data.direction === 'toMeaning' && (
+      {/* Stimulus: the sentence with readings (toMeaning) or just the romanized
+          reading (pinyinToMeaning). toSentence shows no stimulus — the options
+          are the sentences. */}
+      {(data.direction === 'toMeaning' || data.direction === 'pinyinToMeaning') && (
         <div className="flex items-start justify-between gap-2 rounded-xl border border-border bg-muted/40 px-4 py-3">
           <p className="text-lg font-medium">
-            {data.sentenceFurigana
-              ? <Furigana segments={data.sentenceFurigana} />
-              : data.sentence}
+            {data.direction === 'pinyinToMeaning'
+              ? <span className="italic tracking-wide">{data.sentencePinyin ?? data.sentence}</span>
+              : data.sentenceFurigana
+                ? <Furigana segments={data.sentenceFurigana} />
+                : data.sentence}
           </p>
           <SpeakButton text={data.sentence} size="icon" />
         </div>
@@ -70,7 +73,7 @@ export function SentenceMC({ data, onSubmit, disabled }: SentenceMcProps) {
       {/* After answering: show the sentence + reading + meaning for context */}
       {answered && (
         <div className="text-xs text-muted-foreground leading-relaxed space-y-0.5 pt-1">
-          {data.direction === 'toSentence' && (
+          {(data.direction === 'toSentence' || data.direction === 'pinyinToMeaning') && (
             <p className="text-foreground/80">
               {data.sentenceFurigana
                 ? <Furigana segments={data.sentenceFurigana} />

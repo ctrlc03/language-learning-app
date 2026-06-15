@@ -67,16 +67,18 @@ export default function VocabularyPage() {
 
   return (
     <div className="p-5 md:p-8 max-w-2xl mx-auto space-y-6">
-      <div className="border-b border-dashed border-border pb-5">
-        <div className="text-[10px] tracking-[0.2em] text-muted-foreground mb-1.5">
-          KOTOBA.EXE / <span className="text-primary font-medium">ARCHIVE</span> / VOCAB
+      <div className="page-top">
+        <div>
+          <div className="greet">言葉を集める · the word archive</div>
+          <h1>
+            Archive<span className="cjk"> · 蔵</span>
+          </h1>
         </div>
-        <h1 className="font-display text-2xl font-bold tracking-[0.08em]">
-          VOCAB<span className="text-muted-foreground font-medium">·ARCHIVE</span>
-        </h1>
-        <p className="text-xs text-muted-foreground mt-1 tracking-[0.05em]">
-          {allVocab.length} words indexed · {language === 'chinese' ? 'Chinese' : 'Japanese'}
-        </p>
+        <div className="date">
+          {language === 'chinese' ? '中文' : '日本語'}
+          <b>{allVocab.length}</b>
+          words indexed
+        </div>
       </div>
 
       {/* Level summary badges */}

@@ -1,13 +1,13 @@
 {
-  "name": "KOTOBA.EXE · Neon Language Deck",
-  "short_name": "KOTOBA.EXE",
-  "description": "AI-powered language learning for Chinese and Japanese",
+  "name": "INKPATH · 言葉の道",
+  "short_name": "INKPATH",
+  "description": "Paper-and-ink language study for Chinese and Japanese",
   "start_url": "/dashboard",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0a0a0f",
-  "theme_color": "#0a0a0f",
+  "background_color": "#e9e3d4",
+  "theme_color": "#e9e3d4",
   "icons": [
     {
       "src": "/icon-192.png",

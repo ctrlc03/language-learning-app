@@ -1,5 +1,10 @@
 @import "tailwindcss";
-@import "./kotoba.css";
+@import "./inkpath.css";
+
+/* 墨 INKPATH — paper & ink language study
+   Tailwind tokens are mapped onto the per-language "world" variables so that
+   existing utility classes (bg-card, text-muted-foreground, …) inherit the
+   paper-and-ink palette and swap with the active language. */
 
 @theme inline {
   --color-background: var(--background);
@@ -15,58 +20,210 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-success: var(--success);
-  --color-neon-pink: var(--neon-pink);
-  --color-neon-cyan: var(--neon-cyan);
-  --color-neon-lime: var(--neon-lime);
-  --color-neon-amber: var(--neon-amber);
-  --color-neon-violet: var(--neon-violet);
-  --font-sans: var(--font-jetbrains), 'JetBrains Mono', ui-monospace, monospace;
-  --font-mono: var(--font-jetbrains), 'JetBrains Mono', ui-monospace, monospace;
-  --font-display: var(--font-orbitron), 'Orbitron', ui-monospace, monospace;
+
+  --font-sans: var(--font-zen), 'Zen Kaku Gothic New', system-ui, sans-serif;
+  --font-mono: var(--font-zen), 'Zen Kaku Gothic New', system-ui, sans-serif;
+  --font-display: var(--font-shippori), 'Shippori Mincho B1', serif;
 }
 
 :root {
-  /* KOTOBA.EXE — Neon Tokyo palette */
-  --background: oklch(0.12 0.04 280);
-  --foreground: oklch(0.96 0.02 300);
-  --primary: oklch(0.72 0.26 350);
-  --primary-foreground: oklch(0.10 0 0);
-  --muted: oklch(0.17 0.05 282);
-  --muted-foreground: oklch(0.50 0.05 285);
-  --border: oklch(0.32 0.06 285);
-  --card: oklch(0.17 0.05 282 / 0.7);
-  --card-foreground: oklch(0.96 0.02 300);
-  --accent: oklch(0.80 0.18 75);
-  --accent-foreground: oklch(0.12 0.04 280);
-  --destructive: oklch(0.65 0.25 25);
-  --success: oklch(0.88 0.22 140);
+  --ui: var(--font-zen), 'Zen Kaku Gothic New', system-ui, sans-serif;
+  --serif-jp: var(--font-shippori), 'Shippori Mincho B1', 'Noto Serif SC', serif;
+  --serif-zh: var(--font-noto-serif-sc), 'Noto Serif SC', 'Shippori Mincho B1', serif;
 
-  /* Neon accent tokens */
-  --neon-pink: oklch(0.72 0.26 350);
-  --neon-pink-hot: oklch(0.78 0.30 355);
-  --neon-cyan: oklch(0.82 0.18 210);
-  --neon-cyan-hot: oklch(0.88 0.22 205);
-  --neon-amber: oklch(0.80 0.18 75);
-  --neon-lime: oklch(0.88 0.22 140);
-  --neon-violet: oklch(0.60 0.22 300);
+  --motif-opacity: 0.4;
+  --paper-strength: 1;
+  --radius: 3px;
 
-  /* Scanline control */
-  --scanline-opacity: 0.35;
+  /* skill-bar colors (theme-dependent, language-independent) */
+  --bar-jp: #284b73;
+  --bar-zh: #b23b2e;
 }
 
+/* ---------- LANGUAGE WORLDS ----------
+   Both the design tokens and the Tailwind-mapped tokens are set here so the
+   whole subtree (including utility-styled routes) re-themes per language. */
+.app[data-lang="jp"] {
+  --serif: var(--serif-jp);
+  --paper-img: url(/inkpath/paper-jp.png);
+  --motif-img: url(/inkpath/seigaiha.png);
+  --motif-size: 256px;
+  --seal-img: url(/inkpath/seal-jp.png);
+
+  --ink: #1b2a41;
+  --ink-soft: #3e4a63;
+  --ink-faint: #5e6884;
+  --paper: #e9e3d4;
+  --card-edge: #d4cdba;
+  --line: #ccc4ae;
+
+  --primary: #284b73;     /* 藍 ai indigo */
+  --primary-soft: #4a6c92;
+  --gold: #9a7b3f;
+  --jade: #4a7c59;
+
+  /* Tailwind token bridge */
+  --background: #e9e3d4;
+  --foreground: #1b2a41;
+  --primary-foreground: #ffffff;
+  --muted: #ddd5c2;
+  --muted-foreground: #8089a0;
+  --border: #ccc4ae;
+  --card: #f1ece0;
+  --card-foreground: #1b2a41;
+  --accent: #c0392b;      /* 朱 vermillion */
+  --accent-foreground: #ffffff;
+  --destructive: #c0392b;
+  --success: #4a7c59;
+}
+
+.app[data-lang="zh"] {
+  --serif: var(--serif-zh);
+  --paper-img: url(/inkpath/paper-zh.png);
+  --motif-img: url(/inkpath/coins.png);
+  --motif-size: 168px;
+  --seal-img: url(/inkpath/seal-zh.png);
+
+  --ink: #2b1a12;
+  --ink-soft: #574031;
+  --ink-faint: #7d6446;
+  --paper: #f1e7d3;
+  --card-edge: #e0d3b4;
+  --line: #ddcdab;
+
+  --primary: #b23b2e;     /* 朱 cinnabar */
+  --primary-soft: #c8675a;
+  --gold: #b8893a;
+  --jade: #3f6f57;
+
+  /* Tailwind token bridge */
+  --background: #f1e7d3;
+  --foreground: #2b1a12;
+  --primary-foreground: #ffffff;
+  --muted: #e7dabb;
+  --muted-foreground: #9a8264;
+  --border: #ddcdab;
+  --card: #f8f0de;
+  --card-foreground: #2b1a12;
+  --accent: #b8893a;      /* 金 gold */
+  --accent-foreground: #ffffff;
+  --destructive: #b23b2e;
+  --success: #3f6f57;
+}
+
+/* ---------- DARK WORLDS ----------
+   Higher specificity (theme + lang) overrides the light blocks above. Both the
+   design vars and the Tailwind bridge tokens are re-set so the whole subtree
+   goes dark. */
+.app[data-theme="dark"] {
+  --bar-jp: #7aa2d6;
+  --bar-zh: #e87a6b;
+}
+.app[data-theme="dark"][data-lang="jp"] {
+  --paper-img: url(/inkpath/paper-jp-dark.png);
+  --ink: #eceadf;
+  --ink-soft: #b3bacb;
+  --ink-faint: #818aa3;
+  --paper: #141b2a;
+  --card-edge: #313c56;
+  --line: #313c56;
+  --primary: #7aa2d6;     /* 藍 lightened */
+  --primary-soft: #9bbce6;
+  --gold: #cda45c;
+  --jade: #6cae84;
+
+  --background: #141b2a;
+  --foreground: #eceadf;
+  --primary-foreground: #141b2a;
+  --muted: #1d2638;
+  --muted-foreground: #818aa3;
+  --border: #313c56;
+  --card: #1d2638;
+  --card-foreground: #eceadf;
+  --accent: #ec7464;      /* 朱 brightened */
+  --accent-foreground: #141b2a;
+  --destructive: #ec7464;
+  --success: #6cae84;
+}
+.app[data-theme="dark"][data-lang="zh"] {
+  --paper-img: url(/inkpath/paper-zh-dark.png);
+  --ink: #f1e7d6;
+  --ink-soft: #cbb293;
+  --ink-faint: #97805f;
+  --paper: #1d1410;
+  --card-edge: #41301f;
+  --line: #41301f;
+  --primary: #e8786a;     /* 朱 brightened cinnabar */
+  --primary-soft: #f09a8d;
+  --gold: #e0b665;
+  --jade: #6cae84;
+
+  --background: #1d1410;
+  --foreground: #f1e7d6;
+  --primary-foreground: #1d1410;
+  --muted: #281c15;
+  --muted-foreground: #97805f;
+  --border: #41301f;
+  --card: #281c15;
+  --card-foreground: #f1e7d6;
+  --accent: #e0b665;      /* 金 brightened */
+  --accent-foreground: #1d1410;
+  --destructive: #e8786a;
+  --success: #6cae84;
+}
+
+/* Sensible defaults before the app shell mounts (mirrors the JP world). */
+:root {
+  --serif: var(--serif-jp);
+  --ink: #1b2a41;
+  --ink-soft: #44506a;
+  --ink-faint: #8089a0;
+  --paper: #e9e3d4;
+  --card-edge: #d4cdba;
+  --line: #ccc4ae;
+  --primary: #284b73;
+  --primary-soft: #4a6c92;
+  --gold: #9a7b3f;
+  --jade: #4a7c59;
+  --background: #e9e3d4;
+  --foreground: #1b2a41;
+  --primary-foreground: #ffffff;
+  --muted: #ddd5c2;
+  --muted-foreground: #8089a0;
+  --border: #ccc4ae;
+  --card: #f1ece0;
+  --card-foreground: #1b2a41;
+  --accent: #c0392b;
+  --accent-foreground: #ffffff;
+  --destructive: #c0392b;
+  --success: #4a7c59;
+}
+
+/* Back-compat aliases: any lingering cyberpunk neon references now resolve to
+   the paper-and-ink palette so older routes stay legible. */
+:root, .app[data-lang="jp"], .app[data-lang="zh"] {
+  --neon-pink: var(--accent);
+  --neon-cyan: var(--primary);
+  --neon-lime: var(--success);
+  --neon-amber: var(--accent);
+  --neon-violet: var(--primary);
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; }
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans, 'JetBrains Mono', ui-monospace, monospace);
-  overflow-x: hidden;
+  font-family: var(--ui);
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
 }
 
-/* CJK text rendering */
-ruby {
-  ruby-align: center;
-}
+/* CJK font helpers (used across the app) */
+.cjk-jp { font-family: var(--serif-jp); }
+.cjk-zh { font-family: var(--serif-zh); }
+.font-display { font-family: var(--serif); }
 
-rt {
-  font-size: 0.5em;
-  color: var(--muted-foreground);
-}
+/* CJK ruby */
+ruby { ruby-align: center; }
+rt { font-size: 0.5em; color: var(--ink-faint); }

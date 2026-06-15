@@ -14,6 +14,7 @@ import { DialogueBrowser } from '@/components/exercises/dialogue-browser';
 import { KanaPractice } from '@/components/exercises/kana-practice';
 import { GrammarReference } from '@/components/exercises/grammar-reference';
 import { getOfflineExercise, isOfflineExerciseType } from '@/lib/exercises/offline';
+import { getLanguageName, getLanguageNativeName } from '@/lib/language/utils';
 import lessonsData from '@/data/chinese/lessons.json';
 import { irodoriLevels, irodoriLessonIndex, irodoriLessonTitles } from '@/data/japanese/irodori-vocab';
 import type { Exercise, ExerciseType, ExerciseResult, Language } from '@/types';
@@ -195,8 +196,10 @@ export default function ExercisesPage() {
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="sm" onClick={() => setShowLessonPicker(false)}>&larr; Back</Button>
           <div>
-            <div className="text-[10px] tracking-[0.2em] text-muted-foreground mb-0.5">KOTOBA.EXE / FREQUENCY / <span className="text-primary">SELECT</span></div>
-            <h1 className="font-display text-lg font-bold tracking-[0.08em]">LESSON·SELECT</h1>
+            <div className="greet" style={{ marginBottom: 4 }}>課を選ぶ · choose a lesson</div>
+            <h1 style={{ fontSize: 30 }}>
+              Lessons<span className="cjk"> · 課</span>
+            </h1>
           </div>
         </div>
         <div className="space-y-2">
@@ -306,22 +309,24 @@ export default function ExercisesPage() {
   return (
     <div className="p-5 md:p-8 max-w-xl mx-auto space-y-6">
       {/* Page header */}
-      <div className="border-b border-dashed border-border pb-5">
-        <div className="text-[10px] tracking-[0.2em] text-muted-foreground mb-1.5">
-          KOTOBA.EXE / <span className="text-primary font-medium">FREQUENCY</span> / DRILL
+      <div className="page-top">
+        <div>
+          <div className="greet">手を動かす · practice</div>
+          <h1>
+            Practice<span className="cjk"> · 練習</span>
+          </h1>
         </div>
-        <h1 className="font-display text-2xl font-bold tracking-[0.08em]">
-          FREQUENCY<span className="text-muted-foreground font-medium">·DRILL</span>
-        </h1>
-        <p className="text-xs text-muted-foreground mt-1 tracking-[0.05em]">
-          Practice your {language === 'chinese' ? 'Chinese' : 'Japanese'} signal
-        </p>
+        <div className="date">
+          {getLanguageNativeName(language)}
+          <b>{getLanguageName(language)}</b>
+          drills &amp; quizzes
+        </div>
       </div>
 
       {error && (
         <Panel glow="amber">
           <div className="p-5 text-center space-y-3">
-            <p className="text-destructive font-medium text-sm tracking-[0.1em]">▲ SIGNAL ERROR</p>
+            <p className="text-destructive font-medium text-sm tracking-[0.1em]">Something went wrong</p>
             <p className="text-xs text-muted-foreground">{error}</p>
             <Button variant="outline" size="sm" onClick={() => setError(null)}>
               DISMISS
@@ -333,7 +338,7 @@ export default function ExercisesPage() {
       {loading && (
         <div className="text-center py-12">
           <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full mx-auto" />
-          <p className="text-[10px] text-muted-foreground mt-3 tracking-[0.2em]">GENERATING SIGNAL...</p>
+          <p className="text-xs mt-3 tracking-[0.2em]" style={{ color: 'var(--ink-soft)' }}>Preparing your exercise…</p>
         </div>
       )}
 

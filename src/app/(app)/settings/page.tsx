@@ -79,13 +79,13 @@ export default function SettingsPage() {
 
   return (
     <div className="p-5 md:p-8 max-w-2xl mx-auto space-y-6">
-      <div className="border-b border-dashed border-border pb-5">
-        <div className="text-[10px] tracking-[0.2em] text-muted-foreground mb-1.5">
-          KOTOBA.EXE / <span className="text-primary font-medium">SETTINGS</span> / CONFIG
+      <div className="page-top">
+        <div>
+          <div className="greet">設定 · preferences</div>
+          <h1>
+            Settings<span className="cjk"> · 設定</span>
+          </h1>
         </div>
-        <h1 className="font-display text-2xl font-bold tracking-[0.08em]">
-          NEURAL<span className="text-muted-foreground font-medium">·CONFIG</span>
-        </h1>
       </div>
 
       {/* Language & Difficulty */}
@@ -225,27 +225,35 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      {/* Theme */}
+      {/* Appearance */}
       <Card>
         <CardHeader>
           <CardTitle>Appearance</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="flex gap-2">
-            {(['light', 'dark', 'system'] as const).map(t => (
-              <button
-                key={t}
-                onClick={() => setTheme(t)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium border capitalize transition-colors ${
-                  theme === t
-                    ? 'bg-primary text-primary-foreground border-primary'
-                    : 'border-border hover:bg-muted'
-                }`}
-              >
-                {t}
-              </button>
-            ))}
+        <CardContent className="space-y-3">
+          <div>
+            <label className="text-sm font-medium">Theme</label>
+            <div className="flex gap-2 mt-1">
+              {(['light', 'dark'] as const).map(t => (
+                <button
+                  key={t}
+                  onClick={() => setTheme(t)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium border capitalize transition-colors ${
+                    theme === t
+                      ? 'bg-primary text-primary-foreground border-primary'
+                      : 'border-border hover:bg-muted'
+                  }`}
+                >
+                  {t === 'light' ? '☀ Light' : '☾ Dark'}
+                </button>
+              ))}
+            </div>
           </div>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            The palette also follows your language — <span className="cjk" style={{ color: 'var(--bar-jp)', fontWeight: 700 }}>藍</span>{' '}
+            indigo washi for Japanese, <span className="cjk" style={{ color: 'var(--bar-zh)', fontWeight: 700 }}>朱</span> cinnabar
+            rice-paper for Chinese. Fine-tune motif, warmth, and density from the 調 Tweaks panel (bottom-right).
+          </p>
         </CardContent>
       </Card>
 

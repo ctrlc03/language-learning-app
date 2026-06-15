@@ -1,87 +1,79 @@
 'use client';
 
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Clock } from '@/components/layout/clock';
-import type { DifficultyLevel } from '@/types';
+import { useTheme } from '@/contexts/ThemeContext';
+import { useProgress } from '@/hooks/use-progress';
+
+export const NAV_TABS = [
+  { href: '/dashboard', cjk: '今', label: 'Today' },
+  { href: '/flashcards', cjk: '学', label: 'Study' },
+  { href: '/review', cjk: '復', label: 'Review' },
+  { href: '/exercises', cjk: '練', label: 'Practice' },
+  { href: '/listening', cjk: '聴', label: 'Listen' },
+  { href: '/chat', cjk: '話', label: 'Chat' },
+  { href: '/vocabulary', cjk: '庫', label: 'Archive' },
+  { href: '/journal', cjk: '記', label: 'Journal' },
+];
 
 export function TopBar() {
-  const { language, difficulty, setLanguage, setDifficulty } = useLanguage();
+  const pathname = usePathname();
+  const { language, setLanguage } = useLanguage();
+  const { theme, toggleTheme } = useTheme();
+  const { progress } = useProgress();
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b border-border px-4 md:px-6"
-      style={{
-        background: 'oklch(0.10 0.04 285 / 0.8)',
-        backdropFilter: 'blur(12px)',
-      }}
-    >
-      {/* Mobile brand */}
-      <div className="md:hidden flex items-center gap-2">
-        <div className="brand-mark cjk-jp text-sm" style={{ width: 24, height: 24, fontSize: 14 }}>言</div>
-        <span className="font-display text-xs font-bold tracking-[0.15em]">KOTOBA.EXE</span>
-      </div>
-
-      {/* Right side controls */}
-      <div className="flex items-center gap-4 ml-auto">
-        {/* Status indicators - desktop only */}
-        <div className="hidden lg:flex items-center gap-5 text-[11px] tracking-[0.1em] text-muted-foreground">
-          <div className="flex items-center gap-1.5">
-            LINK <span className="font-medium" style={{ color: 'var(--neon-lime)' }}>◉ ONLINE</span>
+    <div className="topbar">
+      <div className="topbar-inner">
+        <Link href="/dashboard" className="brand" style={{ textDecoration: 'none' }}>
+          <div className="seal" />
+          <div className="name">
+            INKPATH
+            <small>墨 · 言葉の道</small>
           </div>
-          <div className="flex items-center gap-1.5">
-            MODE <span className="font-medium text-foreground">DUAL·CJK</span>
+        </Link>
+
+        <nav className="nav">
+          {NAV_TABS.map(t => (
+            <Link key={t.href} href={t.href} className={pathname?.startsWith(t.href) ? 'active' : ''}>
+              <span className="cjk">{t.cjk}</span>
+              {t.label}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="topbar-right">
+          <div className="streak-chip">
+            <span className="mark">炎</span>
+            {progress.streak}
+            <small>day streak</small>
           </div>
-        </div>
-
-        {/* Language toggle */}
-        <div className="flex items-center border border-border" style={{ background: 'oklch(0.14 0.05 285)' }}>
+          <div className="lang-toggle">
+            <button className={language === 'japanese' ? 'on' : ''} onClick={() => setLanguage('japanese')}>
+              日
+            </button>
+            <button className={language === 'chinese' ? 'on' : ''} onClick={() => setLanguage('chinese')}>
+              中
+            </button>
+          </div>
           <button
-            onClick={() => setLanguage('chinese')}
-            className={`h-8 px-3 text-xs tracking-[0.1em] transition-colors ${
-              language === 'chinese'
-                ? 'text-foreground font-medium'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-            style={language === 'chinese' ? { background: 'oklch(0.82 0.18 210 / 0.15)', color: 'var(--neon-cyan)' } : {}}
+            className="icon-btn"
+            onClick={toggleTheme}
+            aria-label={theme === 'dark' ? 'Switch to light' : 'Switch to dark'}
+            title={theme === 'dark' ? 'Switch to light' : 'Switch to dark'}
           >
-            中文
+            {theme === 'dark' ? '☀' : '☾'}
           </button>
-          <button
-            onClick={() => setLanguage('japanese')}
-            className={`h-8 px-3 text-xs tracking-[0.1em] transition-colors border-l border-border ${
-              language === 'japanese'
-                ? 'text-foreground font-medium'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-            style={language === 'japanese' ? { background: 'oklch(0.72 0.26 350 / 0.15)', color: 'var(--neon-pink)' } : {}}
+          <Link
+            href="/settings"
+            className={`icon-btn ${pathname?.startsWith('/settings') ? 'active' : ''}`}
+            aria-label="Settings"
           >
-            日本語
-          </button>
-        </div>
-
-        {/* Difficulty selector */}
-        <select
-          value={difficulty}
-          onChange={e => setDifficulty(e.target.value as DifficultyLevel)}
-          className="h-8 border border-border px-2 text-[11px] tracking-[0.1em] text-foreground hidden sm:block"
-          style={{ background: 'oklch(0.14 0.05 285)' }}
-        >
-          <option value="beginner">BEGINNER</option>
-          <option value="intermediate">INTERMEDIATE</option>
-          <option value="advanced">ADVANCED</option>
-        </select>
-
-        {/* Live indicator */}
-        <div className="hidden md:flex items-center gap-2 px-2.5 py-1 border border-border text-[10px] tracking-[0.1em]"
-          style={{ borderColor: 'var(--neon-pink)', color: 'var(--neon-pink)', background: 'oklch(0.14 0.05 285)' }}
-        >
-          ● REC
-        </div>
-
-        {/* Clock - desktop only */}
-        <div className="hidden md:block">
-          <Clock />
+            設
+          </Link>
         </div>
       </div>
-    </header>
+    </div>
   );
 }

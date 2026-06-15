@@ -1,29 +1,34 @@
 'use client';
 
 import { StorageProvider } from '@/contexts/StorageContext';
-import { LanguageProvider } from '@/contexts/LanguageContext';
-import { ThemeProvider } from '@/contexts/ThemeContext';
-import { Sidebar } from '@/components/layout/sidebar';
+import { LanguageProvider, useLanguage } from '@/contexts/LanguageContext';
+import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
 import { TopBar } from '@/components/layout/top-bar';
 import { MobileNav } from '@/components/layout/mobile-nav';
-import { GridBackground } from '@/components/ui/grid-background';
+import { Tweaks } from '@/components/ink/tweaks';
+import { langCode } from '@/components/ink/primitives';
+
+function Shell({ children }: { children: React.ReactNode }) {
+  const { language } = useLanguage();
+  const { theme } = useTheme();
+  return (
+    <div className="app" data-lang={langCode(language)} data-theme={theme}>
+      <TopBar />
+      <main className="frame" key={langCode(language)}>
+        {children}
+      </main>
+      <MobileNav />
+      <Tweaks />
+    </div>
+  );
+}
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <StorageProvider>
       <ThemeProvider>
         <LanguageProvider>
-          <GridBackground />
-          <div className="relative z-[1] flex min-h-screen">
-            <Sidebar />
-            <div className="flex-1 flex flex-col min-w-0">
-              <TopBar />
-              <main className="flex-1 pb-20 md:pb-0 overflow-y-auto overflow-x-hidden">
-                {children}
-              </main>
-            </div>
-            <MobileNav />
-          </div>
+          <Shell>{children}</Shell>
         </LanguageProvider>
       </ThemeProvider>
     </StorageProvider>

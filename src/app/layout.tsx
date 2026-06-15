@@ -1,48 +1,43 @@
 import type { Metadata, Viewport } from 'next';
-import { JetBrains_Mono, Orbitron, Noto_Serif_JP, Noto_Serif_SC } from 'next/font/google';
+import { Shippori_Mincho_B1, Noto_Serif_SC, Zen_Kaku_Gothic_New } from 'next/font/google';
 import './globals.css';
 import { PWARegister } from '@/components/pwa-register';
 
-const jetbrainsMono = JetBrains_Mono({
-  variable: '--font-jetbrains',
+const shippori = Shippori_Mincho_B1({
+  variable: '--font-shippori',
   subsets: ['latin'],
   display: 'swap',
-});
-
-const orbitron = Orbitron({
-  variable: '--font-orbitron',
-  subsets: ['latin'],
-  display: 'swap',
-  weight: ['500', '700', '900'],
-});
-
-const notoSerifJP = Noto_Serif_JP({
-  variable: '--font-noto-serif-jp',
-  subsets: ['latin'],
-  display: 'swap',
-  weight: ['400', '700', '900'],
+  weight: ['500', '600', '700', '800'],
 });
 
 const notoSerifSC = Noto_Serif_SC({
   variable: '--font-noto-serif-sc',
   subsets: ['latin'],
   display: 'swap',
-  weight: ['400', '700', '900'],
+  weight: ['500', '700', '900'],
+});
+
+const zenKaku = Zen_Kaku_Gothic_New({
+  variable: '--font-zen',
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['400', '500', '700', '900'],
 });
 
 export const metadata: Metadata = {
-  title: 'KOTOBA.EXE · Neon Language Deck',
-  description: 'AI-powered language learning for Chinese and Japanese',
+  title: 'INKPATH · 言葉の道',
+  description: 'Paper-and-ink language study for Chinese and Japanese',
   manifest: '/manifest.webmanifest',
+  icons: { icon: '/inkpath/seal-jp.png' },
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'black-translucent',
-    title: 'KOTOBA.EXE',
+    statusBarStyle: 'default',
+    title: 'INKPATH',
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0a0a0f',
+  themeColor: '#e9e3d4',
 };
 
 export default function RootLayout({
@@ -51,8 +46,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={`${jetbrainsMono.variable} ${orbitron.variable} ${notoSerifJP.variable} ${notoSerifSC.variable} antialiased scanlines`}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${shippori.variable} ${notoSerifSC.variable} ${zenKaku.variable} antialiased`}>
         {children}
         <PWARegister />
       </body>

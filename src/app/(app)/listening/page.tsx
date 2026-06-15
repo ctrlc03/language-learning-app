@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSpeechInit } from '@/hooks/use-speech';
 import { useProgress } from '@/hooks/use-progress';
@@ -9,6 +9,8 @@ import { ListenAndChoose } from '@/components/listening/listen-choose';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { getLanguageName, getLanguageNativeName } from '@/lib/language/utils';
+import { getDictationItems, getListenChooseItems } from '@/lib/exercises/listening-offline';
 
 // Pre-built listening exercises
 const DICTATION_SETS = {
@@ -93,10 +95,21 @@ export default function ListeningPage() {
   const [sessionCorrect, setSessionCorrect] = useState(0);
   const [sessionTotal, setSessionTotal] = useState(0);
 
+  const [seed] = useState(() => Date.now());
+
   useSpeechInit();
 
-  const dictationSet = DICTATION_SETS[language][difficulty] ?? DICTATION_SETS[language].beginner;
-  const listenChooseSet = LISTEN_CHOOSE_SETS[language][difficulty] ?? LISTEN_CHOOSE_SETS[language].beginner;
+  // Curated prompts first (hand-written, highest quality), then many more
+  // generated from the vocabulary pool so the drill never runs dry.
+  const dictationSet = useMemo(() => {
+    const curated = DICTATION_SETS[language][difficulty] ?? DICTATION_SETS[language].beginner;
+    return [...curated, ...getDictationItems(language, difficulty, seed)];
+  }, [language, difficulty, seed]);
+
+  const listenChooseSet = useMemo(() => {
+    const curated = LISTEN_CHOOSE_SETS[language][difficulty] ?? LISTEN_CHOOSE_SETS[language].beginner;
+    return [...curated, ...getListenChooseItems(language, difficulty, seed)];
+  }, [language, difficulty, seed]);
 
   const handleComplete = (correct: boolean) => {
     setSessionTotal(prev => prev + 1);
@@ -120,17 +133,19 @@ export default function ListeningPage() {
 
   if (mode === 'select') {
     return (
-      <div className="p-5 md:p-8 max-w-2xl mx-auto space-y-6">
-        <div className="border-b border-dashed border-border pb-5">
-          <div className="text-[10px] tracking-[0.2em] text-muted-foreground mb-1.5">
-            KOTOBA.EXE / <span className="text-primary font-medium">LISTEN</span> / DRILL
+      <div className="max-w-2xl mx-auto space-y-6">
+        <div className="page-top">
+          <div>
+            <div className="greet">耳を澄ます · train your ear</div>
+            <h1>
+              Listen<span className="cjk"> · 聴解</span>
+            </h1>
           </div>
-          <h1 className="font-display text-2xl font-bold tracking-[0.08em]">
-            LISTEN<span className="text-muted-foreground font-medium">·DRILL</span>
-          </h1>
-          <p className="text-xs text-muted-foreground mt-1 tracking-[0.05em]">
-            Train your ear for {language === 'chinese' ? 'Chinese' : 'Japanese'}
-          </p>
+          <div className="date">
+            {getLanguageNativeName(language)}
+            <b>{dictationSet.length + listenChooseSet.length}</b>
+            {getLanguageName(language).toUpperCase()} DRILLS
+          </div>
         </div>
 
         {sessionTotal > 0 && (
