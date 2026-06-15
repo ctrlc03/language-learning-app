@@ -34,6 +34,11 @@ function firstChar(s: string): string {
   return Array.from(s)[0] ?? '';
 }
 
+/** First CJK ideograph in a string, falling back to the first character. */
+function firstCJK(s: string): string {
+  return Array.from(s).find(c => /[㐀-鿿]/.test(c)) ?? firstChar(s);
+}
+
 /** Day-of-year index for deterministic "word of the day" selection. */
 function dayIndex(): number {
   const now = new Date();
@@ -92,7 +97,7 @@ export function getHero(language: Language): InkHero {
   const wod = getWordOfDay(language);
   if (language === 'japanese') {
     return {
-      char: firstChar(wod.char) || '今',
+      char: firstCJK(wod.char) || '今',
       ruby: `${wod.reading} · ${wod.meaning}`,
       title: `今日の一筆 —\n${top?.sub ?? 'Today'}`,
       desc: `New words drawn from ${top?.title ?? 'your studies'}. Pick up where you left off and keep the thread of memory intact.`,

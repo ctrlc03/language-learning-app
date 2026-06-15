@@ -115,7 +115,7 @@ export default function SettingsPage() {
 
           <div>
             <label className="text-sm font-medium">Difficulty</label>
-            <div className="flex gap-2 p-2">
+            <div className="flex flex-wrap gap-2 p-2">
               {(['beginner', 'intermediate', 'advanced'] as DifficultyLevel[]).map(diff => (
                 <button
                   key={diff}
