@@ -1034,4 +1034,38 @@ export const chineseDialogues: Dialogue[] = [
       { speaker: 'B', text: '不过我更喜欢旅游和看电影。', pinyin: 'Búguò wǒ gèng xǐhuan lǚyóu hé kàn diànyǐng.', translation: 'But I prefer traveling and watching movies.' },
     ],
   },
+
+  // ============================================================
+  // Lesson 24 - Have You Been to Shanghai?
+  // ============================================================
+  {
+    id: 'dlg-l24-01',
+    title: 'Have You Been to Shanghai?',
+    titleChinese: '你去过上海吗？',
+    setting: 'Two friends talk about places they have visited.',
+    lesson: 24,
+    lines: [
+      { speaker: 'A', text: '你去过上海吗？', pinyin: 'Nǐ qù guo Shànghǎi ma?', translation: 'Have you ever been to Shanghai?' },
+      { speaker: 'B', text: '去过，以前放假的时候去过一次。', pinyin: 'Qù guo, yǐqián fàngjià de shíhou qù guo yí cì.', translation: 'Yes, I went once during a holiday before.' },
+      { speaker: 'A', text: '上海怎么样？', pinyin: 'Shànghǎi zěnmeyàng?', translation: 'What is Shanghai like?' },
+      { speaker: 'B', text: '上海是个很有名的地方，很漂亮。', pinyin: 'Shànghǎi shì ge hěn yǒumíng de dìfang, hěn piàoliang.', translation: 'Shanghai is a very famous place, very beautiful.' },
+      { speaker: 'A', text: '我还没去过呢，真想去看看。', pinyin: 'Wǒ hái méi qù guo ne, zhēn xiǎng qù kànkan.', translation: "I haven't been yet — I really want to go and see it." },
+      { speaker: 'B', text: '下个假期我们一起去吧！', pinyin: 'Xià ge jiàqī wǒmen yìqǐ qù ba!', translation: "Let's go together next holiday!" },
+    ],
+  },
+  {
+    id: 'dlg-l24-02',
+    title: 'Ordering Takeout',
+    titleChinese: '点外卖',
+    setting: 'Two roommates decide what to order for dinner.',
+    lesson: 24,
+    lines: [
+      { speaker: 'A', text: '今天我们点外卖吧，我不想做饭。', pinyin: 'Jīntiān wǒmen diǎn wàimài ba, wǒ bù xiǎng zuò fàn.', translation: "Let's order takeout today, I don't want to cook." },
+      { speaker: 'B', text: '好啊。我在网上订一家西餐厅的菜，可以吗？', pinyin: 'Hǎo a. Wǒ zài wǎngshàng dìng yì jiā xīcāntīng de cài, kěyǐ ma?', translation: 'Sure. Can I order from a Western restaurant online?' },
+      { speaker: 'A', text: '可以。那家有名吗？味道怎么样？', pinyin: 'Kěyǐ. Nà jiā yǒumíng ma? Wèidào zěnmeyàng?', translation: 'Sure. Is that place famous? How does it taste?' },
+      { speaker: 'B', text: '很有名，不过菜有点儿辣。', pinyin: 'Hěn yǒumíng, búguò cài yǒudiǎnr là.', translation: 'Very famous, but the food is a little spicy.' },
+      { speaker: 'A', text: '没关系，我特别喜欢吃辣的。', pinyin: 'Méi guānxi, wǒ tèbié xǐhuan chī là de.', translation: "It's fine, I especially like spicy food." },
+      { speaker: 'B', text: '好，我订了。不过送得比较慢，我们等一等。', pinyin: 'Hǎo, wǒ dìng le. Búguò sòng de bǐjiào màn, wǒmen děng yi děng.', translation: "Okay, I've ordered. But the delivery is rather slow, let's wait a bit." },
+    ],
+  },
 ];

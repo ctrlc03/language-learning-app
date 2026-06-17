@@ -368,4 +368,54 @@ export const chineseGrammarRules: GrammarRule[] = [
       { chinese: '除了我，大家都去了。', pinyin: 'Chúle wǒ, dàjiā dōu qù le.', english: 'Everyone went except me.', note: '除了…都… = except' },
     ],
   },
+
+  // ── Experiences & Aspect ──
+  {
+    id: 'gr-29',
+    title: 'Experiential Aspect with 过',
+    titleChinese: '动态助词「过」',
+    pattern: 'Subject + Verb + 过 + (Object)',
+    explanation: '过 guò after a verb marks that an action has been experienced at least once in the past ("have ever done"). Negate with 没(有) + V + 过 (the action never happened). Form a question with V + 过 + 没有 or V + 没 + V + 过.',
+    examples: [
+      { chinese: '我去过上海。', pinyin: 'Wǒ qù guo Shànghǎi.', english: 'I have been to Shanghai.' },
+      { chinese: '他没吃过中国菜。', pinyin: 'Tā méi chī guo Zhōngguó cài.', english: 'He has never eaten Chinese food.', note: '没 + V + 过 = never happened' },
+      { chinese: '你去过北京没有？', pinyin: 'Nǐ qù guo Běijīng méiyǒu?', english: 'Have you ever been to Beijing?', note: 'V + 过 + 没有 = yes/no question' },
+    ],
+  },
+  {
+    id: 'gr-30',
+    title: 'Not Yet with 还没…呢',
+    titleChinese: '还没…呢',
+    pattern: 'Subject + 还没(有) + Verb + (呢)',
+    explanation: '还没…呢 hái méi … ne means an expected action has "not happened yet" but still might. 还 = still, 没 negates the past action, and the optional 呢 softens it to "not yet."',
+    examples: [
+      { chinese: '我还没吃饭呢。', pinyin: 'Wǒ hái méi chī fàn ne.', english: "I haven't eaten yet." },
+      { chinese: '他还没来呢。', pinyin: 'Tā hái méi lái ne.', english: "He hasn't come yet." },
+      { chinese: '我还没去过西餐厅呢。', pinyin: 'Wǒ hái méi qù guo xīcāntīng ne.', english: "I haven't been to a Western restaurant yet.", note: 'Combines with 过' },
+    ],
+  },
+  {
+    id: 'gr-31',
+    title: 'Verb Reduplication',
+    titleChinese: '动词重叠',
+    pattern: 'VV / V一V (single) · ABAB (two-syllable)',
+    explanation: 'Reduplicating a verb makes the action short, casual, or tentative ("give it a try"). One-syllable verbs become VV or V一V (看看 / 看一看); two-syllable verbs become ABAB (休息休息). Only concrete, doable verbs reduplicate — not verbs like 是 or 爱.',
+    examples: [
+      { chinese: '你看看这个菜单。', pinyin: 'Nǐ kànkan zhège càidān.', english: 'Take a look at this menu.' },
+      { chinese: '我们休息休息吧。', pinyin: 'Wǒmen xiūxi xiūxi ba.', english: "Let's rest for a bit." },
+      { chinese: '你尝一尝这个味道。', pinyin: 'Nǐ cháng yi cháng zhège wèidào.', english: 'Have a taste of this flavor.', note: 'V一V form' },
+    ],
+  },
+  {
+    id: 'gr-32',
+    title: 'Attributive Particle 的',
+    titleChinese: '结构助词「的」',
+    pattern: 'Modifier + 的 + Noun',
+    explanation: '的 de links a modifier to the noun it describes: possession (我的书), a two-syllable adjective (漂亮的衣服), or a whole verb clause acting like a relative clause (妈妈做的菜 = "the dishes that Mom cooked"). 的 is dropped for monosyllabic adjectives (好人) and for fixed region/identity/material/purpose pairs (中国人, 学生证, 木头桌子).',
+    examples: [
+      { chinese: '妈妈做的菜很好吃。', pinyin: 'Māma zuò de cài hěn hǎochī.', english: 'The dishes that Mom cooked are delicious.', note: 'Verb clause + 的 + noun' },
+      { chinese: '在教室唱歌的女孩是我妹妹。', pinyin: 'Zài jiàoshì chànggē de nǚhái shì wǒ mèimei.', english: 'The girl singing in the classroom is my younger sister.' },
+      { chinese: '他是中国人。', pinyin: 'Tā shì Zhōngguó rén.', english: 'He is Chinese.', note: 'No 的: identity/region + noun' },
+    ],
+  },
 ];

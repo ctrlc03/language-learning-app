@@ -1064,6 +1064,35 @@
         { "word": "陪伴", "reading": "péi bàn", "meaning": "to accompany, to keep company", "partOfSpeech": "verb", "topic": "vocabulary" },
         { "word": "普遍", "reading": "pǔ biàn", "meaning": "universal, widespread, common", "partOfSpeech": "adjective", "topic": "vocabulary" }
       ]
+    },
+    {
+      "lesson": 24,
+      "title": "Have You Been to Shanghai?",
+      "titleChinese": "你去过上海吗？",
+      "vocabulary": [
+        { "word": "假期", "reading": "jià qī", "meaning": "holiday, vacation", "partOfSpeech": "noun", "topic": "time", "exampleSentence": "你假期想去哪儿？", "examplePinyin": "Nǐ jiàqī xiǎng qù nǎr?", "exampleTranslation": "Where do you want to go on holiday?" },
+        { "word": "以前", "reading": "yǐ qián", "meaning": "before, ago, in the past", "partOfSpeech": "noun", "topic": "time", "exampleSentence": "我以前去过上海。", "examplePinyin": "Wǒ yǐqián qù guo Shànghǎi.", "exampleTranslation": "I have been to Shanghai before." },
+        { "word": "地方", "reading": "dì fang", "meaning": "place", "partOfSpeech": "noun", "topic": "places", "exampleSentence": "上海是个很有名的地方。", "examplePinyin": "Shànghǎi shì ge hěn yǒumíng de dìfang.", "exampleTranslation": "Shanghai is a very famous place." },
+        { "word": "过", "reading": "guò", "meaning": "aspect particle marking past experience", "partOfSpeech": "particle", "topic": "grammar", "exampleSentence": "我去过北京。", "examplePinyin": "Wǒ qù guo Běijīng.", "exampleTranslation": "I have been to Beijing." },
+        { "word": "外卖", "reading": "wài mài", "meaning": "takeout, takeaway", "partOfSpeech": "noun", "topic": "food", "exampleSentence": "我们今天点外卖吧。", "examplePinyin": "Wǒmen jīntiān diǎn wàimài ba.", "exampleTranslation": "Let's order takeout today." },
+        { "word": "菜", "reading": "cài", "meaning": "dish, food, cuisine", "partOfSpeech": "noun", "topic": "food", "exampleSentence": "妈妈做的菜很好吃。", "examplePinyin": "Māma zuò de cài hěn hǎochī.", "exampleTranslation": "The dishes Mom makes are delicious." },
+        { "word": "西餐厅", "reading": "xī cān tīng", "meaning": "Western restaurant", "partOfSpeech": "noun", "topic": "food", "exampleSentence": "这家西餐厅很有名。", "examplePinyin": "Zhè jiā xīcāntīng hěn yǒumíng.", "exampleTranslation": "This Western restaurant is very famous." },
+        { "word": "味道", "reading": "wèi dào", "meaning": "flavor, taste", "partOfSpeech": "noun", "topic": "food", "exampleSentence": "这个菜的味道怎么样？", "examplePinyin": "Zhège cài de wèidào zěnmeyàng?", "exampleTranslation": "How does this dish taste?" },
+        { "word": "订", "reading": "dìng", "meaning": "to book, to order, to reserve", "partOfSpeech": "verb", "topic": "food", "exampleSentence": "我在网上订了一些菜。", "examplePinyin": "Wǒ zài wǎngshàng dìng le yìxiē cài.", "exampleTranslation": "I ordered some food online." },
+        { "word": "上网", "reading": "shàng wǎng", "meaning": "to surf the internet, to go online", "partOfSpeech": "verb", "topic": "technology", "exampleSentence": "我喜欢上网看电影。", "examplePinyin": "Wǒ xǐhuan shàngwǎng kàn diànyǐng.", "exampleTranslation": "I like to go online and watch movies." },
+        { "word": "送", "reading": "sòng", "meaning": "to deliver, to send", "partOfSpeech": "verb", "topic": "actions", "exampleSentence": "外卖送得很快。", "examplePinyin": "Wàimài sòng de hěn kuài.", "exampleTranslation": "The takeout was delivered quickly." },
+        { "word": "试", "reading": "shì", "meaning": "to try, to test", "partOfSpeech": "verb", "topic": "actions", "exampleSentence": "你试一试这个菜。", "examplePinyin": "Nǐ shì yi shì zhège cài.", "exampleTranslation": "Give this dish a try." },
+        { "word": "辣", "reading": "là", "meaning": "spicy, hot", "partOfSpeech": "adjective", "topic": "food", "exampleSentence": "这个菜太辣了。", "examplePinyin": "Zhège cài tài là le.", "exampleTranslation": "This dish is too spicy." },
+        { "word": "特别", "reading": "tè bié", "meaning": "particularly, especially", "partOfSpeech": "adverb", "topic": "descriptions", "exampleSentence": "我特别喜欢吃辣的。", "examplePinyin": "Wǒ tèbié xǐhuan chī là de.", "exampleTranslation": "I especially like eating spicy food." },
+        { "word": "慢", "reading": "màn", "meaning": "slow", "partOfSpeech": "adjective", "topic": "descriptions", "exampleSentence": "他走得很慢。", "examplePinyin": "Tā zǒu de hěn màn.", "exampleTranslation": "He walks very slowly." },
+        { "word": "有名", "reading": "yǒu míng", "meaning": "famous, well-known", "partOfSpeech": "adjective", "topic": "descriptions", "exampleSentence": "这个地方很有名。", "examplePinyin": "Zhège dìfang hěn yǒumíng.", "exampleTranslation": "This place is very famous." },
+        { "word": "可以", "reading": "kě yǐ", "meaning": "can, may, to be allowed", "partOfSpeech": "modal verb", "topic": "grammar", "exampleSentence": "我可以试试吗？", "examplePinyin": "Wǒ kěyǐ shìshi ma?", "exampleTranslation": "May I give it a try?" },
+        { "word": "家", "reading": "jiā", "meaning": "measure word for restaurants, companies, shops", "partOfSpeech": "measure word", "topic": "grammar", "exampleSentence": "那家西餐厅很有名。", "examplePinyin": "Nà jiā xīcāntīng hěn yǒumíng.", "exampleTranslation": "That Western restaurant is very famous." },
+        { "word": "甜", "reading": "tián", "meaning": "sweet", "partOfSpeech": "adjective", "topic": "food", "exampleSentence": "这个味道有点儿甜。", "examplePinyin": "Zhège wèidào yǒudiǎnr tián.", "exampleTranslation": "This flavor is a little sweet." },
+        { "word": "酸", "reading": "suān", "meaning": "sour", "partOfSpeech": "adjective", "topic": "food", "exampleSentence": "这个菜又酸又辣。", "examplePinyin": "Zhège cài yòu suān yòu là.", "exampleTranslation": "This dish is both sour and spicy." },
+        { "word": "咸", "reading": "xián", "meaning": "salty", "partOfSpeech": "adjective", "topic": "food", "exampleSentence": "这个菜太咸了。", "examplePinyin": "Zhège cài tài xián le.", "exampleTranslation": "This dish is too salty." },
+        { "word": "苦", "reading": "kǔ", "meaning": "bitter", "partOfSpeech": "adjective", "topic": "food", "exampleSentence": "这个咖啡很苦。", "examplePinyin": "Zhège kāfēi hěn kǔ.", "exampleTranslation": "This coffee is very bitter." }
+      ]
     }
   ]
 }
