@@ -26,7 +26,7 @@ export function MessageBubble({ message, showSpeaker = true }: MessageBubbleProp
             'rounded-2xl px-4 py-2.5 text-sm leading-relaxed',
             isUser
               ? 'bg-primary text-primary-foreground rounded-br-md'
-              : 'bg-muted text-foreground rounded-bl-md'
+              : 'bg-muted text-foreground rounded-bl-md',
           )}
         >
           <p className="whitespace-pre-wrap break-words">{message.content}</p>
@@ -38,7 +38,10 @@ export function MessageBubble({ message, showSpeaker = true }: MessageBubbleProp
             {message.metadata.corrections && message.metadata.corrections.length > 0 && (
               <div className="text-xs space-y-1">
                 {message.metadata.corrections.map((correction, i) => (
-                  <div key={i} className="bg-destructive/5 border border-destructive/20 rounded-lg p-2">
+                  <div
+                    key={i}
+                    className="bg-destructive/5 border border-destructive/20 rounded-lg p-2"
+                  >
                     <span className="line-through text-destructive/70">{correction.original}</span>
                     {' → '}
                     <span className="text-success font-medium">{correction.corrected}</span>

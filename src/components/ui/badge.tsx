@@ -20,7 +20,7 @@ export function Badge({ className, variant = 'default', ...props }: BadgeProps) 
       className={cn(
         'inline-flex items-center px-2 py-0.5 text-[10px] tracking-[0.1em] font-medium border',
         variantStyles[variant],
-        className
+        className,
       )}
       {...props}
     />

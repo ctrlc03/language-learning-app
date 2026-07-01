@@ -39,9 +39,11 @@ export function DialogueComprehension({ data, onSubmit, disabled }: DialogueComp
       setPlayingIndex(i);
       try {
         await speak(data.lines[i].text, language, speechRate);
-      } catch { /* skip */ }
+      } catch {
+        /* skip */
+      }
       if (cancelledRef.current) break;
-      await new Promise(r => setTimeout(r, 600));
+      await new Promise((r) => setTimeout(r, 600));
     }
     setPlaying(false);
     setPlayingIndex(-1);
@@ -54,7 +56,7 @@ export function DialogueComprehension({ data, onSubmit, disabled }: DialogueComp
     setPlayingIndex(-1);
   }, []);
 
-  const speakers = [...new Set(data.lines.map(l => l.speaker))];
+  const speakers = [...new Set(data.lines.map((l) => l.speaker))];
   const speakerColors = [
     'text-blue-600 dark:text-blue-400',
     'text-emerald-600 dark:text-emerald-400',
@@ -70,34 +72,34 @@ export function DialogueComprehension({ data, onSubmit, disabled }: DialogueComp
       {/* Toggle controls */}
       <div className="flex gap-2 flex-wrap">
         <button
-          onClick={() => setShowReading(v => !v)}
+          onClick={() => setShowReading((v) => !v)}
           className={cn(
             'text-[11px] px-2.5 py-1 rounded-full border transition-colors',
             showReading
               ? 'bg-primary/10 border-primary/30 text-primary'
-              : 'border-border text-muted-foreground hover:border-primary/30'
+              : 'border-border text-muted-foreground hover:border-primary/30',
           )}
         >
           {readingLabel} {showReading ? 'ON' : 'OFF'}
         </button>
         <button
-          onClick={() => setShowTranslation(v => !v)}
+          onClick={() => setShowTranslation((v) => !v)}
           className={cn(
             'text-[11px] px-2.5 py-1 rounded-full border transition-colors',
             showTranslation
               ? 'bg-primary/10 border-primary/30 text-primary'
-              : 'border-border text-muted-foreground hover:border-primary/30'
+              : 'border-border text-muted-foreground hover:border-primary/30',
           )}
         >
           Translation {showTranslation ? 'ON' : 'OFF'}
         </button>
         <button
-          onClick={() => playing ? handleStopListening() : handleListenAll()}
+          onClick={() => (playing ? handleStopListening() : handleListenAll())}
           className={cn(
             'text-[11px] px-2.5 py-1 rounded-full border transition-colors',
             playing
               ? 'bg-destructive/10 border-destructive/30 text-destructive'
-              : 'border-border text-muted-foreground hover:border-primary/30'
+              : 'border-border text-muted-foreground hover:border-primary/30',
           )}
         >
           {playing ? 'Stop' : 'Listen All'}
@@ -117,18 +119,22 @@ export function DialogueComprehension({ data, onSubmit, disabled }: DialogueComp
                 className={cn(
                   'max-w-[85%] rounded-2xl px-4 py-2.5 space-y-1 transition-all',
                   isLeft ? 'bg-muted rounded-tl-sm' : 'bg-primary/10 rounded-tr-sm',
-                  playingIndex === i && 'ring-2 ring-primary/50'
+                  playingIndex === i && 'ring-2 ring-primary/50',
                 )}
               >
                 <div className="flex items-center justify-between gap-2">
-                  <span className={cn('text-[11px] font-semibold', colorClass)}>{line.speaker}</span>
+                  <span className={cn('text-[11px] font-semibold', colorClass)}>
+                    {line.speaker}
+                  </span>
                   <SpeakButton text={line.text} size="icon" />
                 </div>
                 {line.furigana && line.furigana.length > 0 ? (
                   <p className="text-base font-medium">
-                    {showReading
-                      ? <Furigana segments={line.furigana} />
-                      : <span className="leading-relaxed">{line.text}</span>}
+                    {showReading ? (
+                      <Furigana segments={line.furigana} />
+                    ) : (
+                      <span className="leading-relaxed">{line.text}</span>
+                    )}
                   </p>
                 ) : (
                   <>
@@ -139,7 +145,9 @@ export function DialogueComprehension({ data, onSubmit, disabled }: DialogueComp
                   </>
                 )}
                 {showTranslation && (
-                  <p className="text-xs text-muted-foreground/70 italic leading-relaxed">{line.translation}</p>
+                  <p className="text-xs text-muted-foreground/70 italic leading-relaxed">
+                    {line.translation}
+                  </p>
                 )}
               </div>
             </div>
@@ -163,7 +171,7 @@ export function DialogueComprehension({ data, onSubmit, disabled }: DialogueComp
                   ? 'border-success/50 bg-success/10 text-success'
                   : selected === i
                     ? 'border-destructive/50 bg-destructive/10 text-destructive'
-                    : 'border-border/50 opacity-40'
+                    : 'border-border/50 opacity-40',
             )}
           >
             <span className="inline-flex items-center justify-center w-6 h-6 rounded-full border border-current/20 text-xs font-semibold mr-3">
@@ -173,7 +181,9 @@ export function DialogueComprehension({ data, onSubmit, disabled }: DialogueComp
           </button>
         ))}
         {selected !== null && data.explanation && (
-          <p className="text-xs text-muted-foreground pt-1 leading-relaxed whitespace-pre-line">{data.explanation}</p>
+          <p className="text-xs text-muted-foreground pt-1 leading-relaxed whitespace-pre-line">
+            {data.explanation}
+          </p>
         )}
       </div>
     </div>

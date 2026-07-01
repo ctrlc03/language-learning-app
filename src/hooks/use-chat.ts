@@ -2,7 +2,13 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { nanoid } from 'nanoid';
-import type { Conversation, ChatMessage, MessageMetadata, Language, DifficultyLevel } from '@/types';
+import type {
+  Conversation,
+  ChatMessage,
+  MessageMetadata,
+  Language,
+  DifficultyLevel,
+} from '@/types';
 import { useStorage } from '@/contexts/StorageContext';
 import { StorageKeys } from '@/lib/storage/interface';
 
@@ -41,7 +47,7 @@ export function useChat() {
       setConversation(conv);
       return conv;
     },
-    [storage]
+    [storage],
   );
 
   const loadConversation = useCallback(
@@ -50,7 +56,7 @@ export function useChat() {
       if (conv) setConversation(conv);
       return conv;
     },
-    [storage]
+    [storage],
   );
 
   const sendMessage = useCallback(
@@ -94,7 +100,7 @@ export function useChat() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            messages: updatedConv.messages.map(m => ({
+            messages: updatedConv.messages.map((m) => ({
               role: m.role,
               content: m.content,
             })),
@@ -167,7 +173,7 @@ export function useChat() {
         abortRef.current = null;
       }
     },
-    [conversation, isStreaming, storage]
+    [conversation, isStreaming, storage],
   );
 
   const stopStreaming = useCallback(() => {

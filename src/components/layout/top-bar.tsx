@@ -9,6 +9,7 @@ import { useProgress } from '@/hooks/use-progress';
 export const NAV_TABS = [
   { href: '/dashboard', cjk: '今', label: 'Today' },
   { href: '/flashcards', cjk: '学', label: 'Study' },
+  { href: '/learn', cjk: '教', label: 'Learn' },
   { href: '/review', cjk: '復', label: 'Review' },
   { href: '/exercises', cjk: '練', label: 'Practice' },
   { href: '/listening', cjk: '聴', label: 'Listen' },
@@ -35,8 +36,12 @@ export function TopBar() {
         </Link>
 
         <nav className="nav">
-          {NAV_TABS.map(t => (
-            <Link key={t.href} href={t.href} className={pathname?.startsWith(t.href) ? 'active' : ''}>
+          {NAV_TABS.map((t) => (
+            <Link
+              key={t.href}
+              href={t.href}
+              className={pathname?.startsWith(t.href) ? 'active' : ''}
+            >
               <span className="cjk">{t.cjk}</span>
               {t.label}
             </Link>
@@ -50,10 +55,16 @@ export function TopBar() {
             <small>day streak</small>
           </div>
           <div className="lang-toggle">
-            <button className={language === 'japanese' ? 'on' : ''} onClick={() => setLanguage('japanese')}>
+            <button
+              className={language === 'japanese' ? 'on' : ''}
+              onClick={() => setLanguage('japanese')}
+            >
               日
             </button>
-            <button className={language === 'chinese' ? 'on' : ''} onClick={() => setLanguage('chinese')}>
+            <button
+              className={language === 'chinese' ? 'on' : ''}
+              onClick={() => setLanguage('chinese')}
+            >
               中
             </button>
           </div>

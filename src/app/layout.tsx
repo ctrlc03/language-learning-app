@@ -40,14 +40,12 @@ export const viewport: Viewport = {
   themeColor: '#e9e3d4',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${shippori.variable} ${notoSerifSC.variable} ${zenKaku.variable} antialiased`}>
+      <body
+        className={`${shippori.variable} ${notoSerifSC.variable} ${zenKaku.variable} antialiased`}
+      >
         {children}
         <PWARegister />
       </body>

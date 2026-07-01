@@ -14,11 +14,11 @@ function applyTweaks(t: TweakState) {
   const root = document.documentElement.style;
   root.setProperty('--motif-opacity', String(t.motif));
   const dens: Record<string, string> = { snug: '0.94', default: '1', airy: '1.08' };
-  document.querySelectorAll<HTMLElement>('.frame').forEach(f => {
+  document.querySelectorAll<HTMLElement>('.frame').forEach((f) => {
     f.style.fontSize = `${dens[t.density] || 1}em`;
   });
   const warmth: Record<string, string> = { cool: '0.92', neutral: '1', warm: '1.06' };
-  document.querySelectorAll<HTMLElement>('.app').forEach(a => {
+  document.querySelectorAll<HTMLElement>('.app').forEach((a) => {
     a.style.filter = `saturate(${warmth[t.warmth] || 1})`;
   });
 }
@@ -32,14 +32,14 @@ export function Tweaks() {
   }, [tweaks]);
 
   const set = <K extends keyof TweakState>(k: K, v: TweakState[K]) =>
-    setTweaks(prev => ({ ...prev, [k]: v }));
+    setTweaks((prev) => ({ ...prev, [k]: v }));
 
   return (
     <>
       <button
         className="icon-btn"
         aria-label="Tweaks"
-        onClick={() => setOpen(o => !o)}
+        onClick={() => setOpen((o) => !o)}
         style={{ position: 'fixed', bottom: 20, right: 20, zIndex: 9998 }}
       >
         調
@@ -50,7 +50,10 @@ export function Tweaks() {
           <span>
             <span className="cjk">調</span> Tweaks
           </span>
-          <button onClick={() => setOpen(false)} style={{ fontSize: 18, color: 'var(--ink-faint)' }}>
+          <button
+            onClick={() => setOpen(false)}
+            style={{ fontSize: 18, color: 'var(--ink-faint)' }}
+          >
             ×
           </button>
         </div>
@@ -63,14 +66,18 @@ export function Tweaks() {
               max="0.8"
               step="0.05"
               value={tweaks.motif}
-              onChange={e => set('motif', parseFloat(e.target.value))}
+              onChange={(e) => set('motif', parseFloat(e.target.value))}
             />
           </div>
           <div className="row">
             <label>Card warmth</label>
             <div className="chips">
-              {(['cool', 'neutral', 'warm'] as const).map(w => (
-                <button key={w} className={tweaks.warmth === w ? 'on' : ''} onClick={() => set('warmth', w)}>
+              {(['cool', 'neutral', 'warm'] as const).map((w) => (
+                <button
+                  key={w}
+                  className={tweaks.warmth === w ? 'on' : ''}
+                  onClick={() => set('warmth', w)}
+                >
                   {w[0].toUpperCase() + w.slice(1)}
                 </button>
               ))}
@@ -79,8 +86,12 @@ export function Tweaks() {
           <div className="row">
             <label>Density</label>
             <div className="chips">
-              {(['snug', 'default', 'airy'] as const).map(d => (
-                <button key={d} className={tweaks.density === d ? 'on' : ''} onClick={() => set('density', d)}>
+              {(['snug', 'default', 'airy'] as const).map((d) => (
+                <button
+                  key={d}
+                  className={tweaks.density === d ? 'on' : ''}
+                  onClick={() => set('density', d)}
+                >
                   {d[0].toUpperCase() + d.slice(1)}
                 </button>
               ))}

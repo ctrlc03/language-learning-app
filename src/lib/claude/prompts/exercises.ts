@@ -56,7 +56,7 @@ export function buildExerciseGenerationPrompt(
   difficulty: DifficultyLevel,
   exerciseType: ExerciseType,
   topic?: string,
-  previousQuestions?: string[]
+  previousQuestions?: string[],
 ): string {
   const langName = LANGUAGE_NAMES[language];
 
@@ -88,7 +88,7 @@ Requirements:
 
 export function buildExerciseEvaluationPrompt(
   language: Language,
-  difficulty: DifficultyLevel
+  difficulty: DifficultyLevel,
 ): string {
   const langName = LANGUAGE_NAMES[language];
 

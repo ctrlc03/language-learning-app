@@ -31,11 +31,13 @@ export function SentenceMC({ data, onSubmit, disabled }: SentenceMcProps) {
       {(data.direction === 'toMeaning' || data.direction === 'pinyinToMeaning') && (
         <div className="flex items-start justify-between gap-2 rounded-xl border border-border bg-muted/40 px-4 py-3">
           <p className="text-lg font-medium">
-            {data.direction === 'pinyinToMeaning'
-              ? <span className="italic tracking-wide">{data.sentencePinyin ?? data.sentence}</span>
-              : data.sentenceFurigana
-                ? <Furigana segments={data.sentenceFurigana} />
-                : data.sentence}
+            {data.direction === 'pinyinToMeaning' ? (
+              <span className="italic tracking-wide">{data.sentencePinyin ?? data.sentence}</span>
+            ) : data.sentenceFurigana ? (
+              <Furigana segments={data.sentenceFurigana} />
+            ) : (
+              data.sentence
+            )}
           </p>
           <SpeakButton text={data.sentence} size="icon" />
         </div>
@@ -58,7 +60,7 @@ export function SentenceMC({ data, onSubmit, disabled }: SentenceMcProps) {
                     ? 'border-success/50 bg-success/10 text-success'
                     : selected === i
                       ? 'border-destructive/50 bg-destructive/10 text-destructive'
-                      : 'border-border/50 opacity-40'
+                      : 'border-border/50 opacity-40',
               )}
             >
               <span className="inline-flex items-center justify-center w-6 h-6 rounded-full border border-current/20 text-xs font-semibold mr-3 align-middle">
@@ -75,9 +77,11 @@ export function SentenceMC({ data, onSubmit, disabled }: SentenceMcProps) {
         <div className="text-xs text-muted-foreground leading-relaxed space-y-0.5 pt-1">
           {(data.direction === 'toSentence' || data.direction === 'pinyinToMeaning') && (
             <p className="text-foreground/80">
-              {data.sentenceFurigana
-                ? <Furigana segments={data.sentenceFurigana} />
-                : data.sentence}
+              {data.sentenceFurigana ? (
+                <Furigana segments={data.sentenceFurigana} />
+              ) : (
+                data.sentence
+              )}
             </p>
           )}
           <p>{data.translation}</p>

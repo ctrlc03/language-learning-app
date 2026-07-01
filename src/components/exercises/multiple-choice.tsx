@@ -34,7 +34,7 @@ export function MultipleChoice({ data, onSubmit, disabled }: MultipleChoiceProps
                 ? 'border-success/50 bg-success/10 text-success'
                 : selected === i
                   ? 'border-destructive/50 bg-destructive/10 text-destructive'
-                  : 'border-border/50 opacity-40'
+                  : 'border-border/50 opacity-40',
           )}
         >
           <span className="inline-flex items-center justify-center w-6 h-6 rounded-full border border-current/20 text-xs font-semibold mr-3">
@@ -44,7 +44,9 @@ export function MultipleChoice({ data, onSubmit, disabled }: MultipleChoiceProps
         </button>
       ))}
       {disabled && data.explanation && (
-        <p className="text-xs text-muted-foreground pt-1 leading-relaxed whitespace-pre-line">{data.explanation}</p>
+        <p className="text-xs text-muted-foreground pt-1 leading-relaxed whitespace-pre-line">
+          {data.explanation}
+        </p>
       )}
     </div>
   );

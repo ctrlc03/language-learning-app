@@ -37,12 +37,13 @@ export function ChatContainer({ conversation, isStreaming, onSend }: ChatContain
               {conversation.language === 'chinese' ? '你好！' : 'こんにちは！'}
             </p>
             <p className="text-sm mt-1">
-              Start chatting to practice your {conversation.language === 'chinese' ? 'Chinese' : 'Japanese'}!
+              Start chatting to practice your{' '}
+              {conversation.language === 'chinese' ? 'Chinese' : 'Japanese'}!
             </p>
           </div>
         )}
 
-        {conversation.messages.map(message => (
+        {conversation.messages.map((message) => (
           <MessageBubble key={message.id} message={message} />
         ))}
 

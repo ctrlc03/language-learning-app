@@ -35,7 +35,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    storage.get<AppSettings>(StorageKeys.settings()).then(saved => {
+    storage.get<AppSettings>(StorageKeys.settings()).then((saved) => {
       if (saved) setSettings({ ...DEFAULT_SETTINGS, ...saved });
       setLoaded(true);
     });
@@ -43,13 +43,13 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   const updateSettings = useCallback(
     (partial: Partial<AppSettings>) => {
-      setSettings(prev => {
+      setSettings((prev) => {
         const next = { ...prev, ...partial };
         storage.set(StorageKeys.settings(), next);
         return next;
       });
     },
-    [storage]
+    [storage],
   );
 
   const value: LanguageContextValue = {
@@ -67,11 +67,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   if (!loaded) return null;
 
-  return (
-    <LanguageContext.Provider value={value}>
-      {children}
-    </LanguageContext.Provider>
-  );
+  return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
 }
 
 export function useLanguage(): LanguageContextValue {

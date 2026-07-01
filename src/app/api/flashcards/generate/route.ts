@@ -12,7 +12,10 @@ const FLASHCARD_TOOL = {
         items: {
           type: 'object' as const,
           properties: {
-            front: { type: 'string' as const, description: 'The word or phrase in the target language' },
+            front: {
+              type: 'string' as const,
+              description: 'The word or phrase in the target language',
+            },
             back: { type: 'string' as const, description: 'English translation' },
             reading: { type: 'string' as const, description: 'Pinyin or hiragana reading' },
             exampleSentence: { type: 'string' as const },
@@ -29,7 +32,12 @@ const FLASHCARD_TOOL = {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { language, difficulty, topic, count = 10 } = body as {
+    const {
+      language,
+      difficulty,
+      topic,
+      count = 10,
+    } = body as {
       language: Language;
       difficulty: DifficultyLevel;
       topic?: string;
@@ -56,7 +64,7 @@ export async function POST(request: Request) {
       ],
     });
 
-    const toolUse = response.content.find(block => block.type === 'tool_use');
+    const toolUse = response.content.find((block) => block.type === 'tool_use');
     if (!toolUse || toolUse.type !== 'tool_use') {
       throw new Error('No tool use in response');
     }
@@ -65,9 +73,6 @@ export async function POST(request: Request) {
     return Response.json({ cards: input.cards });
   } catch (error) {
     console.error('Flashcard generation error:', error);
-    return Response.json(
-      { error: 'Failed to generate flashcards' },
-      { status: 500 }
-    );
+    return Response.json({ error: 'Failed to generate flashcards' }, { status: 500 });
   }
 }

@@ -8,14 +8,26 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { getLanguageName, getAnnotationType } from '@/lib/language/utils';
-import { getAvailableVoices, speak, setPreferredVoice, getPreferredVoiceName } from '@/lib/tts/speech';
+import {
+  getAvailableVoices,
+  speak,
+  setPreferredVoice,
+  getPreferredVoiceName,
+} from '@/lib/tts/speech';
 import type { Language, DifficultyLevel } from '@/types';
 
 export default function SettingsPage() {
   const {
-    language, difficulty, showAnnotations, speechRate,
-    setLanguage, setDifficulty, setShowAnnotations, setSpeechRate,
-    settings, updateSettings,
+    language,
+    difficulty,
+    showAnnotations,
+    speechRate,
+    setLanguage,
+    setDifficulty,
+    setShowAnnotations,
+    setSpeechRate,
+    settings,
+    updateSettings,
   } = useLanguage();
   const { theme, setTheme } = useTheme();
   const storage = useStorage();
@@ -44,13 +56,14 @@ export default function SettingsPage() {
     if (voiceName === '') {
       setPreferredVoice(language, null);
     } else {
-      const voice = voices.find(v => v.name === voiceName);
+      const voice = voices.find((v) => v.name === voiceName);
       if (voice) setPreferredVoice(language, voice);
     }
   };
 
   const handleTestVoice = () => {
-    const sample = language === 'chinese' ? '你好，我是你的中文老师。' : 'こんにちは、日本語の先生です。';
+    const sample =
+      language === 'chinese' ? '你好，我是你的中文老师。' : 'こんにちは、日本語の先生です。';
     speak(sample, language, speechRate);
   };
 
@@ -97,7 +110,7 @@ export default function SettingsPage() {
           <div>
             <label className="text-sm font-medium">Language</label>
             <div className="flex gap-2 mt-1">
-              {(['chinese', 'japanese'] as Language[]).map(lang => (
+              {(['chinese', 'japanese'] as Language[]).map((lang) => (
                 <button
                   key={lang}
                   onClick={() => setLanguage(lang)}
@@ -116,7 +129,7 @@ export default function SettingsPage() {
           <div>
             <label className="text-sm font-medium">Difficulty</label>
             <div className="flex flex-wrap gap-2 p-2">
-              {(['beginner', 'intermediate', 'advanced'] as DifficultyLevel[]).map(diff => (
+              {(['beginner', 'intermediate', 'advanced'] as DifficultyLevel[]).map((diff) => (
                 <button
                   key={diff}
                   onClick={() => setDifficulty(diff)}
@@ -131,18 +144,23 @@ export default function SettingsPage() {
               ))}
             </div>
             <p className="text-xs text-muted-foreground mt-1.5">
-              {({
-                chinese: {
-                  beginner: 'HSK 1 + Pinyin & Adjectives, Time & Daily Schedule, Family & Occupations',
-                  intermediate: 'HSK 1-2 + all custom lessons',
-                  advanced: 'All vocabulary (HSK 1-6 + all lessons)',
-                },
-                japanese: {
-                  beginner: 'JLPT N5 + Irodori Starter',
-                  intermediate: 'JLPT N5-N4 + Irodori Starter & Elementary 1',
-                  advanced: 'All vocabulary (JLPT N5-N1 + all Irodori levels)',
-                },
-              } as Record<string, Record<string, string>>)[language]?.[difficulty]}
+              {
+                (
+                  {
+                    chinese: {
+                      beginner:
+                        'HSK 1 + Pinyin & Adjectives, Time & Daily Schedule, Family & Occupations',
+                      intermediate: 'HSK 1-2 + all custom lessons',
+                      advanced: 'All vocabulary (HSK 1-6 + all lessons)',
+                    },
+                    japanese: {
+                      beginner: 'JLPT N5 + Irodori Starter',
+                      intermediate: 'JLPT N5-N4 + Irodori Starter & Elementary 1',
+                      advanced: 'All vocabulary (JLPT N5-N1 + all Irodori levels)',
+                    },
+                  } as Record<string, Record<string, string>>
+                )[language]?.[difficulty]
+              }
             </p>
           </div>
 
@@ -175,7 +193,7 @@ export default function SettingsPage() {
               max="2"
               step="0.1"
               value={speechRate}
-              onChange={e => setSpeechRate(parseFloat(e.target.value))}
+              onChange={(e) => setSpeechRate(parseFloat(e.target.value))}
               className="w-full mt-1 accent-primary"
             />
             <div className="flex justify-between text-xs text-muted-foreground">
@@ -190,13 +208,14 @@ export default function SettingsPage() {
             <div className="flex gap-2 mt-1">
               <select
                 value={selectedVoiceName}
-                onChange={e => handleVoiceChange(e.target.value)}
+                onChange={(e) => handleVoiceChange(e.target.value)}
                 className="flex-1 min-w-0 h-10 rounded-lg border border-border bg-background px-3 text-sm"
               >
                 <option value="">Auto-select best voice</option>
-                {voices.map(v => (
+                {voices.map((v) => (
                   <option key={v.name} value={v.name}>
-                    {v.name} ({v.lang}{v.localService ? ', local' : ', remote'})
+                    {v.name} ({v.lang}
+                    {v.localService ? ', local' : ', remote'})
                   </option>
                 ))}
               </select>
@@ -216,7 +235,9 @@ export default function SettingsPage() {
             <Input
               type="number"
               value={settings.maxNewCardsPerDay}
-              onChange={e => updateSettings({ maxNewCardsPerDay: parseInt(e.target.value) || 20 })}
+              onChange={(e) =>
+                updateSettings({ maxNewCardsPerDay: parseInt(e.target.value) || 20 })
+              }
               min={1}
               max={100}
               className="mt-1 w-24"
@@ -234,7 +255,7 @@ export default function SettingsPage() {
           <div>
             <label className="text-sm font-medium">Theme</label>
             <div className="flex gap-2 mt-1">
-              {(['light', 'dark'] as const).map(t => (
+              {(['light', 'dark'] as const).map((t) => (
                 <button
                   key={t}
                   onClick={() => setTheme(t)}
@@ -250,9 +271,16 @@ export default function SettingsPage() {
             </div>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            The palette also follows your language — <span className="cjk" style={{ color: 'var(--bar-jp)', fontWeight: 700 }}>藍</span>{' '}
-            indigo washi for Japanese, <span className="cjk" style={{ color: 'var(--bar-zh)', fontWeight: 700 }}>朱</span> cinnabar
-            rice-paper for Chinese. Fine-tune motif, warmth, and density from the 調 Tweaks panel (bottom-right).
+            The palette also follows your language —{' '}
+            <span className="cjk" style={{ color: 'var(--bar-jp)', fontWeight: 700 }}>
+              藍
+            </span>{' '}
+            indigo washi for Japanese,{' '}
+            <span className="cjk" style={{ color: 'var(--bar-zh)', fontWeight: 700 }}>
+              朱
+            </span>{' '}
+            cinnabar rice-paper for Chinese. Fine-tune motif, warmth, and density from the 調 Tweaks
+            panel (bottom-right).
           </p>
         </CardContent>
       </Card>
@@ -276,17 +304,20 @@ export default function SettingsPage() {
             <label className="text-sm font-medium">Import Data</label>
             <textarea
               value={importData}
-              onChange={e => setImportData(e.target.value)}
+              onChange={(e) => setImportData(e.target.value)}
               placeholder="Paste exported JSON data here..."
               className="w-full h-24 mt-1 rounded-lg border border-border bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/50"
             />
             <div className="flex items-center gap-2 mt-1">
-              <Button onClick={handleImport} variant="outline" size="sm" disabled={!importData.trim()}>
+              <Button
+                onClick={handleImport}
+                variant="outline"
+                size="sm"
+                disabled={!importData.trim()}
+              >
                 Import
               </Button>
-              {importStatus && (
-                <p className="text-xs text-muted-foreground">{importStatus}</p>
-              )}
+              {importStatus && <p className="text-xs text-muted-foreground">{importStatus}</p>}
             </div>
           </div>
         </CardContent>

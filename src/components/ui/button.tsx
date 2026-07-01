@@ -34,13 +34,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           'inline-flex items-center justify-center font-medium transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:pointer-events-none disabled:opacity-50',
           variantStyles[variant],
           sizeStyles[size],
-          className
+          className,
         )}
         disabled={disabled}
         {...props}
       />
     );
-  }
+  },
 );
 
 Button.displayName = 'Button';

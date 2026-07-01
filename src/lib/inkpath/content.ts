@@ -36,7 +36,7 @@ function firstChar(s: string): string {
 
 /** First CJK ideograph in a string, falling back to the first character. */
 function firstCJK(s: string): string {
-  return Array.from(s).find(c => /[㐀-鿿]/.test(c)) ?? firstChar(s);
+  return Array.from(s).find((c) => /[㐀-鿿]/.test(c)) ?? firstChar(s);
 }
 
 /** Day-of-year index for deterministic "word of the day" selection. */
@@ -48,14 +48,14 @@ function dayIndex(): number {
 
 export function getVocabulary(language: Language): VocabularyItem[] {
   if (language === 'chinese') {
-    return chineseLessons.flatMap(l => l.vocabulary as VocabularyItem[]);
+    return chineseLessons.flatMap((l) => l.vocabulary as VocabularyItem[]);
   }
   return irodoriVocabulary;
 }
 
 export function getLessons(language: Language): InkLesson[] {
   if (language === 'chinese') {
-    return chineseLessons.slice(0, 4).map(l => ({
+    return chineseLessons.slice(0, 4).map((l) => ({
       id: `zh-l${l.lesson}`,
       glyph: firstChar(l.titleChinese || l.title),
       title: l.titleChinese || l.title,
@@ -65,11 +65,13 @@ export function getLessons(language: Language): InkLesson[] {
     }));
   }
   return irodoriLevels.map((level, i) => {
-    const words = irodoriVocabulary.filter(v => v.level === level);
+    const words = irodoriVocabulary.filter((v) => v.level === level);
     const topic = words[0]?.topic?.replace(/^[①-⑨0-9]+/, '') || 'Vocabulary';
     return {
       id: `ja-${i}`,
-      glyph: firstChar(words.find(w => /[一-龯]/.test(firstChar(w.word)))?.word || words[0]?.word || '日'),
+      glyph: firstChar(
+        words.find((w) => /[一-龯]/.test(firstChar(w.word)))?.word || words[0]?.word || '日',
+      ),
       title: level,
       sub: topic,
       band: `Irodori`,
@@ -79,7 +81,7 @@ export function getLessons(language: Language): InkLesson[] {
 }
 
 export function getWordOfDay(language: Language): InkWord {
-  const vocab = getVocabulary(language).filter(v => v.exampleSentence);
+  const vocab = getVocabulary(language).filter((v) => v.exampleSentence);
   const pool = vocab.length ? vocab : getVocabulary(language);
   const v = pool[dayIndex() % pool.length];
   return {

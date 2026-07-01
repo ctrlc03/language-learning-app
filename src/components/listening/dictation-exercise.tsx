@@ -53,14 +53,40 @@ export function DictationExercise({ text, hint, onComplete }: DictationExerciseP
         <p className="text-muted-foreground text-sm mb-4">Listen and type what you hear</p>
         <div className="flex justify-center gap-3">
           <Button onClick={handlePlay} disabled={playing} size="lg" className="gap-2">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"
+              />
             </svg>
             Play
           </Button>
-          <Button onClick={handlePlaySlow} disabled={playing} variant="outline" size="lg" className="gap-2">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
+          <Button
+            onClick={handlePlaySlow}
+            disabled={playing}
+            variant="outline"
+            size="lg"
+            className="gap-2"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"
+              />
             </svg>
             Slow
           </Button>
@@ -74,10 +100,10 @@ export function DictationExercise({ text, hint, onComplete }: DictationExerciseP
       <div className="flex gap-2">
         <Input
           value={answer}
-          onChange={e => setAnswer(e.target.value)}
+          onChange={(e) => setAnswer(e.target.value)}
           placeholder="Type what you heard..."
           disabled={submitted}
-          onKeyDown={e => e.key === 'Enter' && !submitted && handleSubmit()}
+          onKeyDown={(e) => e.key === 'Enter' && !submitted && handleSubmit()}
           className="text-lg"
         />
         {!submitted && (
@@ -88,19 +114,23 @@ export function DictationExercise({ text, hint, onComplete }: DictationExerciseP
       </div>
 
       {submitted && (
-        <div className={cn(
-          'p-4 rounded-lg border',
-          answer.trim() === text.trim()
-            ? 'bg-success/10 border-success/30'
-            : 'bg-destructive/10 border-destructive/30'
-        )}>
-          <p className="font-medium">
-            {answer.trim() === text.trim() ? 'Correct!' : 'Not quite'}
-          </p>
+        <div
+          className={cn(
+            'p-4 rounded-lg border',
+            answer.trim() === text.trim()
+              ? 'bg-success/10 border-success/30'
+              : 'bg-destructive/10 border-destructive/30',
+          )}
+        >
+          <p className="font-medium">{answer.trim() === text.trim() ? 'Correct!' : 'Not quite'}</p>
           {answer.trim() !== text.trim() && (
             <div className="mt-2 text-sm">
-              <p>Your answer: <span className="text-destructive">{answer}</span></p>
-              <p>Correct: <span className="text-success font-medium">{text}</span></p>
+              <p>
+                Your answer: <span className="text-destructive">{answer}</span>
+              </p>
+              <p>
+                Correct: <span className="text-success font-medium">{text}</span>
+              </p>
             </div>
           )}
         </div>

@@ -42,9 +42,6 @@ export async function POST(request: Request) {
     }
   } catch (error) {
     console.error('Exercise evaluation error:', error);
-    return Response.json(
-      { error: 'Failed to evaluate answer' },
-      { status: 500 }
-    );
+    return Response.json({ error: 'Failed to evaluate answer' }, { status: 500 });
   }
 }

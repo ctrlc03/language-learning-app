@@ -21,7 +21,10 @@ export function InkCard({ title, cjk, meta, className, children, ...props }: Ink
     <div className={cn('ink-card', className)} {...props}>
       {(title || meta) && (
         <div className="card-label">
-          <div className="t">{cjk && <span className="cjk">{cjk}</span>}{title}</div>
+          <div className="t">
+            {cjk && <span className="cjk">{cjk}</span>}
+            {title}
+          </div>
           {meta && <div className="m">{meta}</div>}
         </div>
       )}
@@ -49,7 +52,16 @@ export function Ring({
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   return (
-    <div className="prog" style={{ width: size, height: size, position: 'relative', display: 'grid', placeItems: 'center' }}>
+    <div
+      className="prog"
+      style={{
+        width: size,
+        height: size,
+        position: 'relative',
+        display: 'grid',
+        placeItems: 'center',
+      }}
+    >
       <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={track} strokeWidth={stroke} />
         <circle
@@ -65,7 +77,16 @@ export function Ring({
         />
       </svg>
       {label !== undefined && (
-        <span className="pct" style={{ position: 'absolute', fontSize: 11, fontWeight: 700, color: 'var(--ink)', fontFamily: 'var(--serif)' }}>
+        <span
+          className="pct"
+          style={{
+            position: 'absolute',
+            fontSize: 11,
+            fontWeight: 700,
+            color: 'var(--ink)',
+            fontFamily: 'var(--serif)',
+          }}
+        >
           {label}
         </span>
       )}

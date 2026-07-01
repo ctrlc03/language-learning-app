@@ -9,11 +9,7 @@ const StorageContext = createContext<StorageAdapter | null>(null);
 export function StorageProvider({ children }: { children: React.ReactNode }) {
   const storageRef = useRef<StorageAdapter>(new LocalStorageAdapter());
 
-  return (
-    <StorageContext.Provider value={storageRef.current}>
-      {children}
-    </StorageContext.Provider>
-  );
+  return <StorageContext.Provider value={storageRef.current}>{children}</StorageContext.Provider>;
 }
 
 export function useStorage(): StorageAdapter {

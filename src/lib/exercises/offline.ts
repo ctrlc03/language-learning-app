@@ -65,31 +65,40 @@ function getVocabulary(language: Language): VocabularyItem[] {
 function filterByDifficulty(
   items: VocabularyItem[],
   language: Language,
-  difficulty: DifficultyLevel
+  difficulty: DifficultyLevel,
 ): VocabularyItem[] {
   if (difficulty === 'beginner') {
     if (language === 'chinese') {
-      return items.filter(v =>
-        v.level === 'HSK 1' || v.level === 'Pinyin & Adjectives' ||
-        v.level === 'Time & Daily Schedule' || v.level === 'Family & Occupations'
+      return items.filter(
+        (v) =>
+          v.level === 'HSK 1' ||
+          v.level === 'Pinyin & Adjectives' ||
+          v.level === 'Time & Daily Schedule' ||
+          v.level === 'Family & Occupations',
       );
     }
-    return items.filter(v =>
-      v.level === 'JLPT N5' || v.level === 'Irodori Starter'
-    );
+    return items.filter((v) => v.level === 'JLPT N5' || v.level === 'Irodori Starter');
   }
   if (difficulty === 'intermediate') {
     if (language === 'chinese') {
       // Include all lesson-based and HSK 1-2 levels
-      return items.filter(v =>
-        v.level === 'HSK 1' || v.level === 'HSK 2' ||
-        (v.level && !v.level.startsWith('HSK 3') && !v.level.startsWith('HSK 4') &&
-         !v.level.startsWith('HSK 5') && !v.level.startsWith('HSK 6'))
+      return items.filter(
+        (v) =>
+          v.level === 'HSK 1' ||
+          v.level === 'HSK 2' ||
+          (v.level &&
+            !v.level.startsWith('HSK 3') &&
+            !v.level.startsWith('HSK 4') &&
+            !v.level.startsWith('HSK 5') &&
+            !v.level.startsWith('HSK 6')),
       );
     }
-    return items.filter(v =>
-      v.level === 'JLPT N5' || v.level === 'JLPT N4' ||
-      v.level === 'Irodori Starter' || v.level === 'Irodori Elementary 1'
+    return items.filter(
+      (v) =>
+        v.level === 'JLPT N5' ||
+        v.level === 'JLPT N4' ||
+        v.level === 'Irodori Starter' ||
+        v.level === 'Irodori Elementary 1',
     );
   }
   // advanced: all items
@@ -120,7 +129,7 @@ export function getOfflineExercise(
   difficulty: DifficultyLevel,
   type: ExerciseType,
   seen: string[] = [],
-  lessonFilter?: string
+  lessonFilter?: string,
 ): Exercise | null {
   const allVocab = getVocabulary(language);
   let vocab = filterByDifficulty(allVocab, language, difficulty);
@@ -132,9 +141,9 @@ export function getOfflineExercise(
     if (lessonFilter.includes('|')) {
       const [level, lessonNum] = lessonFilter.split('|');
       const num = parseInt(lessonNum, 10);
-      lessonVocab = irodoriVocabulary.filter(v => v.level === level && v.lesson === num);
+      lessonVocab = irodoriVocabulary.filter((v) => v.level === level && v.lesson === num);
     } else {
-      lessonVocab = allVocab.filter(v => v.level === lessonFilter);
+      lessonVocab = allVocab.filter((v) => v.level === lessonFilter);
     }
     if (lessonVocab.length >= 4) {
       vocab = lessonVocab;
@@ -148,7 +157,7 @@ export function getOfflineExercise(
 
   // Filter out recently seen items
   const seenSet = new Set(seen);
-  const available = vocab.filter(v => !seenSet.has(v.id));
+  const available = vocab.filter((v) => !seenSet.has(v.id));
   const pool = available.length >= 4 ? available : vocab;
 
   switch (type) {
@@ -178,25 +187,25 @@ function generateMultipleChoice(
   allVocab: VocabularyItem[],
   language: Language,
   difficulty: DifficultyLevel,
-  rng: () => number
+  rng: () => number,
 ): Exercise {
   const target = pickRandom(pool, rng);
 
   // Pick 3 distractors from the same level or nearby
   const distractors = allVocab
-    .filter(v => v.id !== target.id && v.meaning !== target.meaning)
+    .filter((v) => v.id !== target.id && v.meaning !== target.meaning)
     .sort(() => rng() - 0.5)
     .slice(0, 3);
 
   const correctIndex = Math.floor(rng() * 4);
-  const options = [...distractors.map(d => d.meaning)];
+  const options = [...distractors.map((d) => d.meaning)];
   options.splice(correctIndex, 0, target.meaning);
 
   let explanation = `${target.word} (${target.reading}) — ${target.meaning}`;
   if (target.exampleSentence) {
     explanation += `\n\nExample: ${target.exampleSentence}`;
-    const readingLine = target.examplePinyin ??
-      (language === 'chinese' ? toPinyin(target.exampleSentence) : '');
+    const readingLine =
+      target.examplePinyin ?? (language === 'chinese' ? toPinyin(target.exampleSentence) : '');
     if (readingLine) {
       explanation += `\n${readingLine}`;
     }
@@ -236,9 +245,9 @@ interface JpSentence {
   lesson: number;
 }
 
-const japaneseSentenceBank: JpSentence[] = japaneseDialogues.flatMap(d =>
+const japaneseSentenceBank: JpSentence[] = japaneseDialogues.flatMap((d) =>
   d.lines
-    .filter(l => l.furigana.some(s => s.r) && l.text.length >= 4)
+    .filter((l) => l.furigana.some((s) => s.r) && l.text.length >= 4)
     .map((l, i) => ({
       id: `${d.id}-L${i}`,
       text: l.text,
@@ -246,13 +255,13 @@ const japaneseSentenceBank: JpSentence[] = japaneseDialogues.flatMap(d =>
       translation: l.translation,
       level: d.level,
       lesson: d.lesson,
-    }))
+    })),
 );
 
 function generateJapaneseSentenceMC(
   difficulty: DifficultyLevel,
   rng: () => number,
-  lessonFilter?: string
+  lessonFilter?: string,
 ): Exercise | null {
   if (japaneseSentenceBank.length < 4) return null;
 
@@ -262,13 +271,13 @@ function generateJapaneseSentenceMC(
   if (lessonFilter && lessonFilter.includes('|')) {
     const [level, lessonNum] = lessonFilter.split('|');
     const num = parseInt(lessonNum, 10);
-    const scoped = japaneseSentenceBank.filter(s => s.level === level && s.lesson === num);
+    const scoped = japaneseSentenceBank.filter((s) => s.level === level && s.lesson === num);
     if (scoped.length > 0) targetPool = scoped;
   }
 
   const target = pickRandom(targetPool, rng);
   const distractors = japaneseSentenceBank
-    .filter(s => s.id !== target.id && s.translation !== target.translation)
+    .filter((s) => s.id !== target.id && s.translation !== target.translation)
     .sort(() => rng() - 0.5)
     .slice(0, 3);
   if (distractors.length < 3) return null;
@@ -281,7 +290,7 @@ function generateJapaneseSentenceMC(
   let instruction: string;
 
   if (direction === 'toMeaning') {
-    const options = distractors.map(d => d.translation);
+    const options = distractors.map((d) => d.translation);
     options.splice(correctIndex, 0, target.translation);
     data = {
       type: 'sentence-mc',
@@ -295,9 +304,9 @@ function generateJapaneseSentenceMC(
     question = 'What does this sentence mean?';
     instruction = '';
   } else {
-    const options = distractors.map(d => d.text);
+    const options = distractors.map((d) => d.text);
     options.splice(correctIndex, 0, target.text);
-    const optionFurigana: (FuriSegment[] | null)[] = distractors.map(d => d.furigana);
+    const optionFurigana: (FuriSegment[] | null)[] = distractors.map((d) => d.furigana);
     optionFurigana.splice(correctIndex, 0, target.furigana);
     data = {
       type: 'sentence-mc',
@@ -331,7 +340,7 @@ function generateSentenceMC(
   language: Language,
   difficulty: DifficultyLevel,
   rng: () => number,
-  lessonFilter?: string
+  lessonFilter?: string,
 ): Exercise {
   // Japanese draws from the Irodori dialogue sentence bank — real sentences
   // with furigana + translation, so they stay sentence-level (not single words)
@@ -343,7 +352,7 @@ function generateSentenceMC(
   }
 
   // Find items with both example sentence and translation
-  const withSentences = pool.filter(v => v.exampleSentence && v.exampleTranslation);
+  const withSentences = pool.filter((v) => v.exampleSentence && v.exampleTranslation);
 
   if (withSentences.length < 4) {
     // Not enough sentence data, fall back to word-level MC
@@ -354,10 +363,11 @@ function generateSentenceMC(
 
   // Pick 3 distractors — other items with distinct sentences and translations
   const distractors = withSentences
-    .filter(v =>
-      v.id !== target.id &&
-      v.exampleTranslation !== target.exampleTranslation &&
-      v.exampleSentence !== target.exampleSentence
+    .filter(
+      (v) =>
+        v.id !== target.id &&
+        v.exampleTranslation !== target.exampleTranslation &&
+        v.exampleSentence !== target.exampleSentence,
     )
     .sort(() => rng() - 0.5)
     .slice(0, 3);
@@ -370,9 +380,10 @@ function generateSentenceMC(
   // Pick a direction. Chinese gets a third mode, 'pinyinToMeaning', which shows
   // only the romanized reading and asks for the English meaning. Japanese keeps
   // the two character-based directions (pinyin is meaningless there).
-  const directions = language === 'chinese'
-    ? (['toMeaning', 'toSentence', 'pinyinToMeaning'] as const)
-    : (['toMeaning', 'toSentence'] as const);
+  const directions =
+    language === 'chinese'
+      ? (['toMeaning', 'toSentence', 'pinyinToMeaning'] as const)
+      : (['toMeaning', 'toSentence'] as const);
   const direction = directions[Math.floor(rng() * directions.length)];
 
   // Per-character pinyin ruby so beginners can read every sentence, not just
@@ -381,9 +392,8 @@ function generateSentenceMC(
   const annotate = (text: string): FuriSegment[] | undefined =>
     language === 'chinese' ? pinyinSegments(text) : undefined;
 
-  const readingLine = language === 'chinese'
-    ? (target.examplePinyin ?? toPinyin(target.exampleSentence!))
-    : '';
+  const readingLine =
+    language === 'chinese' ? (target.examplePinyin ?? toPinyin(target.exampleSentence!)) : '';
   const explanation =
     `${target.exampleSentence}\n` +
     (readingLine ? `${readingLine}\n` : '') +
@@ -394,9 +404,9 @@ function generateSentenceMC(
   let instruction: string;
 
   if (direction === 'toSentence') {
-    const options = distractors.map(d => d.exampleSentence!);
+    const options = distractors.map((d) => d.exampleSentence!);
     options.splice(correctIndex, 0, target.exampleSentence!);
-    const optionFurigana: (FuriSegment[] | null)[] = options.map(o => annotate(o) ?? null);
+    const optionFurigana: (FuriSegment[] | null)[] = options.map((o) => annotate(o) ?? null);
     data = {
       type: 'sentence-mc',
       direction,
@@ -413,21 +423,22 @@ function generateSentenceMC(
   } else {
     // toMeaning + pinyinToMeaning: options are translations. pinyinToMeaning
     // shows only the romanized reading as the stimulus.
-    const options = distractors.map(d => d.exampleTranslation!);
+    const options = distractors.map((d) => d.exampleTranslation!);
     options.splice(correctIndex, 0, target.exampleTranslation!);
     data = {
       type: 'sentence-mc',
       direction,
       sentence: target.exampleSentence!,
       sentenceFurigana: annotate(target.exampleSentence!),
-      sentencePinyin: direction === 'pinyinToMeaning' ? (readingLine || undefined) : undefined,
+      sentencePinyin: direction === 'pinyinToMeaning' ? readingLine || undefined : undefined,
       translation: target.exampleTranslation!,
       options,
       correctIndex,
       explanation,
     };
     question = 'What does this sentence mean?';
-    instruction = direction === 'pinyinToMeaning' ? 'Read the pinyin, then choose the English meaning.' : '';
+    instruction =
+      direction === 'pinyinToMeaning' ? 'Read the pinyin, then choose the English meaning.' : '';
   }
 
   return {
@@ -446,13 +457,11 @@ function generateFillInBlank(
   pool: VocabularyItem[],
   language: Language,
   difficulty: DifficultyLevel,
-  rng: () => number
+  rng: () => number,
 ): Exercise {
   // Find items with example sentences
-  const withSentences = pool.filter(v => v.exampleSentence);
-  const target = withSentences.length > 0
-    ? pickRandom(withSentences, rng)
-    : pickRandom(pool, rng);
+  const withSentences = pool.filter((v) => v.exampleSentence);
+  const target = withSentences.length > 0 ? pickRandom(withSentences, rng) : pickRandom(pool, rng);
 
   if (target.exampleSentence) {
     // Replace the target word in the sentence with a blank
@@ -465,14 +474,14 @@ function generateFillInBlank(
 
     // Build distractor options from vocab pool (keep items for readings)
     const distractorItems = pool
-      .filter(v => v.id !== target.id && v.word !== target.word)
+      .filter((v) => v.id !== target.id && v.word !== target.word)
       .sort(() => rng() - 0.5)
       .slice(0, 3);
 
     const correctIndex = Math.floor(rng() * 4);
-    const options = distractorItems.map(v => v.word);
+    const options = distractorItems.map((v) => v.word);
     options.splice(correctIndex, 0, target.word);
-    const optionReadings: (string | null)[] = distractorItems.map(v => v.reading || null);
+    const optionReadings: (string | null)[] = distractorItems.map((v) => v.reading || null);
     optionReadings.splice(correctIndex, 0, target.reading || null);
 
     const data: FillInBlankData = {
@@ -510,18 +519,18 @@ function createSimpleFillInBlank(
   pool: VocabularyItem[],
   language: Language,
   difficulty: DifficultyLevel,
-  rng: () => number
+  rng: () => number,
 ): Exercise {
   // Build distractor options (keep items for readings)
   const distractorItems = pool
-    .filter(v => v.id !== target.id && v.word !== target.word)
+    .filter((v) => v.id !== target.id && v.word !== target.word)
     .sort(() => rng() - 0.5)
     .slice(0, 3);
 
   const correctIndex = Math.floor(rng() * 4);
-  const options = distractorItems.map(v => v.word);
+  const options = distractorItems.map((v) => v.word);
   options.splice(correctIndex, 0, target.word);
-  const optionReadings: (string | null)[] = distractorItems.map(v => v.reading || null);
+  const optionReadings: (string | null)[] = distractorItems.map((v) => v.reading || null);
   optionReadings.splice(correctIndex, 0, target.reading || null);
 
   const data: FillInBlankData = {
@@ -551,10 +560,10 @@ function generateSentenceConstruction(
   pool: VocabularyItem[],
   language: Language,
   difficulty: DifficultyLevel,
-  rng: () => number
+  rng: () => number,
 ): Exercise {
   // Find items with example sentences
-  const withSentences = pool.filter(v => v.exampleSentence && v.exampleTranslation);
+  const withSentences = pool.filter((v) => v.exampleSentence && v.exampleTranslation);
   if (withSentences.length === 0) {
     // Fallback to multiple choice
     return generateMultipleChoice(pool, getVocabulary(language), language, difficulty, rng);
@@ -583,21 +592,21 @@ function generateSentenceConstruction(
 
   // Prevent the shuffled order from being the same as correct
   if (shuffledWords.join('') === correctOrder && words.length > 2) {
-    [shuffledWords[0], shuffledWords[shuffledWords.length - 1]] =
-      [shuffledWords[shuffledWords.length - 1], shuffledWords[0]];
+    [shuffledWords[0], shuffledWords[shuffledWords.length - 1]] = [
+      shuffledWords[shuffledWords.length - 1],
+      shuffledWords[0],
+    ];
   }
 
   const data: SentenceConstructionData = {
     type: 'sentence-construction',
     words: shuffledWords,
     // Pinyin per tile so beginners can read the pieces they're arranging
-    wordReadings: language === 'chinese'
-      ? shuffledWords.map(w => toPinyin(w) || null)
-      : undefined,
+    wordReadings:
+      language === 'chinese' ? shuffledWords.map((w) => toPinyin(w) || null) : undefined,
     correctOrder,
-    correctPinyin: language === 'chinese'
-      ? (target.examplePinyin ?? toPinyin(correctOrder))
-      : undefined,
+    correctPinyin:
+      language === 'chinese' ? (target.examplePinyin ?? toPinyin(correctOrder)) : undefined,
     translation: target.exampleTranslation || target.meaning,
   };
 
@@ -616,9 +625,9 @@ function generateSentenceConstruction(
 // Dictionary of known Chinese words (from the vocabulary data) used to split
 // sentences along real word boundaries instead of arbitrary character chunks.
 const chineseWordSet: Set<string> = new Set(
-  chineseVocabulary.map(v => v.word).filter(w => w.length >= 2)
+  chineseVocabulary.map((v) => v.word).filter((w) => w.length >= 2),
 );
-const maxChineseWordLength = Math.max(2, ...[...chineseWordSet].map(w => w.length));
+const maxChineseWordLength = Math.max(2, ...[...chineseWordSet].map((w) => w.length));
 
 function splitChineseSentence(sentence: string): string[] {
   // Remove punctuation, then segment by greedy longest match against the
@@ -668,8 +677,9 @@ function splitJapaneseSentence(sentence: string): string[] {
   // Split on particles and common boundaries
   const clean = sentence.replace(/[。！？、]/g, '');
   // Split on common particles while keeping them
-  const parts = clean.split(/(は|が|を|に|で|と|も|の|へ|から|まで|より|ます|です|ました|ません)/)
-    .filter(s => s.length > 0);
+  const parts = clean
+    .split(/(は|が|を|に|で|と|も|の|へ|から|まで|より|ます|です|ました|ません)/)
+    .filter((s) => s.length > 0);
 
   if (parts.length < 3) {
     // Simple split by every 2-3 chars
@@ -694,7 +704,7 @@ function splitJapaneseSentence(sentence: string): string[] {
     }
   }
 
-  return merged.filter(s => s.length > 0);
+  return merged.filter((s) => s.length > 0);
 }
 
 function generateCharacterRecognition(
@@ -702,18 +712,18 @@ function generateCharacterRecognition(
   allVocab: VocabularyItem[],
   language: Language,
   difficulty: DifficultyLevel,
-  rng: () => number
+  rng: () => number,
 ): Exercise {
   const target = pickRandom(pool, rng);
 
   // Pick 3 distractors
   const distractors = allVocab
-    .filter(v => v.id !== target.id && v.meaning !== target.meaning)
+    .filter((v) => v.id !== target.id && v.meaning !== target.meaning)
     .sort(() => rng() - 0.5)
     .slice(0, 3);
 
   const correctIndex = Math.floor(rng() * 4);
-  const options = [...distractors.map(d => d.meaning)];
+  const options = [...distractors.map((d) => d.meaning)];
   options.splice(correctIndex, 0, target.meaning);
 
   const data: CharacterRecognitionData = {
@@ -741,7 +751,7 @@ function generateGrammarDrill(
   pool: VocabularyItem[],
   language: Language,
   difficulty: DifficultyLevel,
-  rng: () => number
+  rng: () => number,
 ): Exercise {
   // For Japanese, use Irodori grammar patterns if available
   if (language === 'japanese' && irodoriGrammar.length > 0) {
@@ -759,17 +769,46 @@ function generateGrammarDrill(
  */
 const GRAMMAR_BLANK_TARGETS = [
   // Verb endings & auxiliaries (longer first)
-  'てください', 'てくれる', 'てもいい', 'ています', 'ている',
-  'ましょう', 'ませんか', 'ません', 'ました', 'ますか', 'ます',
-  'ないです', 'ことができ',
+  'てください',
+  'てくれる',
+  'てもいい',
+  'ています',
+  'ている',
+  'ましょう',
+  'ませんか',
+  'ません',
+  'ました',
+  'ますか',
+  'ます',
+  'ないです',
+  'ことができ',
   // Copula & adjective endings
-  'じゃないです', 'じゃない', 'くないです', 'くない',
-  'でした', 'です',
+  'じゃないです',
+  'じゃない',
+  'くないです',
+  'くない',
+  'でした',
+  'です',
   // Particles (longer compound particles first)
-  'から', 'まで', 'より', 'だけ', 'ので', 'のに', 'けど',
-  'が', 'を', 'に', 'で', 'と', 'も', 'は', 'へ', 'の',
+  'から',
+  'まで',
+  'より',
+  'だけ',
+  'ので',
+  'のに',
+  'けど',
+  'が',
+  'を',
+  'に',
+  'で',
+  'と',
+  'も',
+  'は',
+  'へ',
+  'の',
   // Common grammar words
-  'たい', 'たく',
+  'たい',
+  'たく',
 ];
 
 /**
@@ -777,58 +816,53 @@ const GRAMMAR_BLANK_TARGETS = [
  * answers for each blank type.
  */
 const PARTICLE_DISTRACTORS: Record<string, string[]> = {
-  'が': ['を', 'に', 'は', 'で', 'と'],
-  'を': ['が', 'に', 'は', 'で', 'と'],
-  'に': ['で', 'へ', 'を', 'が', 'と'],
-  'で': ['に', 'を', 'が', 'へ', 'は'],
-  'と': ['も', 'が', 'に', 'を', 'は'],
-  'も': ['は', 'が', 'を', 'に', 'で'],
-  'は': ['が', 'を', 'も', 'に', 'で'],
-  'へ': ['に', 'で', 'を', 'が', 'は'],
-  'の': ['が', 'を', 'に', 'は', 'で'],
-  'から': ['まで', 'より', 'に', 'で', 'を'],
-  'まで': ['から', 'に', 'で', 'を', 'より'],
-  'より': ['から', 'まで', 'に', 'で', 'は'],
-  'だけ': ['も', 'しか', 'は', 'が', 'を'],
-  'ので': ['のに', 'けど', 'から', 'が', 'は'],
-  'のに': ['ので', 'けど', 'から', 'が', 'は'],
-  'けど': ['ので', 'のに', 'から', 'が', 'は'],
-  'です': ['ます', 'でした', 'ません', 'だ', 'じゃない'],
-  'ます': ['です', 'ました', 'ません', 'る', 'ない'],
-  'ました': ['ます', 'ません', 'です', 'でした', 'ない'],
-  'ません': ['ます', 'ました', 'ないです', 'です', 'ない'],
-  'ませんか': ['ましょう', 'ません', 'ますか', 'ます', 'ました'],
-  'ましょう': ['ませんか', 'ます', 'ました', 'ません', 'ますか'],
-  'ますか': ['ます', 'ました', 'ません', 'ませんか', 'ましょう'],
-  'てください': ['てもいい', 'ています', 'てくれる', 'ます', 'ません'],
-  'てくれる': ['てください', 'ています', 'てもいい', 'ます', 'ない'],
-  'てもいい': ['てください', 'ています', 'てくれる', 'ません', 'ない'],
-  'ています': ['てください', 'てもいい', 'ます', 'ません', 'ました'],
-  'ている': ['てある', 'てくる', 'ていく', 'ます', 'ない'],
-  'ないです': ['ません', 'ます', 'です', 'ました', 'ない'],
-  'じゃないです': ['です', 'でした', 'じゃない', 'ないです', 'くないです'],
-  'じゃない': ['じゃないです', 'です', 'くない', 'ない', 'でした'],
-  'くないです': ['です', 'くない', 'じゃないです', 'ないです', 'いです'],
-  'くない': ['くないです', 'じゃない', 'ない', 'い', 'です'],
-  'たい': ['ます', 'ない', 'た', 'ている', 'てください'],
-  'たく': ['ます', 'ない', 'た', 'ている', 'てください'],
+  が: ['を', 'に', 'は', 'で', 'と'],
+  を: ['が', 'に', 'は', 'で', 'と'],
+  に: ['で', 'へ', 'を', 'が', 'と'],
+  で: ['に', 'を', 'が', 'へ', 'は'],
+  と: ['も', 'が', 'に', 'を', 'は'],
+  も: ['は', 'が', 'を', 'に', 'で'],
+  は: ['が', 'を', 'も', 'に', 'で'],
+  へ: ['に', 'で', 'を', 'が', 'は'],
+  の: ['が', 'を', 'に', 'は', 'で'],
+  から: ['まで', 'より', 'に', 'で', 'を'],
+  まで: ['から', 'に', 'で', 'を', 'より'],
+  より: ['から', 'まで', 'に', 'で', 'は'],
+  だけ: ['も', 'しか', 'は', 'が', 'を'],
+  ので: ['のに', 'けど', 'から', 'が', 'は'],
+  のに: ['ので', 'けど', 'から', 'が', 'は'],
+  けど: ['ので', 'のに', 'から', 'が', 'は'],
+  です: ['ます', 'でした', 'ません', 'だ', 'じゃない'],
+  ます: ['です', 'ました', 'ません', 'る', 'ない'],
+  ました: ['ます', 'ません', 'です', 'でした', 'ない'],
+  ません: ['ます', 'ました', 'ないです', 'です', 'ない'],
+  ませんか: ['ましょう', 'ません', 'ますか', 'ます', 'ました'],
+  ましょう: ['ませんか', 'ます', 'ました', 'ません', 'ますか'],
+  ますか: ['ます', 'ました', 'ません', 'ませんか', 'ましょう'],
+  てください: ['てもいい', 'ています', 'てくれる', 'ます', 'ません'],
+  てくれる: ['てください', 'ています', 'てもいい', 'ます', 'ない'],
+  てもいい: ['てください', 'ています', 'てくれる', 'ません', 'ない'],
+  ています: ['てください', 'てもいい', 'ます', 'ません', 'ました'],
+  ている: ['てある', 'てくる', 'ていく', 'ます', 'ない'],
+  ないです: ['ません', 'ます', 'です', 'ました', 'ない'],
+  じゃないです: ['です', 'でした', 'じゃない', 'ないです', 'くないです'],
+  じゃない: ['じゃないです', 'です', 'くない', 'ない', 'でした'],
+  くないです: ['です', 'くない', 'じゃないです', 'ないです', 'いです'],
+  くない: ['くないです', 'じゃない', 'ない', 'い', 'です'],
+  たい: ['ます', 'ない', 'た', 'ている', 'てください'],
+  たく: ['ます', 'ない', 'た', 'ている', 'てください'],
 };
 
 function generateGrammarDrillFromPatterns(
   patterns: GrammarPattern[],
   language: Language,
   difficulty: DifficultyLevel,
-  rng: () => number
+  rng: () => number,
 ): Exercise {
   // Filter patterns with examples — pick the first non-multiline example line
-  const withExamples = patterns.filter(p => p.example && p.example.length > 0);
+  const withExamples = patterns.filter((p) => p.example && p.example.length > 0);
   if (withExamples.length === 0) {
-    return generateGrammarDrillFromVocab(
-      getVocabulary(language),
-      language,
-      difficulty,
-      rng
-    );
+    return generateGrammarDrillFromVocab(getVocabulary(language), language, difficulty, rng);
   }
 
   // Shuffle patterns and try each until we produce a good exercise
@@ -838,17 +872,17 @@ function generateGrammarDrillFromPatterns(
     // Many Irodori examples have multiple lines separated by \r\n — pick one at random
     const exampleLines = pattern.example
       .split(/\r?\n/)
-      .map(l => l.trim())
-      .filter(l => l.length > 0 && !l.startsWith('Ａ：') && !l.startsWith('Ｂ：'));
+      .map((l) => l.trim())
+      .filter((l) => l.length > 0 && !l.startsWith('Ａ：') && !l.startsWith('Ｂ：'));
 
     // If the example has A:/B: dialogue format, include those lines too (stripped of label)
     const dialogueLines = pattern.example
       .split(/\r?\n/)
-      .map(l => l.trim())
-      .filter(l => l.startsWith('Ａ：') || l.startsWith('Ｂ：'))
-      .map(l => l.slice(2));
+      .map((l) => l.trim())
+      .filter((l) => l.startsWith('Ａ：') || l.startsWith('Ｂ：'))
+      .map((l) => l.slice(2));
 
-    const allLines = [...exampleLines, ...dialogueLines].filter(l => l.length >= 3);
+    const allLines = [...exampleLines, ...dialogueLines].filter((l) => l.length >= 3);
     if (allLines.length === 0) continue;
 
     const example = pickRandom(allLines, rng);
@@ -871,7 +905,15 @@ function generateGrammarDrillFromPatterns(
     if (!blankTarget) {
       const patternParts = pattern.pattern
         .split(/[（）【】\s\r\n\/＜＞]/g)
-        .filter(s => s.length >= 1 && s.length <= 6 && !/^[A-Z]$/.test(s) && !/^N\d?$/.test(s) && !/^V/.test(s) && !/^S$/.test(s));
+        .filter(
+          (s) =>
+            s.length >= 1 &&
+            s.length <= 6 &&
+            !/^[A-Z]$/.test(s) &&
+            !/^N\d?$/.test(s) &&
+            !/^V/.test(s) &&
+            !/^S$/.test(s),
+        );
 
       for (const part of patternParts) {
         if (example.includes(part) && part.length >= 1) {
@@ -938,42 +980,210 @@ function generateGrammarDrillFromVocab(
   pool: VocabularyItem[],
   language: Language,
   difficulty: DifficultyLevel,
-  rng: () => number
+  rng: () => number,
 ): Exercise {
   // Chinese grammar patterns
   const chineseGrammarPatterns = [
-    { pattern: '太...了', template: (w: VocabularyItem) => `太${w.word}了`, blank: (w: VocabularyItem) => `太___了`, answer: (w: VocabularyItem) => w.word, pinyin: (w: VocabularyItem) => `tài ___ le`, translation: (w: VocabularyItem) => `too ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'adjective' },
-    { pattern: '很 + adj', template: (w: VocabularyItem) => `很${w.word}`, blank: (w: VocabularyItem) => `很___`, answer: (w: VocabularyItem) => w.word, pinyin: (w: VocabularyItem) => `hěn ___`, translation: (w: VocabularyItem) => `very ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'adjective' },
-    { pattern: '不 + verb/adj', template: (w: VocabularyItem) => `不${w.word}`, blank: (w: VocabularyItem) => `___${w.word}`, answer: (_w: VocabularyItem) => '不', pinyin: (w: VocabularyItem) => `___ ${w.reading}`, translation: (w: VocabularyItem) => `not ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'verb' || v.partOfSpeech === 'adjective' },
-    { pattern: '没有 + noun', template: (w: VocabularyItem) => `没有${w.word}`, blank: (w: VocabularyItem) => `___${w.word}`, answer: (_w: VocabularyItem) => '没有', pinyin: (w: VocabularyItem) => `___ ${w.reading}`, translation: (w: VocabularyItem) => `don't have ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'noun' },
+    {
+      pattern: '太...了',
+      template: (w: VocabularyItem) => `太${w.word}了`,
+      blank: (w: VocabularyItem) => `太___了`,
+      answer: (w: VocabularyItem) => w.word,
+      pinyin: (w: VocabularyItem) => `tài ___ le`,
+      translation: (w: VocabularyItem) => `too ${w.meaning}`,
+      filter: (v: VocabularyItem) => v.partOfSpeech === 'adjective',
+    },
+    {
+      pattern: '很 + adj',
+      template: (w: VocabularyItem) => `很${w.word}`,
+      blank: (w: VocabularyItem) => `很___`,
+      answer: (w: VocabularyItem) => w.word,
+      pinyin: (w: VocabularyItem) => `hěn ___`,
+      translation: (w: VocabularyItem) => `very ${w.meaning}`,
+      filter: (v: VocabularyItem) => v.partOfSpeech === 'adjective',
+    },
+    {
+      pattern: '不 + verb/adj',
+      template: (w: VocabularyItem) => `不${w.word}`,
+      blank: (w: VocabularyItem) => `___${w.word}`,
+      answer: (_w: VocabularyItem) => '不',
+      pinyin: (w: VocabularyItem) => `___ ${w.reading}`,
+      translation: (w: VocabularyItem) => `not ${w.meaning}`,
+      filter: (v: VocabularyItem) => v.partOfSpeech === 'verb' || v.partOfSpeech === 'adjective',
+    },
+    {
+      pattern: '没有 + noun',
+      template: (w: VocabularyItem) => `没有${w.word}`,
+      blank: (w: VocabularyItem) => `___${w.word}`,
+      answer: (_w: VocabularyItem) => '没有',
+      pinyin: (w: VocabularyItem) => `___ ${w.reading}`,
+      translation: (w: VocabularyItem) => `don't have ${w.meaning}`,
+      filter: (v: VocabularyItem) => v.partOfSpeech === 'noun',
+    },
   ];
 
   const japaneseGrammarPatterns = [
     // --- Original patterns ---
-    { pattern: 'N + です', template: (w: VocabularyItem) => `${w.word}です`, blank: (w: VocabularyItem) => `${w.word}___`, answer: (_w: VocabularyItem) => 'です', pinyin: (_w: VocabularyItem) => '', translation: (_w: VocabularyItem) => '', filter: (v: VocabularyItem) => v.partOfSpeech === 'noun' },
-    { pattern: 'V + ます', template: (w: VocabularyItem) => `${w.reading}ます`, blank: (w: VocabularyItem) => `${w.reading}___`, answer: (_w: VocabularyItem) => 'ます', pinyin: (_w: VocabularyItem) => '', translation: (_w: VocabularyItem) => '', filter: (v: VocabularyItem) => v.partOfSpeech === 'verb' },
-    { pattern: 'N + が好きです', template: (w: VocabularyItem) => `${w.word}が好きです`, blank: (w: VocabularyItem) => `${w.word}___好きです`, answer: (_w: VocabularyItem) => 'が', pinyin: (_w: VocabularyItem) => '', translation: (_w: VocabularyItem) => '', filter: (v: VocabularyItem) => v.partOfSpeech === 'noun' },
-    { pattern: 'N + を + V', template: (w: VocabularyItem) => `${w.word}を食べます`, blank: (w: VocabularyItem) => `${w.word}___食べます`, answer: (_w: VocabularyItem) => 'を', pinyin: (_w: VocabularyItem) => '', translation: (_w: VocabularyItem) => '', filter: (v: VocabularyItem) => v.partOfSpeech === 'noun' },
+    {
+      pattern: 'N + です',
+      template: (w: VocabularyItem) => `${w.word}です`,
+      blank: (w: VocabularyItem) => `${w.word}___`,
+      answer: (_w: VocabularyItem) => 'です',
+      pinyin: (_w: VocabularyItem) => '',
+      translation: (_w: VocabularyItem) => '',
+      filter: (v: VocabularyItem) => v.partOfSpeech === 'noun',
+    },
+    {
+      pattern: 'V + ます',
+      template: (w: VocabularyItem) => `${w.reading}ます`,
+      blank: (w: VocabularyItem) => `${w.reading}___`,
+      answer: (_w: VocabularyItem) => 'ます',
+      pinyin: (_w: VocabularyItem) => '',
+      translation: (_w: VocabularyItem) => '',
+      filter: (v: VocabularyItem) => v.partOfSpeech === 'verb',
+    },
+    {
+      pattern: 'N + が好きです',
+      template: (w: VocabularyItem) => `${w.word}が好きです`,
+      blank: (w: VocabularyItem) => `${w.word}___好きです`,
+      answer: (_w: VocabularyItem) => 'が',
+      pinyin: (_w: VocabularyItem) => '',
+      translation: (_w: VocabularyItem) => '',
+      filter: (v: VocabularyItem) => v.partOfSpeech === 'noun',
+    },
+    {
+      pattern: 'N + を + V',
+      template: (w: VocabularyItem) => `${w.word}を食べます`,
+      blank: (w: VocabularyItem) => `${w.word}___食べます`,
+      answer: (_w: VocabularyItem) => 'を',
+      pinyin: (_w: VocabularyItem) => '',
+      translation: (_w: VocabularyItem) => '',
+      filter: (v: VocabularyItem) => v.partOfSpeech === 'noun',
+    },
     // --- New patterns ---
-    { pattern: 'N + から (from)', template: (w: VocabularyItem) => `${w.word}から来ました`, blank: (w: VocabularyItem) => `${w.word}___来ました`, answer: (_w: VocabularyItem) => 'から', pinyin: (_w: VocabularyItem) => '', translation: (w: VocabularyItem) => `came from ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'noun' },
-    { pattern: 'N + まで (until)', template: (w: VocabularyItem) => `${w.word}まで行きます`, blank: (w: VocabularyItem) => `${w.word}___行きます`, answer: (_w: VocabularyItem) => 'まで', pinyin: (_w: VocabularyItem) => '', translation: (w: VocabularyItem) => `go until/to ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'noun' },
-    { pattern: 'V + たい (want to)', template: (w: VocabularyItem) => `${w.reading}たいです`, blank: (w: VocabularyItem) => `${w.reading}___です`, answer: (_w: VocabularyItem) => 'たい', pinyin: (_w: VocabularyItem) => '', translation: (w: VocabularyItem) => `want to ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'verb' },
-    { pattern: 'V + ている (progressive)', template: (w: VocabularyItem) => `${w.reading}ています`, blank: (w: VocabularyItem) => `${w.reading}___います`, answer: (_w: VocabularyItem) => 'て', pinyin: (_w: VocabularyItem) => '', translation: (w: VocabularyItem) => `is ${w.meaning}ing`, filter: (v: VocabularyItem) => v.partOfSpeech === 'verb' },
-    { pattern: 'V + てください (please do)', template: (w: VocabularyItem) => `${w.reading}てください`, blank: (w: VocabularyItem) => `${w.reading}___ください`, answer: (_w: VocabularyItem) => 'て', pinyin: (_w: VocabularyItem) => '', translation: (w: VocabularyItem) => `please ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'verb' },
-    { pattern: 'N + より (than)', template: (w: VocabularyItem) => `${w.word}より大きいです`, blank: (w: VocabularyItem) => `${w.word}___大きいです`, answer: (_w: VocabularyItem) => 'より', pinyin: (_w: VocabularyItem) => '', translation: (w: VocabularyItem) => `bigger than ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'noun' },
-    { pattern: 'N + じゃないです (neg. copula)', template: (w: VocabularyItem) => `${w.word}じゃないです`, blank: (w: VocabularyItem) => `${w.word}___`, answer: (_w: VocabularyItem) => 'じゃないです', pinyin: (_w: VocabularyItem) => '', translation: (w: VocabularyItem) => `is not ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'noun' },
-    { pattern: 'V + ましょう (let\'s)', template: (w: VocabularyItem) => `${w.reading}ましょう`, blank: (w: VocabularyItem) => `${w.reading}___`, answer: (_w: VocabularyItem) => 'ましょう', pinyin: (_w: VocabularyItem) => '', translation: (w: VocabularyItem) => `let's ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'verb' },
-    { pattern: 'N + だけ (only)', template: (w: VocabularyItem) => `${w.word}だけです`, blank: (w: VocabularyItem) => `${w.word}___です`, answer: (_w: VocabularyItem) => 'だけ', pinyin: (_w: VocabularyItem) => '', translation: (w: VocabularyItem) => `only ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'noun' },
-    { pattern: 'V + ことができます (can do)', template: (w: VocabularyItem) => `${w.reading}ことができます`, blank: (w: VocabularyItem) => `${w.reading}___ができます`, answer: (_w: VocabularyItem) => 'こと', pinyin: (_w: VocabularyItem) => '', translation: (w: VocabularyItem) => `can ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'verb' },
-    { pattern: 'N + に行きます (go to)', template: (w: VocabularyItem) => `${w.word}に行きます`, blank: (w: VocabularyItem) => `${w.word}___行きます`, answer: (_w: VocabularyItem) => 'に', pinyin: (_w: VocabularyItem) => '', translation: (w: VocabularyItem) => `go to ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'noun' },
-    { pattern: 'N + で + V (location)', template: (w: VocabularyItem) => `${w.word}で食べます`, blank: (w: VocabularyItem) => `${w.word}___食べます`, answer: (_w: VocabularyItem) => 'で', pinyin: (_w: VocabularyItem) => '', translation: (w: VocabularyItem) => `eat at ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'noun' },
-    { pattern: 'N + がほしいです (want N)', template: (w: VocabularyItem) => `${w.word}がほしいです`, blank: (w: VocabularyItem) => `${w.word}___ほしいです`, answer: (_w: VocabularyItem) => 'が', pinyin: (_w: VocabularyItem) => '', translation: (w: VocabularyItem) => `want ${w.meaning}`, filter: (v: VocabularyItem) => v.partOfSpeech === 'noun' },
+    {
+      pattern: 'N + から (from)',
+      template: (w: VocabularyItem) => `${w.word}から来ました`,
+      blank: (w: VocabularyItem) => `${w.word}___来ました`,
+      answer: (_w: VocabularyItem) => 'から',
+      pinyin: (_w: VocabularyItem) => '',
+      translation: (w: VocabularyItem) => `came from ${w.meaning}`,
+      filter: (v: VocabularyItem) => v.partOfSpeech === 'noun',
+    },
+    {
+      pattern: 'N + まで (until)',
+      template: (w: VocabularyItem) => `${w.word}まで行きます`,
+      blank: (w: VocabularyItem) => `${w.word}___行きます`,
+      answer: (_w: VocabularyItem) => 'まで',
+      pinyin: (_w: VocabularyItem) => '',
+      translation: (w: VocabularyItem) => `go until/to ${w.meaning}`,
+      filter: (v: VocabularyItem) => v.partOfSpeech === 'noun',
+    },
+    {
+      pattern: 'V + たい (want to)',
+      template: (w: VocabularyItem) => `${w.reading}たいです`,
+      blank: (w: VocabularyItem) => `${w.reading}___です`,
+      answer: (_w: VocabularyItem) => 'たい',
+      pinyin: (_w: VocabularyItem) => '',
+      translation: (w: VocabularyItem) => `want to ${w.meaning}`,
+      filter: (v: VocabularyItem) => v.partOfSpeech === 'verb',
+    },
+    {
+      pattern: 'V + ている (progressive)',
+      template: (w: VocabularyItem) => `${w.reading}ています`,
+      blank: (w: VocabularyItem) => `${w.reading}___います`,
+      answer: (_w: VocabularyItem) => 'て',
+      pinyin: (_w: VocabularyItem) => '',
+      translation: (w: VocabularyItem) => `is ${w.meaning}ing`,
+      filter: (v: VocabularyItem) => v.partOfSpeech === 'verb',
+    },
+    {
+      pattern: 'V + てください (please do)',
+      template: (w: VocabularyItem) => `${w.reading}てください`,
+      blank: (w: VocabularyItem) => `${w.reading}___ください`,
+      answer: (_w: VocabularyItem) => 'て',
+      pinyin: (_w: VocabularyItem) => '',
+      translation: (w: VocabularyItem) => `please ${w.meaning}`,
+      filter: (v: VocabularyItem) => v.partOfSpeech === 'verb',
+    },
+    {
+      pattern: 'N + より (than)',
+      template: (w: VocabularyItem) => `${w.word}より大きいです`,
+      blank: (w: VocabularyItem) => `${w.word}___大きいです`,
+      answer: (_w: VocabularyItem) => 'より',
+      pinyin: (_w: VocabularyItem) => '',
+      translation: (w: VocabularyItem) => `bigger than ${w.meaning}`,
+      filter: (v: VocabularyItem) => v.partOfSpeech === 'noun',
+    },
+    {
+      pattern: 'N + じゃないです (neg. copula)',
+      template: (w: VocabularyItem) => `${w.word}じゃないです`,
+      blank: (w: VocabularyItem) => `${w.word}___`,
+      answer: (_w: VocabularyItem) => 'じゃないです',
+      pinyin: (_w: VocabularyItem) => '',
+      translation: (w: VocabularyItem) => `is not ${w.meaning}`,
+      filter: (v: VocabularyItem) => v.partOfSpeech === 'noun',
+    },
+    {
+      pattern: "V + ましょう (let's)",
+      template: (w: VocabularyItem) => `${w.reading}ましょう`,
+      blank: (w: VocabularyItem) => `${w.reading}___`,
+      answer: (_w: VocabularyItem) => 'ましょう',
+      pinyin: (_w: VocabularyItem) => '',
+      translation: (w: VocabularyItem) => `let's ${w.meaning}`,
+      filter: (v: VocabularyItem) => v.partOfSpeech === 'verb',
+    },
+    {
+      pattern: 'N + だけ (only)',
+      template: (w: VocabularyItem) => `${w.word}だけです`,
+      blank: (w: VocabularyItem) => `${w.word}___です`,
+      answer: (_w: VocabularyItem) => 'だけ',
+      pinyin: (_w: VocabularyItem) => '',
+      translation: (w: VocabularyItem) => `only ${w.meaning}`,
+      filter: (v: VocabularyItem) => v.partOfSpeech === 'noun',
+    },
+    {
+      pattern: 'V + ことができます (can do)',
+      template: (w: VocabularyItem) => `${w.reading}ことができます`,
+      blank: (w: VocabularyItem) => `${w.reading}___ができます`,
+      answer: (_w: VocabularyItem) => 'こと',
+      pinyin: (_w: VocabularyItem) => '',
+      translation: (w: VocabularyItem) => `can ${w.meaning}`,
+      filter: (v: VocabularyItem) => v.partOfSpeech === 'verb',
+    },
+    {
+      pattern: 'N + に行きます (go to)',
+      template: (w: VocabularyItem) => `${w.word}に行きます`,
+      blank: (w: VocabularyItem) => `${w.word}___行きます`,
+      answer: (_w: VocabularyItem) => 'に',
+      pinyin: (_w: VocabularyItem) => '',
+      translation: (w: VocabularyItem) => `go to ${w.meaning}`,
+      filter: (v: VocabularyItem) => v.partOfSpeech === 'noun',
+    },
+    {
+      pattern: 'N + で + V (location)',
+      template: (w: VocabularyItem) => `${w.word}で食べます`,
+      blank: (w: VocabularyItem) => `${w.word}___食べます`,
+      answer: (_w: VocabularyItem) => 'で',
+      pinyin: (_w: VocabularyItem) => '',
+      translation: (w: VocabularyItem) => `eat at ${w.meaning}`,
+      filter: (v: VocabularyItem) => v.partOfSpeech === 'noun',
+    },
+    {
+      pattern: 'N + がほしいです (want N)',
+      template: (w: VocabularyItem) => `${w.word}がほしいです`,
+      blank: (w: VocabularyItem) => `${w.word}___ほしいです`,
+      answer: (_w: VocabularyItem) => 'が',
+      pinyin: (_w: VocabularyItem) => '',
+      translation: (w: VocabularyItem) => `want ${w.meaning}`,
+      filter: (v: VocabularyItem) => v.partOfSpeech === 'noun',
+    },
   ];
 
   // Plausible wrong answers for Chinese function-word blanks (不/没有 patterns)
   const CHINESE_FUNCTION_DISTRACTORS: Record<string, string[]> = {
-    '不': ['没', '没有', '很', '太', '也'],
-    '没有': ['不', '很', '也', '都', '太'],
+    不: ['没', '没有', '很', '太', '也'],
+    没有: ['不', '很', '也', '都', '太'],
   };
 
   const grammarPatterns = language === 'chinese' ? chineseGrammarPatterns : japaneseGrammarPatterns;
@@ -997,11 +1207,11 @@ function generateGrammarDrillFromVocab(
     } else {
       // For word-based answers, use other vocab words
       const otherWords = pool
-        .filter(v => v.id !== word.id && v.word !== answer && gp.filter(v))
+        .filter((v) => v.id !== word.id && v.word !== answer && gp.filter(v))
         .sort(() => rng() - 0.5)
         .slice(0, 3)
-        .map(v => answer === word.word ? v.word : v.word.slice(0, answer.length) || v.word);
-      uniqueDistractors = [...new Set(otherWords.filter(d => d !== answer))].slice(0, 3);
+        .map((v) => (answer === word.word ? v.word : v.word.slice(0, answer.length) || v.word));
+      uniqueDistractors = [...new Set(otherWords.filter((d) => d !== answer))].slice(0, 3);
     }
 
     let options: string[] | undefined;
@@ -1017,25 +1227,28 @@ function generateGrammarDrillFromVocab(
       grammarPoint: gp.pattern,
       sentence,
       answer,
-      acceptableAnswers: language === 'chinese'
-        ? [answer, ...(answer === word.word ? [word.reading, word.meaning] : [])]
-        : [answer],
+      acceptableAnswers:
+        language === 'chinese'
+          ? [answer, ...(answer === word.word ? [word.reading, word.meaning] : [])]
+          : [answer],
       explanation: `Full expression: ${gp.template(word)} — Pattern: ${gp.pattern}`,
       options,
       // Pinyin under each option so beginners can read the choices
-      optionReadings: options && language === 'chinese'
-        ? options.map(o => toPinyin(o) || null)
-        : undefined,
+      optionReadings:
+        options && language === 'chinese' ? options.map((o) => toPinyin(o) || null) : undefined,
       correctIndex,
-      ...(gp.pinyin(word) ? {
-        pinyin: gp.pinyin(word),
-        translation: gp.translation(word),
-      } : {}),
+      ...(gp.pinyin(word)
+        ? {
+            pinyin: gp.pinyin(word),
+            translation: gp.translation(word),
+          }
+        : {}),
     };
 
-    const answerHint = language === 'chinese'
-      ? `Meaning: "${gp.translation(word) || word.meaning}"`
-      : `Grammar point: ${gp.pattern}`;
+    const answerHint =
+      language === 'chinese'
+        ? `Meaning: "${gp.translation(word) || word.meaning}"`
+        : `Grammar point: ${gp.pattern}`;
 
     return {
       id: word.id + '_gd_' + nanoid(6),
@@ -1070,18 +1283,17 @@ interface DialogueSource {
 // translations as distractors. Distractors are drawn from the same dialogue
 // first (most plausible), then topped up from other dialogues.
 function buildChineseDialogueQuestions(
-  dialogue: (typeof chineseDialogues)[number]
+  dialogue: (typeof chineseDialogues)[number],
 ): DialogueSource['questions'] {
-  const allLines = chineseDialogues.flatMap(d => d.lines);
+  const allLines = chineseDialogues.flatMap((d) => d.lines);
   return dialogue.lines
-    .filter(l => l.text.replace(/[，。！？、\s]/g, '').length >= 4)
+    .filter((l) => l.text.replace(/[，。！？、\s]/g, '').length >= 4)
     .map((line, idx) => {
       const sameDialogue = dialogue.lines.filter(
-        l => l !== line && l.translation !== line.translation
+        (l) => l !== line && l.translation !== line.translation,
       );
       const others = allLines.filter(
-        l => l !== line && l.translation !== line.translation &&
-          !sameDialogue.includes(l)
+        (l) => l !== line && l.translation !== line.translation && !sameDialogue.includes(l),
       );
       // Deterministic but varied: rotate the pools by line index
       const pool = [...sameDialogue, ...others];
@@ -1107,7 +1319,7 @@ function buildChineseDialogueQuestions(
 
 function getDialogues(language: Language): DialogueSource[] {
   if (language === 'chinese') {
-    return chineseDialogues.map(d => ({
+    return chineseDialogues.map((d) => ({
       id: d.id,
       title: d.title,
       titleNative: d.titleChinese,
@@ -1119,19 +1331,19 @@ function getDialogues(language: Language): DialogueSource[] {
   }
   // Japanese: map the line `reading` onto DialogueLine.pinyin (for the reading
   // toggle / TTS fallback) and carry furigana segments for per-kanji ruby.
-  return japaneseDialogues.map(d => ({
+  return japaneseDialogues.map((d) => ({
     id: d.id,
     title: d.title,
     titleNative: d.titleJapanese,
     setting: d.setting,
     level: d.level,
     lesson: d.lesson,
-    lines: d.lines.map(l => ({
+    lines: d.lines.map((l) => ({
       speaker: l.speaker,
       text: l.text,
       // Reading is derived from the furigana segments (reading where annotated,
       // plain kana otherwise) — used only for the non-ruby fallback / TTS.
-      pinyin: l.furigana.map(s => s.r ?? s.t).join(''),
+      pinyin: l.furigana.map((s) => s.r ?? s.t).join(''),
       translation: l.translation,
       furigana: l.furigana,
     })),
@@ -1143,17 +1355,20 @@ function getDialogues(language: Language): DialogueSource[] {
 // filters use the "<level>|<lesson>" format (e.g. "Irodori Starter|1");
 // Chinese filters carry the lesson title. When no dialogue matches the
 // chapter, returns an empty list so the caller can bail.
-function filterDialoguesByChapter(dialogues: DialogueSource[], lessonFilter?: string): DialogueSource[] {
+function filterDialoguesByChapter(
+  dialogues: DialogueSource[],
+  lessonFilter?: string,
+): DialogueSource[] {
   if (!lessonFilter) return dialogues;
   if (lessonFilter.includes('|')) {
     const [level, lessonNum] = lessonFilter.split('|');
     const num = parseInt(lessonNum, 10);
-    return dialogues.filter(d => d.level === level && d.lesson === num);
+    return dialogues.filter((d) => d.level === level && d.lesson === num);
   }
   // Chinese: map the lesson title to its lesson number
-  const lesson = chineseLessons.find(l => l.title === lessonFilter);
+  const lesson = chineseLessons.find((l) => l.title === lessonFilter);
   if (!lesson) return dialogues;
-  return dialogues.filter(d => d.lesson === lesson.lesson);
+  return dialogues.filter((d) => d.lesson === lesson.lesson);
 }
 
 function generateDialogueReading(
@@ -1161,12 +1376,12 @@ function generateDialogueReading(
   difficulty: DifficultyLevel,
   rng: () => number,
   seenSet: Set<string>,
-  lessonFilter?: string
+  lessonFilter?: string,
 ): Exercise | null {
   const dialogues = filterDialoguesByChapter(getDialogues(language), lessonFilter);
   if (dialogues.length === 0) return null;
 
-  const available = dialogues.filter(d => !seenSet.has(d.id));
+  const available = dialogues.filter((d) => !seenSet.has(d.id));
   const pool = available.length > 0 ? available : dialogues;
 
   const dialogue = pickRandom(pool, rng);
@@ -1195,16 +1410,17 @@ function generateDialogueComprehension(
   difficulty: DifficultyLevel,
   rng: () => number,
   seenSet: Set<string>,
-  lessonFilter?: string
+  lessonFilter?: string,
 ): Exercise | null {
   // Only dialogues that ship with comprehension questions qualify.
-  const dialogues = filterDialoguesByChapter(getDialogues(language), lessonFilter)
-    .filter(d => d.questions.length > 0);
+  const dialogues = filterDialoguesByChapter(getDialogues(language), lessonFilter).filter(
+    (d) => d.questions.length > 0,
+  );
   if (dialogues.length === 0) return null;
 
   // Exercise IDs carry a `_dc_<nanoid>` suffix, so dedup on the dialogue prefix.
   const seenIds = [...seenSet];
-  const available = dialogues.filter(d => !seenIds.some(s => s.startsWith(d.id)));
+  const available = dialogues.filter((d) => !seenIds.some((s) => s.startsWith(d.id)));
   const pool = available.length > 0 ? available : dialogues;
 
   const dialogue = pickRandom(pool, rng);

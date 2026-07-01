@@ -14,7 +14,13 @@ interface ListenAndChooseProps {
   onComplete: (correct: boolean) => void;
 }
 
-export function ListenAndChoose({ text, question, options, correctIndex, onComplete }: ListenAndChooseProps) {
+export function ListenAndChoose({
+  text,
+  question,
+  options,
+  correctIndex,
+  onComplete,
+}: ListenAndChooseProps) {
   const { language, speechRate } = useLanguage();
   const [selected, setSelected] = useState<number | null>(null);
   const [playing, setPlaying] = useState(false);
@@ -40,8 +46,18 @@ export function ListenAndChoose({ text, question, options, correctIndex, onCompl
     <div className="space-y-4">
       <div className="text-center py-4">
         <Button onClick={handlePlay} disabled={playing} size="lg" className="gap-2">
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"
+            />
           </svg>
           Listen
         </Button>
@@ -63,7 +79,7 @@ export function ListenAndChoose({ text, question, options, correctIndex, onCompl
                   ? 'border-success bg-success/10 text-success'
                   : selected === i
                     ? 'border-destructive bg-destructive/10 text-destructive'
-                    : 'border-border opacity-50'
+                    : 'border-border opacity-50',
             )}
           >
             {option}

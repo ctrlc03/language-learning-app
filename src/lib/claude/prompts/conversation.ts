@@ -39,7 +39,7 @@ function getJapaneseScriptRule(language: Language, difficulty: DifficultyLevel):
 export function buildConversationPrompt(
   language: Language,
   difficulty: DifficultyLevel,
-  scenarioAddition?: string
+  scenarioAddition?: string,
 ): string {
   const langName = LANGUAGE_NAMES[language];
   const diffInstructions = DIFFICULTY_INSTRUCTIONS[difficulty];

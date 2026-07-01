@@ -53,7 +53,7 @@ function KanaChart({ set }: { set: KanaSet }) {
             {kanaGroupLabels[group] ?? group}
           </h3>
           <div className="grid grid-cols-5 gap-1.5">
-            {chars.map(ch => (
+            {chars.map((ch) => (
               <div
                 key={ch.kana}
                 className="flex flex-col items-center p-2 rounded-lg border border-border/50 bg-card"
@@ -71,17 +71,8 @@ function KanaChart({ set }: { set: KanaSet }) {
 
 // --- Recognition Quiz ---
 
-function RecognizeQuiz({
-  set,
-  groups,
-}: {
-  set: KanaSet;
-  groups: Set<string>;
-}) {
-  const pool = useMemo(
-    () => set.characters.filter(c => groups.has(c.group)),
-    [set, groups],
-  );
+function RecognizeQuiz({ set, groups }: { set: KanaSet; groups: Set<string> }) {
+  const pool = useMemo(() => set.characters.filter((c) => groups.has(c.group)), [set, groups]);
   const [idx, setIdx] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [score, setScore] = useState({ correct: 0, total: 0 });
@@ -91,9 +82,9 @@ function RecognizeQuiz({
 
   const options = useMemo(() => {
     // pick 3 distractors with different romaji
-    const others = pool.filter(c => c.romaji !== current.romaji);
+    const others = pool.filter((c) => c.romaji !== current.romaji);
     const picked = shuffle(others, idx * 7 + 13).slice(0, 3);
-    const all = [...picked.map(p => p.romaji), current.romaji];
+    const all = [...picked.map((p) => p.romaji), current.romaji];
     return shuffle(all, idx * 3 + 7);
   }, [current, pool, idx]);
 
@@ -102,7 +93,7 @@ function RecognizeQuiz({
   const handleSelect = (i: number) => {
     if (selected !== null) return;
     setSelected(i);
-    setScore(prev => ({
+    setScore((prev) => ({
       correct: prev.correct + (i === correctIdx ? 1 : 0),
       total: prev.total + 1,
     }));
@@ -110,7 +101,7 @@ function RecognizeQuiz({
 
   const handleNext = () => {
     setSelected(null);
-    setIdx(prev => prev + 1);
+    setIdx((prev) => prev + 1);
   };
 
   return (
@@ -157,7 +148,9 @@ function RecognizeQuiz({
             {current.romaji}
           </p>
           <div className="flex justify-center">
-            <Button size="sm" onClick={handleNext}>Next</Button>
+            <Button size="sm" onClick={handleNext}>
+              Next
+            </Button>
           </div>
         </div>
       )}
@@ -167,17 +160,8 @@ function RecognizeQuiz({
 
 // --- Type Quiz ---
 
-function TypeQuiz({
-  set,
-  groups,
-}: {
-  set: KanaSet;
-  groups: Set<string>;
-}) {
-  const pool = useMemo(
-    () => set.characters.filter(c => groups.has(c.group)),
-    [set, groups],
-  );
+function TypeQuiz({ set, groups }: { set: KanaSet; groups: Set<string> }) {
+  const pool = useMemo(() => set.characters.filter((c) => groups.has(c.group)), [set, groups]);
   const [idx, setIdx] = useState(0);
   const [input, setInput] = useState('');
   const [result, setResult] = useState<'correct' | 'wrong' | null>(null);
@@ -190,7 +174,7 @@ function TypeQuiz({
     const answer = input.trim().toLowerCase();
     const isCorrect = answer === current.romaji;
     setResult(isCorrect ? 'correct' : 'wrong');
-    setScore(prev => ({
+    setScore((prev) => ({
       correct: prev.correct + (isCorrect ? 1 : 0),
       total: prev.total + 1,
     }));
@@ -199,7 +183,7 @@ function TypeQuiz({
   const handleNext = () => {
     setResult(null);
     setInput('');
-    setIdx(prev => prev + 1);
+    setIdx((prev) => prev + 1);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -227,7 +211,7 @@ function TypeQuiz({
         <input
           type="text"
           value={input}
-          onChange={e => setInput(e.target.value)}
+          onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           disabled={result !== null}
           placeholder="Type the romaji..."
@@ -270,8 +254,17 @@ function TypeQuiz({
 const BASE_GROUPS = ['vowels', 'k', 's', 't', 'n', 'h', 'm', 'y', 'r', 'w'];
 const DAKUTEN_GROUPS = ['g', 'z', 'd', 'b', 'p'];
 const COMBO_GROUPS = [
-  'k-combo', 's-combo', 't-combo', 'n-combo', 'h-combo', 'm-combo', 'r-combo',
-  'g-combo', 'j-combo', 'b-combo', 'p-combo',
+  'k-combo',
+  's-combo',
+  't-combo',
+  'n-combo',
+  'h-combo',
+  'm-combo',
+  'r-combo',
+  'g-combo',
+  'j-combo',
+  'b-combo',
+  'p-combo',
 ];
 
 const GROUP_SECTIONS = [
@@ -285,14 +278,12 @@ const GROUP_SECTIONS = [
 export function KanaPractice({ onBack }: KanaPracticeProps) {
   const [kanaType, setKanaType] = useState<KanaType>('hiragana');
   const [mode, setMode] = useState<PracticeMode>('chart');
-  const [selectedGroups, setSelectedGroups] = useState<Set<string>>(
-    () => new Set(BASE_GROUPS),
-  );
+  const [selectedGroups, setSelectedGroups] = useState<Set<string>>(() => new Set(BASE_GROUPS));
 
   const set = kanaType === 'hiragana' ? hiragana : katakana;
 
   const toggleGroup = (g: string) => {
-    setSelectedGroups(prev => {
+    setSelectedGroups((prev) => {
       const next = new Set(prev);
       if (next.has(g)) next.delete(g);
       else next.add(g);
@@ -301,9 +292,9 @@ export function KanaPractice({ onBack }: KanaPracticeProps) {
   };
 
   const selectSection = (groups: string[]) => {
-    setSelectedGroups(prev => {
+    setSelectedGroups((prev) => {
       const next = new Set(prev);
-      const allSelected = groups.every(g => next.has(g));
+      const allSelected = groups.every((g) => next.has(g));
       for (const g of groups) {
         if (allSelected) next.delete(g);
         else next.add(g);
@@ -314,13 +305,13 @@ export function KanaPractice({ onBack }: KanaPracticeProps) {
 
   const selectAll = useCallback(() => {
     const all = [...BASE_GROUPS, ...DAKUTEN_GROUPS, ...COMBO_GROUPS];
-    setSelectedGroups(prev => {
+    setSelectedGroups((prev) => {
       if (prev.size === all.length) return new Set(BASE_GROUPS);
       return new Set(all);
     });
   }, []);
 
-  const activeCount = set.characters.filter(c => selectedGroups.has(c.group)).length;
+  const activeCount = set.characters.filter((c) => selectedGroups.has(c.group)).length;
 
   return (
     <div className="p-5 md:p-8 max-w-xl mx-auto space-y-5">
@@ -331,15 +322,13 @@ export function KanaPractice({ onBack }: KanaPracticeProps) {
         </Button>
         <div>
           <h1 className="text-xl font-bold tracking-tight">Kana Practice</h1>
-          <p className="text-muted-foreground text-xs mt-0.5">
-            Learn hiragana & katakana
-          </p>
+          <p className="text-muted-foreground text-xs mt-0.5">Learn hiragana & katakana</p>
         </div>
       </div>
 
       {/* Kana type toggle */}
       <div className="flex gap-2">
-        {(['hiragana', 'katakana'] as const).map(t => (
+        {(['hiragana', 'katakana'] as const).map((t) => (
           <button
             key={t}
             onClick={() => setKanaType(t)}
@@ -357,11 +346,11 @@ export function KanaPractice({ onBack }: KanaPracticeProps) {
 
       {/* Mode toggle */}
       <div className="flex gap-2">
-        {([
+        {[
           { key: 'chart' as const, label: 'Chart' },
           { key: 'recognize' as const, label: 'Recognize' },
           { key: 'type' as const, label: 'Type' },
-        ]).map(({ key, label }) => (
+        ].map(({ key, label }) => (
           <button
             key={key}
             onClick={() => setMode(key)}
@@ -384,16 +373,14 @@ export function KanaPractice({ onBack }: KanaPracticeProps) {
             <p className="text-xs font-semibold text-muted-foreground">
               Practice groups ({activeCount} characters)
             </p>
-            <button
-              onClick={selectAll}
-              className="text-[10px] text-primary hover:underline"
-            >
-              {selectedGroups.size === BASE_GROUPS.length + DAKUTEN_GROUPS.length + COMBO_GROUPS.length
+            <button onClick={selectAll} className="text-[10px] text-primary hover:underline">
+              {selectedGroups.size ===
+              BASE_GROUPS.length + DAKUTEN_GROUPS.length + COMBO_GROUPS.length
                 ? 'Basic only'
                 : 'Select all'}
             </button>
           </div>
-          {GROUP_SECTIONS.map(section => (
+          {GROUP_SECTIONS.map((section) => (
             <div key={section.label} className="space-y-1.5">
               <button
                 onClick={() => selectSection(section.groups)}
@@ -402,7 +389,7 @@ export function KanaPractice({ onBack }: KanaPracticeProps) {
                 {section.label}
               </button>
               <div className="flex flex-wrap gap-1">
-                {section.groups.map(g => (
+                {section.groups.map((g) => (
                   <button
                     key={g}
                     onClick={() => toggleGroup(g)}
@@ -425,10 +412,18 @@ export function KanaPractice({ onBack }: KanaPracticeProps) {
       {/* Content */}
       {mode === 'chart' && <KanaChart set={set} />}
       {mode === 'recognize' && activeCount >= 4 && (
-        <RecognizeQuiz key={`${kanaType}-rec-${Array.from(selectedGroups).join()}`} set={set} groups={selectedGroups} />
+        <RecognizeQuiz
+          key={`${kanaType}-rec-${Array.from(selectedGroups).join()}`}
+          set={set}
+          groups={selectedGroups}
+        />
       )}
       {mode === 'type' && activeCount >= 1 && (
-        <TypeQuiz key={`${kanaType}-type-${Array.from(selectedGroups).join()}`} set={set} groups={selectedGroups} />
+        <TypeQuiz
+          key={`${kanaType}-type-${Array.from(selectedGroups).join()}`}
+          set={set}
+          groups={selectedGroups}
+        />
       )}
       {mode !== 'chart' && activeCount < (mode === 'recognize' ? 4 : 1) && (
         <p className="text-sm text-center text-muted-foreground py-8">

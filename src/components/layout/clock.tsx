@@ -17,7 +17,8 @@ export function Clock() {
   return (
     <div className="text-right font-mono tabular-nums">
       <div className="font-display text-lg font-bold tracking-wide text-foreground">
-        {hh}:{mm}<span className="opacity-40">:{ss}</span>
+        {hh}:{mm}
+        <span className="opacity-40">:{ss}</span>
       </div>
       <div className="text-[10px] tracking-[0.15em] text-muted-foreground">
         SESSION {Math.floor(time.getTime() / 1000) % 100000}

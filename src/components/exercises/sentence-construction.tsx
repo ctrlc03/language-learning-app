@@ -35,18 +35,18 @@ export function SentenceConstruction({ data, onSubmit, disabled }: SentenceConst
 
   const handleSelect = (tile: Tile, index: number) => {
     if (disabled) return;
-    setSelected(prev => [...prev, tile]);
-    setAvailable(prev => prev.filter((_, i) => i !== index));
+    setSelected((prev) => [...prev, tile]);
+    setAvailable((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleDeselect = (tile: Tile, index: number) => {
     if (disabled) return;
-    setAvailable(prev => [...prev, tile]);
-    setSelected(prev => prev.filter((_, i) => i !== index));
+    setAvailable((prev) => [...prev, tile]);
+    setSelected((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = () => {
-    const answer = selected.map(t => t.word).join('');
+    const answer = selected.map((t) => t.word).join('');
     const isCorrect = answer === data.correctOrder;
     onSubmit(answer, isCorrect);
   };
@@ -74,7 +74,9 @@ export function SentenceConstruction({ data, onSubmit, disabled }: SentenceConst
       {/* Drop area */}
       <div className="min-h-[52px] px-4 py-3 rounded-xl border-2 border-dashed border-border/60 flex flex-wrap gap-2 items-center">
         {selected.length === 0 && (
-          <span className="text-muted-foreground/50 text-xs">Tap words below to build the sentence...</span>
+          <span className="text-muted-foreground/50 text-xs">
+            Tap words below to build the sentence...
+          </span>
         )}
         {selected.map((tile, i) => (
           <button
@@ -85,7 +87,7 @@ export function SentenceConstruction({ data, onSubmit, disabled }: SentenceConst
               'px-3 py-1.5 rounded-lg text-sm font-medium transition-all',
               disabled
                 ? 'bg-muted text-muted-foreground'
-                : 'bg-primary/10 text-primary border border-primary/20 hover:bg-primary/15 active:scale-[0.98]'
+                : 'bg-primary/10 text-primary border border-primary/20 hover:bg-primary/15 active:scale-[0.98]',
             )}
           >
             {tileLabel(tile)}

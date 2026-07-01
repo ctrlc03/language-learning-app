@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "extract:slides": "npx tsx scripts/extract-slides.ts",
     "extract:irodori": "npx tsx scripts/extract-irodori.ts"
   },
@@ -28,6 +30,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "3.9.4",
     "tailwindcss": "^4",
     "typescript": "^5",
     "xlsx": "^0.18.5"

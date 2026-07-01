@@ -7,13 +7,17 @@ import { chineseVocabulary } from '@/data/chinese/vocabulary';
 import { japaneseVocabulary } from '@/data/japanese/vocabulary';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SpeakButton } from '@/components/shared/speak-button';
 import { CJKText } from '@/components/shared/cjk-text';
-import type { VocabularyItem } from '@/types';
+import type { Language, VocabularyItem } from '@/types';
+
+type Mode = 'lookup' | 'archive';
 
 export default function VocabularyPage() {
   const { language } = useLanguage();
+  const [mode, setMode] = useState<Mode>('lookup');
   const [search, setSearch] = useState('');
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
   const [selectedTopic, setSelectedTopic] = useState<string>('all');
@@ -45,12 +49,12 @@ export default function VocabularyPage() {
   }, [levelCounts]);
 
   const topics = useMemo(() => {
-    const topicSet = new Set(allVocab.map(v => v.topic).filter(Boolean));
+    const topicSet = new Set(allVocab.map((v) => v.topic).filter(Boolean));
     return Array.from(topicSet).sort() as string[];
   }, [allVocab]);
 
   const filtered = useMemo(() => {
-    return allVocab.filter(item => {
+    return allVocab.filter((item) => {
       if (selectedLevel !== 'all' && item.level !== selectedLevel) return false;
       if (selectedTopic !== 'all' && item.topic !== selectedTopic) return false;
       if (search) {
@@ -81,9 +85,180 @@ export default function VocabularyPage() {
         </div>
       </div>
 
+      {/* Mode toggle */}
+      <div className="flex gap-2">
+        <Button
+          variant={mode === 'lookup' ? 'primary' : 'outline'}
+          size="sm"
+          onClick={() => setMode('lookup')}
+        >
+          典 Lookup
+        </Button>
+        <Button
+          variant={mode === 'archive' ? 'primary' : 'outline'}
+          size="sm"
+          onClick={() => setMode('archive')}
+        >
+          庫 Archive
+        </Button>
+      </div>
+
+      {mode === 'lookup' ? (
+        <LookupPanel language={language} allVocab={allVocab} />
+      ) : (
+        <ArchivePanel
+          allVocab={allVocab}
+          search={search}
+          setSearch={setSearch}
+          selectedLevel={selectedLevel}
+          setSelectedLevel={setSelectedLevel}
+          selectedTopic={selectedTopic}
+          setSelectedTopic={setSelectedTopic}
+          levels={levels}
+          levelCounts={levelCounts}
+          topics={topics}
+          filtered={filtered}
+        />
+      )}
+    </div>
+  );
+}
+
+function LookupPanel({ language, allVocab }: { language: Language; allVocab: VocabularyItem[] }) {
+  const [query, setQuery] = useState('');
+
+  const results = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return [];
+    const scored = allVocab
+      .map((item) => {
+        const meaning = item.meaning.toLowerCase();
+        const reading = item.reading.toLowerCase();
+        const word = item.word.toLowerCase();
+        let score = -1;
+        // Prefer exact English meaning matches, then prefix, then substring.
+        if (meaning === q || meaning.split(/[,;/]\s*/).includes(q)) score = 0;
+        else if (meaning.startsWith(q)) score = 1;
+        else if (meaning.includes(q)) score = 2;
+        else if (word === q || reading === q || reading.replace(/\s+/g, '') === q) score = 3;
+        else if (word.includes(q) || reading.includes(q)) score = 4;
+        return { item, score };
+      })
+      .filter((r) => r.score >= 0)
+      .sort((a, b) => a.score - b.score);
+    return scored.slice(0, 50).map((r) => r.item);
+  }, [query, allVocab]);
+
+  return (
+    <div className="space-y-4">
+      <Input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder={
+          language === 'chinese'
+            ? 'Look up a word (English, pinyin, or character)…'
+            : 'Look up a word (English, reading, or kanji)…'
+        }
+        className="w-full"
+      />
+
+      <p className="text-xs text-muted-foreground">
+        {language === 'chinese' ? 'English → pinyin → character' : 'English → reading → kanji'}
+      </p>
+
+      {query.trim() && results.length === 0 && (
+        <div className="text-center py-8 text-muted-foreground">
+          No matching words found for “{query.trim()}”.
+        </div>
+      )}
+
+      <div className="space-y-2">
+        {results.map((item) => (
+          <LookupCard key={item.id} item={item} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function LookupCard({ item }: { item: VocabularyItem }) {
+  return (
+    <Card>
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-sm font-medium">{item.meaning}</p>
+            <p className="text-sm text-muted-foreground">{item.reading}</p>
+            <div className="mt-1">
+              <CJKText text={item.word} reading={item.reading} className="text-3xl font-bold" />
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            {item.partOfSpeech && (
+              <Badge variant="outline" className="text-xs">
+                {item.partOfSpeech}
+              </Badge>
+            )}
+            {item.level && (
+              <Badge variant="outline" className="text-xs">
+                {item.level}
+              </Badge>
+            )}
+            <SpeakButton text={item.word} />
+          </div>
+        </div>
+
+        {item.exampleSentence && (
+          <div className="p-2 bg-muted rounded-lg text-sm space-y-0.5">
+            <div className="flex items-center gap-2">
+              <CJKText text={item.exampleSentence} reading={item.examplePinyin} />
+              <div onClick={(e) => e.stopPropagation()}>
+                <SpeakButton text={item.exampleSentence} />
+              </div>
+            </div>
+            {item.examplePinyin && <p className="text-muted-foreground">{item.examplePinyin}</p>}
+            {item.exampleTranslation && (
+              <p className="text-muted-foreground">{item.exampleTranslation}</p>
+            )}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+interface ArchivePanelProps {
+  allVocab: VocabularyItem[];
+  search: string;
+  setSearch: (s: string) => void;
+  selectedLevel: string;
+  setSelectedLevel: (s: string) => void;
+  selectedTopic: string;
+  setSelectedTopic: (s: string) => void;
+  levels: string[];
+  levelCounts: Map<string, number>;
+  topics: string[];
+  filtered: VocabularyItem[];
+}
+
+function ArchivePanel({
+  allVocab,
+  search,
+  setSearch,
+  selectedLevel,
+  setSelectedLevel,
+  selectedTopic,
+  setSelectedTopic,
+  levels,
+  levelCounts,
+  topics,
+  filtered,
+}: ArchivePanelProps) {
+  return (
+    <div className="space-y-6">
       {/* Level summary badges */}
       <div className="flex flex-wrap gap-1.5">
-        {levels.map(level => (
+        {levels.map((level) => (
           <button
             key={level}
             onClick={() => setSelectedLevel(selectedLevel === level ? 'all' : level)}
@@ -110,17 +285,17 @@ export default function VocabularyPage() {
       <div className="flex flex-wrap gap-2">
         <Input
           value={search}
-          onChange={e => setSearch(e.target.value)}
+          onChange={(e) => setSearch(e.target.value)}
           placeholder="Search words..."
           className="w-full sm:w-48"
         />
         <select
           value={selectedLevel}
-          onChange={e => setSelectedLevel(e.target.value)}
+          onChange={(e) => setSelectedLevel(e.target.value)}
           className="h-10 rounded-lg border border-border bg-background px-3 text-sm"
         >
           <option value="all">All Levels ({allVocab.length})</option>
-          {levels.map(level => (
+          {levels.map((level) => (
             <option key={level} value={level}>
               {level} ({levelCounts.get(level)})
             </option>
@@ -128,12 +303,14 @@ export default function VocabularyPage() {
         </select>
         <select
           value={selectedTopic}
-          onChange={e => setSelectedTopic(e.target.value)}
+          onChange={(e) => setSelectedTopic(e.target.value)}
           className="h-10 rounded-lg border border-border bg-background px-3 text-sm"
         >
           <option value="all">All Topics</option>
-          {topics.map(topic => (
-            <option key={topic} value={topic}>{topic}</option>
+          {topics.map((topic) => (
+            <option key={topic} value={topic}>
+              {topic}
+            </option>
           ))}
         </select>
       </div>
@@ -144,7 +321,7 @@ export default function VocabularyPage() {
 
       {/* Word list */}
       <div className="space-y-2">
-        {filtered.slice(0, 200).map(item => (
+        {filtered.slice(0, 200).map((item) => (
           <VocabCard key={item.id} item={item} />
         ))}
 
@@ -155,9 +332,7 @@ export default function VocabularyPage() {
         )}
 
         {filtered.length === 0 && (
-          <div className="text-center py-8 text-muted-foreground">
-            No matching vocabulary found
-          </div>
+          <div className="text-center py-8 text-muted-foreground">No matching vocabulary found</div>
         )}
       </div>
     </div>
@@ -182,8 +357,12 @@ function VocabCard({ item }: { item: VocabularyItem }) {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {item.level && <Badge variant="outline" className="text-xs">{item.level}</Badge>}
-            <div onClick={e => e.stopPropagation()}>
+            {item.level && (
+              <Badge variant="outline" className="text-xs">
+                {item.level}
+              </Badge>
+            )}
+            <div onClick={(e) => e.stopPropagation()}>
               <SpeakButton text={item.word} />
             </div>
           </div>
@@ -194,9 +373,7 @@ function VocabCard({ item }: { item: VocabularyItem }) {
             {item.partOfSpeech && (
               <p className="text-muted-foreground">Part of speech: {item.partOfSpeech}</p>
             )}
-            {item.topic && (
-              <p className="text-muted-foreground">Topic: {item.topic}</p>
-            )}
+            {item.topic && <p className="text-muted-foreground">Topic: {item.topic}</p>}
             {item.exampleSentence && (
               <div className="mt-2 p-2 bg-muted rounded-lg">
                 <p>{item.exampleSentence}</p>

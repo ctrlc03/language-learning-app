@@ -18,16 +18,14 @@ export function FillInBlank({ data, onSubmit, disabled }: FillInBlankProps) {
 
   const handleSubmit = () => {
     const trimmed = answer.trim();
-    const isCorrect = trimmed === data.answer ||
-      data.acceptableAnswers.includes(trimmed);
+    const isCorrect = trimmed === data.answer || data.acceptableAnswers.includes(trimmed);
     onSubmit(trimmed, isCorrect);
   };
 
   const handleOptionClick = (option: string, index: number) => {
     if (disabled) return;
     setSelected(index);
-    const isCorrect = option === data.answer ||
-      data.acceptableAnswers.includes(option);
+    const isCorrect = option === data.answer || data.acceptableAnswers.includes(option);
     onSubmit(option, isCorrect);
   };
 
@@ -44,7 +42,9 @@ export function FillInBlank({ data, onSubmit, disabled }: FillInBlankProps) {
               <span className="text-success font-semibold">{data.answer}</span>
             ) : selected !== null && hasOptions ? (
               <span className="font-medium">{data.options![selected]}</span>
-            ) : '\u00A0'}
+            ) : (
+              '\u00A0'
+            )}
           </span>
           {parts[1]}
         </p>
@@ -73,7 +73,7 @@ export function FillInBlank({ data, onSubmit, disabled }: FillInBlankProps) {
                 'rounded-xl border border-border bg-card px-4 py-3 text-left',
                 'transition-all active:scale-[0.98]',
                 'hover:border-primary/40 hover:bg-primary/5',
-                'text-base font-medium'
+                'text-base font-medium',
               )}
             >
               {option}
@@ -98,8 +98,10 @@ export function FillInBlank({ data, onSubmit, disabled }: FillInBlankProps) {
                 className={cn(
                   'rounded-xl border px-4 py-3 text-base font-medium',
                   isCorrect && 'border-success/50 bg-success/10 text-success',
-                  wasSelected && !isCorrect && 'border-destructive/50 bg-destructive/10 text-destructive opacity-60',
-                  !isCorrect && !wasSelected && 'border-border opacity-40'
+                  wasSelected &&
+                    !isCorrect &&
+                    'border-destructive/50 bg-destructive/10 text-destructive opacity-60',
+                  !isCorrect && !wasSelected && 'border-border opacity-40',
                 )}
               >
                 {option}
@@ -118,9 +120,9 @@ export function FillInBlank({ data, onSubmit, disabled }: FillInBlankProps) {
         <div className="flex gap-2">
           <Input
             value={answer}
-            onChange={e => setAnswer(e.target.value)}
+            onChange={(e) => setAnswer(e.target.value)}
             placeholder="Type your answer..."
-            onKeyDown={e => e.key === 'Enter' && answer.trim() && handleSubmit()}
+            onKeyDown={(e) => e.key === 'Enter' && answer.trim() && handleSubmit()}
             autoFocus
           />
           <Button onClick={handleSubmit} disabled={!answer.trim()}>

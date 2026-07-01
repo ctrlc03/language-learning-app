@@ -56,7 +56,7 @@ export function useProgress() {
       setProgress(updated);
       return updated;
     },
-    [storage]
+    [storage],
   );
 
   const recordActivity = useCallback(
@@ -87,7 +87,7 @@ export function useProgress() {
       const prog = await storage.get<UserProgress>(StorageKeys.progress());
       if (prog) await updateStreak(prog);
     },
-    [storage, updateStreak]
+    [storage, updateStreak],
   );
 
   useEffect(() => {

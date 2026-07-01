@@ -19,11 +19,16 @@ export function FlipCard({ card, flipped, onFlip }: FlipCardProps) {
         role="button"
         tabIndex={0}
         onClick={onFlip}
-        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onFlip(); } }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onFlip();
+          }
+        }}
         className={cn(
           'relative w-full h-64 transition-transform duration-500 cursor-pointer',
           'transform-style-preserve-3d',
-          flipped && '[transform:rotateY(180deg)]'
+          flipped && '[transform:rotateY(180deg)]',
         )}
         style={{ transformStyle: 'preserve-3d' }}
       >
@@ -34,7 +39,7 @@ export function FlipCard({ card, flipped, onFlip }: FlipCardProps) {
         >
           <CJKText text={card.front} reading={card.reading} className="text-3xl font-bold" />
           <p className="text-sm text-muted-foreground mt-2">{card.reading}</p>
-          <div className="absolute bottom-4 right-4" onClick={e => e.stopPropagation()}>
+          <div className="absolute bottom-4 right-4" onClick={(e) => e.stopPropagation()}>
             <SpeakButton text={card.front} />
           </div>
           <p className="absolute bottom-4 left-4 text-xs text-muted-foreground">Tap to flip</p>
@@ -54,9 +59,7 @@ export function FlipCard({ card, flipped, onFlip }: FlipCardProps) {
               )}
             </div>
           )}
-          {card.notes && (
-            <p className="text-xs text-muted-foreground mt-2 italic">{card.notes}</p>
-          )}
+          {card.notes && <p className="text-xs text-muted-foreground mt-2 italic">{card.notes}</p>}
         </div>
       </div>
     </div>

@@ -22,17 +22,14 @@ export function ReviewSession({ queue, currentCard, onGrade, onFinish }: ReviewS
   if (!currentCard) {
     return (
       <div className="text-center py-12 space-y-4">
-        <div className="text-4xl">
-          {reviewed > 0 ? '🎉' : '📚'}
-        </div>
+        <div className="text-4xl">{reviewed > 0 ? '🎉' : '📚'}</div>
         <h2 className="text-xl font-bold">
           {reviewed > 0 ? 'Review Complete!' : 'No cards to review'}
         </h2>
         <p className="text-muted-foreground">
           {reviewed > 0
             ? `You reviewed ${reviewed} cards. Great work!`
-            : 'All cards are up to date. Come back later!'
-          }
+            : 'All cards are up to date. Come back later!'}
         </p>
         <Button onClick={onFinish} variant="outline">
           Back to Decks
@@ -44,7 +41,7 @@ export function ReviewSession({ queue, currentCard, onGrade, onFinish }: ReviewS
   const handleGrade = (grade: SRSGrade) => {
     onGrade(grade);
     setFlipped(false);
-    setReviewed(prev => prev + 1);
+    setReviewed((prev) => prev + 1);
   };
 
   const remaining = queue.total;
@@ -53,9 +50,7 @@ export function ReviewSession({ queue, currentCard, onGrade, onFinish }: ReviewS
     <div className="space-y-6">
       {/* Progress bar */}
       <div className="flex items-center gap-3">
-        <span className="text-sm text-muted-foreground">
-          {reviewed} reviewed
-        </span>
+        <span className="text-sm text-muted-foreground">{reviewed} reviewed</span>
         <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
           <div
             className="h-full bg-primary rounded-full transition-all"
@@ -64,9 +59,7 @@ export function ReviewSession({ queue, currentCard, onGrade, onFinish }: ReviewS
             }}
           />
         </div>
-        <span className="text-sm text-muted-foreground">
-          {remaining} left
-        </span>
+        <span className="text-sm text-muted-foreground">{remaining} left</span>
       </div>
 
       {/* Queue breakdown */}

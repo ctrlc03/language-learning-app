@@ -13,10 +13,10 @@ const LANG_CODES: Record<Language, string[]> = {
 const PREFERRED_VOICES: Record<Language, string[]> = {
   chinese: [
     // macOS / iOS premium voices
-    'Tingting',         // macOS enhanced Mandarin
-    'Lili',             // macOS Mandarin
-    'Meijia',           // macOS Mandarin (Taiwan)
-    'Sinji',            // macOS Cantonese (fallback)
+    'Tingting', // macOS enhanced Mandarin
+    'Lili', // macOS Mandarin
+    'Meijia', // macOS Mandarin (Taiwan)
+    'Sinji', // macOS Cantonese (fallback)
     // Google Chrome voices
     'Google 普通话',
     'Google Mandarin',
@@ -30,9 +30,9 @@ const PREFERRED_VOICES: Record<Language, string[]> = {
   ],
   japanese: [
     // macOS / iOS
-    'Kyoko',            // macOS Japanese (enhanced)
-    'Otoya',            // macOS Japanese male
-    'O-Ren',            // macOS Japanese
+    'Kyoko', // macOS Japanese (enhanced)
+    'Otoya', // macOS Japanese male
+    'O-Ren', // macOS Japanese
     // Google
     'Google 日本語',
     'Google Japanese',
@@ -47,18 +47,18 @@ const PREFERRED_VOICES: Record<Language, string[]> = {
 // Voices to avoid — these produce bad Chinese pronunciation
 const VOICE_BLOCKLIST = [
   'Ting-Ting', // old macOS voice, very robotic
-  'Sin-ji',    // Cantonese, not Mandarin
+  'Sin-ji', // Cantonese, not Mandarin
 ];
 
 // English voice config for speaking translations
 const ENGLISH_LANG_CODES = ['en-US', 'en-GB', 'en-AU', 'en'];
 const PREFERRED_ENGLISH_VOICES = [
   // macOS / iOS premium
-  'Samantha',          // macOS default, natural sounding
-  'Karen',             // macOS Australian, clear
-  'Daniel',            // macOS British male
-  'Moira',             // macOS Irish
-  'Tessa',             // macOS South African
+  'Samantha', // macOS default, natural sounding
+  'Karen', // macOS Australian, clear
+  'Daniel', // macOS British male
+  'Moira', // macOS Irish
+  'Tessa', // macOS South African
   // Google
   'Google US English',
   'Google UK English Female',
@@ -77,14 +77,16 @@ let allVoicesLoaded = false;
 
 function matchesLangCode(voiceLang: string, targetCodes: string[]): boolean {
   const normalized = voiceLang.toLowerCase().replace('_', '-');
-  return targetCodes.some(code => normalized === code.toLowerCase() || normalized.startsWith(code.toLowerCase() + '-'));
+  return targetCodes.some(
+    (code) => normalized === code.toLowerCase() || normalized.startsWith(code.toLowerCase() + '-'),
+  );
 }
 
 function scoreVoice(voice: SpeechSynthesisVoice, language: Language): number {
   const name = voice.name;
 
   // Block known bad voices
-  if (VOICE_BLOCKLIST.some(blocked => name.includes(blocked))) return -1;
+  if (VOICE_BLOCKLIST.some((blocked) => name.includes(blocked))) return -1;
 
   const preferred = PREFERRED_VOICES[language];
   const targetCodes = LANG_CODES[language];
@@ -122,12 +124,11 @@ function getBestVoice(language: Language): SpeechSynthesisVoice | null {
   if (userPref) return userPref;
 
   // Check saved preference in localStorage
-  const savedName = typeof window !== 'undefined'
-    ? localStorage.getItem(`langbot:voice:${language}`)
-    : null;
+  const savedName =
+    typeof window !== 'undefined' ? localStorage.getItem(`langbot:voice:${language}`) : null;
   if (savedName) {
     const voices = speechSynthesis.getVoices();
-    const saved = voices.find(v => v.name === savedName);
+    const saved = voices.find((v) => v.name === savedName);
     if (saved) {
       userPreferredVoices.set(language, saved);
       return saved;
@@ -143,14 +144,14 @@ function getBestVoice(language: Language): SpeechSynthesisVoice | null {
   const targetCodes = LANG_CODES[language];
 
   // Filter to voices that match our target language codes
-  const matching = voices.filter(v => matchesLangCode(v.lang, targetCodes));
+  const matching = voices.filter((v) => matchesLangCode(v.lang, targetCodes));
 
   if (matching.length === 0) return null;
 
   // Score and sort
   const scored = matching
-    .map(v => ({ voice: v, score: scoreVoice(v, language) }))
-    .filter(v => v.score >= 0) // remove blocklisted
+    .map((v) => ({ voice: v, score: scoreVoice(v, language) }))
+    .filter((v) => v.score >= 0) // remove blocklisted
     .sort((a, b) => b.score - a.score);
 
   if (scored.length === 0) {
@@ -166,7 +167,7 @@ function getBestVoice(language: Language): SpeechSynthesisVoice | null {
     console.log(
       `[TTS] Selected voice for ${language}: "${best.name}" (${best.lang}, score: ${scored[0].score})`,
       '\nAll candidates:',
-      scored.map(s => `${s.voice.name} (${s.voice.lang}) = ${s.score}`).join(', ')
+      scored.map((s) => `${s.voice.name} (${s.voice.lang}) = ${s.score}`).join(', '),
     );
   }
 
@@ -179,11 +180,11 @@ function getBestEnglishVoice(): SpeechSynthesisVoice | null {
   const voices = speechSynthesis.getVoices();
   if (voices.length === 0) return null;
 
-  const matching = voices.filter(v =>
-    ENGLISH_LANG_CODES.some(code => {
+  const matching = voices.filter((v) =>
+    ENGLISH_LANG_CODES.some((code) => {
       const norm = v.lang.toLowerCase().replace('_', '-');
       return norm === code.toLowerCase() || norm.startsWith(code.toLowerCase() + '-');
-    })
+    }),
   );
 
   if (matching.length === 0) {
@@ -192,30 +193,32 @@ function getBestEnglishVoice(): SpeechSynthesisVoice | null {
   }
 
   // Score: preferred name match + exact lang code match + local service bonus
-  const scored = matching.map(v => {
-    let score = 0;
-    for (let i = 0; i < ENGLISH_LANG_CODES.length; i++) {
-      if (v.lang.toLowerCase().replace('_', '-') === ENGLISH_LANG_CODES[i].toLowerCase()) {
-        score += (ENGLISH_LANG_CODES.length - i) * 100;
-        break;
+  const scored = matching
+    .map((v) => {
+      let score = 0;
+      for (let i = 0; i < ENGLISH_LANG_CODES.length; i++) {
+        if (v.lang.toLowerCase().replace('_', '-') === ENGLISH_LANG_CODES[i].toLowerCase()) {
+          score += (ENGLISH_LANG_CODES.length - i) * 100;
+          break;
+        }
       }
-    }
-    for (let i = 0; i < PREFERRED_ENGLISH_VOICES.length; i++) {
-      if (v.name.includes(PREFERRED_ENGLISH_VOICES[i])) {
-        score += (PREFERRED_ENGLISH_VOICES.length - i) * 10;
-        break;
+      for (let i = 0; i < PREFERRED_ENGLISH_VOICES.length; i++) {
+        if (v.name.includes(PREFERRED_ENGLISH_VOICES[i])) {
+          score += (PREFERRED_ENGLISH_VOICES.length - i) * 10;
+          break;
+        }
       }
-    }
-    if (v.localService) score += 3;
-    return { voice: v, score };
-  }).sort((a, b) => b.score - a.score);
+      if (v.localService) score += 3;
+      return { voice: v, score };
+    })
+    .sort((a, b) => b.score - a.score);
 
   const best = scored[0].voice;
   cachedEnglishVoice = best;
 
   if (process.env.NODE_ENV === 'development') {
     console.log(
-      `[TTS] Selected English voice: "${best.name}" (${best.lang}, score: ${scored[0].score})`
+      `[TTS] Selected English voice: "${best.name}" (${best.lang}, score: ${scored[0].score})`,
     );
   }
 
@@ -347,8 +350,8 @@ export function getAvailableVoices(language: Language): SpeechSynthesisVoice[] {
   const voices = speechSynthesis.getVoices();
   const targetCodes = LANG_CODES[language];
   return voices
-    .filter(v => matchesLangCode(v.lang, targetCodes))
-    .filter(v => !VOICE_BLOCKLIST.some(blocked => v.name.includes(blocked)));
+    .filter((v) => matchesLangCode(v.lang, targetCodes))
+    .filter((v) => !VOICE_BLOCKLIST.some((blocked) => v.name.includes(blocked)));
 }
 
 export function setPreferredVoice(language: Language, voice: SpeechSynthesisVoice | null): void {
@@ -389,9 +392,13 @@ export function initVoices(): void {
   loadVoices();
 
   if (!allVoicesLoaded) {
-    speechSynthesis.addEventListener('voiceschanged', () => {
-      cachedVoices = new Map();
-      loadVoices();
-    }, { once: true });
+    speechSynthesis.addEventListener(
+      'voiceschanged',
+      () => {
+        cachedVoices = new Map();
+        loadVoices();
+      },
+      { once: true },
+    );
   }
 }

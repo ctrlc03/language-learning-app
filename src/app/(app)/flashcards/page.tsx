@@ -26,9 +26,9 @@ export default function FlashcardsPage() {
 
   const native = getLanguageNativeName(language);
   const latin = getLanguageName(language).toUpperCase();
-  const languageDecks = decks.filter(d => d.language === language);
-  const existingNames = new Set(languageDecks.map(d => d.name));
-  const availablePrebuilt = getPrebuiltDecks(language).filter(p => !existingNames.has(p.name));
+  const languageDecks = decks.filter((d) => d.language === language);
+  const existingNames = new Set(languageDecks.map((d) => d.name));
+  const availablePrebuilt = getPrebuiltDecks(language).filter((p) => !existingNames.has(p.name));
 
   const beginReview = async (deckId: string) => {
     setSelectedDeckId(deckId);
@@ -56,7 +56,7 @@ export default function FlashcardsPage() {
   const grade = (g: SRSGrade) => {
     gradeCard(g);
     setRevealed(false);
-    setReviewed(r => r + 1);
+    setReviewed((r) => r + 1);
   };
 
   // keyboard: space reveals, 1/2/3 grade
@@ -65,7 +65,7 @@ export default function FlashcardsPage() {
     const h = (e: KeyboardEvent) => {
       if (e.key === ' ') {
         e.preventDefault();
-        setRevealed(r => !r);
+        setRevealed((r) => !r);
       } else if (revealed && currentCard) {
         if (e.key === '1') grade(1);
         else if (e.key === '2') grade(4);
@@ -95,9 +95,14 @@ export default function FlashcardsPage() {
         </div>
 
         {languageDecks.length > 0 && (
-          <InkCard title="Your decks" cjk="束" meta={`${languageDecks.length}`} style={{ marginBottom: 24 }}>
+          <InkCard
+            title="Your decks"
+            cjk="束"
+            meta={`${languageDecks.length}`}
+            style={{ marginBottom: 24 }}
+          >
             <div className="lesson-list">
-              {languageDecks.map(d => (
+              {languageDecks.map((d) => (
                 <div key={d.id} className="lesson-item" onClick={() => beginReview(d.id)}>
                   <div className="glyph">{Array.from(d.name)[0]}</div>
                   <div className="main">
@@ -116,7 +121,7 @@ export default function FlashcardsPage() {
 
         <InkCard title="From the library" cjk="蔵" meta={`${availablePrebuilt.length} available`}>
           <div className="lesson-list">
-            {availablePrebuilt.map(p => (
+            {availablePrebuilt.map((p) => (
               <div key={p.id} className="lesson-item" onClick={() => handleSelectPrebuilt(p)}>
                 <div className="glyph">{Array.from(p.name.replace(/^[^：:]*[：:]\s*/, ''))[0]}</div>
                 <div className="main">
@@ -167,7 +172,10 @@ export default function FlashcardsPage() {
         <InkCard className="flashcard">
           <div className="flash-prog">
             {Array.from({ length: totalSegs }).map((_, i) => (
-              <div key={i} className={`seg ${i < reviewed ? 'done' : i === reviewed ? 'active' : ''}`} />
+              <div
+                key={i}
+                className={`seg ${i < reviewed ? 'done' : i === reviewed ? 'active' : ''}`}
+              />
             ))}
           </div>
 
@@ -254,7 +262,9 @@ export default function FlashcardsPage() {
                 >
                   <span className="g">{Array.from(c.front)[0]}</span>
                   <span className="m">{c.back}</span>
-                  <span className="st">{currentCard && c.id === currentCard.id ? '●' : i < reviewed ? '✓' : i + 1}</span>
+                  <span className="st">
+                    {currentCard && c.id === currentCard.id ? '●' : i < reviewed ? '✓' : i + 1}
+                  </span>
                 </div>
               ))}
             </div>

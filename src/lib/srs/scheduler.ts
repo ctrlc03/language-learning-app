@@ -12,7 +12,7 @@ export interface ReviewQueue {
 
 export function buildReviewQueue(
   cards: Flashcard[],
-  maxNewCards: number = MAX_NEW_CARDS_PER_SESSION
+  maxNewCards: number = MAX_NEW_CARDS_PER_SESSION,
 ): ReviewQueue {
   const learning: Flashcard[] = [];
   const due: Flashcard[] = [];
@@ -52,9 +52,9 @@ export function getNextCard(queue: ReviewQueue): Flashcard | null {
 
 export function removeCardFromQueue(queue: ReviewQueue, cardId: string): ReviewQueue {
   return {
-    learning: queue.learning.filter(c => c.id !== cardId),
-    due: queue.due.filter(c => c.id !== cardId),
-    newCards: queue.newCards.filter(c => c.id !== cardId),
+    learning: queue.learning.filter((c) => c.id !== cardId),
+    due: queue.due.filter((c) => c.id !== cardId),
+    newCards: queue.newCards.filter((c) => c.id !== cardId),
     total: queue.total - 1,
   };
 }

@@ -50,7 +50,7 @@ export function DeckBrowser({
             Ready-made decks from your course materials. Click to add and start reviewing.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {prebuiltDecks.map(deck => (
+            {prebuiltDecks.map((deck) => (
               <button
                 key={deck.id}
                 onClick={() => onSelectPrebuilt?.(deck)}
@@ -65,7 +65,9 @@ export function DeckBrowser({
                     </div>
                     <div className="flex flex-col items-end gap-1">
                       <Badge variant="outline">{deck.cardCount} cards</Badge>
-                      <Badge variant="default" className="text-[10px]">Pre-built</Badge>
+                      <Badge variant="default" className="text-[10px]">
+                        Pre-built
+                      </Badge>
                     </div>
                   </div>
                 </Card>
@@ -78,9 +80,7 @@ export function DeckBrowser({
       {/* User decks section */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">
-            {hasPrebuilt ? 'Your Decks' : 'Your Decks'}
-          </h2>
+          <h2 className="text-lg font-semibold">{hasPrebuilt ? 'Your Decks' : 'Your Decks'}</h2>
           <Button onClick={onCreateDeck} size="sm">
             + New Deck
           </Button>
@@ -93,7 +93,7 @@ export function DeckBrowser({
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {decks.map(deck => (
+          {decks.map((deck) => (
             <button key={deck.id} onClick={() => onSelectDeck(deck.id)} className="text-left">
               <Card className="p-4 hover:border-primary/50 hover:shadow-md transition-all">
                 <div className="flex items-start justify-between">

@@ -31,7 +31,15 @@ function toRow(card: Flashcard, now: number): QueueRow {
     const hours = daysUntil * 24;
     due = hours < 24 ? `${Math.max(1, Math.round(hours))}h` : `${Math.round(daysUntil)}d`;
   }
-  return { id: card.id, char: card.front, reading: card.reading, meaning: card.back, mem, due, dueNow };
+  return {
+    id: card.id,
+    char: card.front,
+    reading: card.reading,
+    meaning: card.back,
+    mem,
+    due,
+    dueNow,
+  };
 }
 
 export default function ReviewPage() {
@@ -46,10 +54,12 @@ export default function ReviewPage() {
     (async () => {
       setLoaded(false);
       const decks = await storage.getAll<FlashcardDeck>(StoragePrefixes.decks);
-      const deckIds = new Set(decks.filter(d => d.language === language).map(d => d.id));
-      const cards = await storage.query<Flashcard>(StoragePrefixes.cards, c => deckIds.has(c.deckId));
+      const deckIds = new Set(decks.filter((d) => d.language === language).map((d) => d.id));
+      const cards = await storage.query<Flashcard>(StoragePrefixes.cards, (c) =>
+        deckIds.has(c.deckId),
+      );
       const now = Date.now();
-      const built = cards.map(c => toRow(c, now)).sort((a, b) => a.mem - b.mem);
+      const built = cards.map((c) => toRow(c, now)).sort((a, b) => a.mem - b.mem);
       if (active) {
         setRows(built);
         setLoaded(true);
@@ -61,9 +71,9 @@ export default function ReviewPage() {
   }, [storage, language]);
 
   const native = getLanguageNativeName(language);
-  const due = useMemo(() => rows.filter(r => r.dueNow).length, [rows]);
-  const fading = useMemo(() => rows.filter(r => r.mem < 0.5).length, [rows]);
-  const settled = useMemo(() => rows.filter(r => r.mem >= 0.7).length, [rows]);
+  const due = useMemo(() => rows.filter((r) => r.dueNow).length, [rows]);
+  const fading = useMemo(() => rows.filter((r) => r.mem < 0.5).length, [rows]);
+  const settled = useMemo(() => rows.filter((r) => r.mem >= 0.7).length, [rows]);
 
   const size = 200,
     stroke = 10,
@@ -89,8 +99,24 @@ export default function ReviewPage() {
 
       {loaded && rows.length === 0 ? (
         <InkCard style={{ padding: 48, textAlign: 'center' }}>
-          <div style={{ fontFamily: 'var(--serif)', fontSize: 64, color: 'var(--primary)', marginBottom: 16 }}>無</div>
-          <div style={{ fontFamily: 'var(--serif)', fontSize: 22, color: 'var(--ink)', marginBottom: 10 }}>
+          <div
+            style={{
+              fontFamily: 'var(--serif)',
+              fontSize: 64,
+              color: 'var(--primary)',
+              marginBottom: 16,
+            }}
+          >
+            無
+          </div>
+          <div
+            style={{
+              fontFamily: 'var(--serif)',
+              fontSize: 22,
+              color: 'var(--ink)',
+              marginBottom: 10,
+            }}
+          >
             No cards to revisit yet
           </div>
           <p style={{ color: 'var(--ink-soft)', fontSize: 14, marginBottom: 22 }}>
@@ -105,7 +131,14 @@ export default function ReviewPage() {
           <InkCard className="revisit-summary" title="Due today" cjk="期">
             <div className="moon-dial">
               <svg width={size} height={size}>
-                <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--line)" strokeWidth={stroke} />
+                <circle
+                  cx={size / 2}
+                  cy={size / 2}
+                  r={r}
+                  fill="none"
+                  stroke="var(--line)"
+                  strokeWidth={stroke}
+                />
                 <circle
                   cx={size / 2}
                   cy={size / 2}
@@ -124,8 +157,8 @@ export default function ReviewPage() {
               </div>
             </div>
             <div className="revisit-note">
-              Memory fades along a curve. Revisiting a word just before you’d forget it carves it deeper. These {due}{' '}
-              cards have reached that moment.
+              Memory fades along a curve. Revisiting a word just before you’d forget it carves it
+              deeper. These {due} cards have reached that moment.
             </div>
             <div className="revisit-legend">
               <div className="lg warm">
@@ -155,7 +188,7 @@ export default function ReviewPage() {
                 <span>Memory</span>
                 <span>Due</span>
               </div>
-              {rows.slice(0, 40).map(row => (
+              {rows.slice(0, 40).map((row) => (
                 <div key={row.id} className="rt-row" onClick={() => router.push('/flashcards')}>
                   <span className="g">{row.char}</span>
                   <span className="r">{row.reading}</span>

@@ -21,9 +21,13 @@ export function TranslationExercise({ data, onSubmit, disabled }: TranslationExe
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
-        <Badge variant="outline" className="text-[11px]">{data.sourceLanguage}</Badge>
+        <Badge variant="outline" className="text-[11px]">
+          {data.sourceLanguage}
+        </Badge>
         <span className="text-muted-foreground text-xs">&rarr;</span>
-        <Badge variant="outline" className="text-[11px]">{data.targetLanguage}</Badge>
+        <Badge variant="outline" className="text-[11px]">
+          {data.targetLanguage}
+        </Badge>
       </div>
 
       <div className="px-4 py-3 bg-muted/50 rounded-xl">
@@ -34,7 +38,7 @@ export function TranslationExercise({ data, onSubmit, disabled }: TranslationExe
         <div className="space-y-3">
           <textarea
             value={answer}
-            onChange={e => setAnswer(e.target.value)}
+            onChange={(e) => setAnswer(e.target.value)}
             placeholder="Type your translation..."
             className="w-full min-h-[80px] rounded-xl border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 resize-none"
             autoFocus

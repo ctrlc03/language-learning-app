@@ -30,7 +30,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <ThemeContext.Provider
-      value={{ theme, resolvedTheme: theme, setTheme, toggleTheme: () => setTheme(theme === 'dark' ? 'light' : 'dark') }}
+      value={{
+        theme,
+        resolvedTheme: theme,
+        setTheme,
+        toggleTheme: () => setTheme(theme === 'dark' ? 'light' : 'dark'),
+      }}
     >
       {children}
     </ThemeContext.Provider>

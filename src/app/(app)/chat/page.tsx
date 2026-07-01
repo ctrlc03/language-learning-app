@@ -15,7 +15,8 @@ import { cn, truncate, formatDate } from '@/lib/utils';
 export default function ChatPage() {
   const { language, difficulty } = useLanguage();
   const storage = useStorage();
-  const { conversation, isStreaming, createConversation, loadConversation, sendMessage } = useChat();
+  const { conversation, isStreaming, createConversation, loadConversation, sendMessage } =
+    useChat();
   const [showScenarios, setShowScenarios] = useState(true);
   const [pastConversations, setPastConversations] = useState<Conversation[]>([]);
   const [showHistory, setShowHistory] = useState(false);
@@ -23,20 +24,15 @@ export default function ChatPage() {
   useSpeechInit();
 
   useEffect(() => {
-    storage.query<Conversation>(
-      StoragePrefixes.conversations,
-      c => c.language === language
-    ).then(convs => {
-      setPastConversations(convs.sort((a, b) => b.updatedAt - a.updatedAt));
-    });
+    storage
+      .query<Conversation>(StoragePrefixes.conversations, (c) => c.language === language)
+      .then((convs) => {
+        setPastConversations(convs.sort((a, b) => b.updatedAt - a.updatedAt));
+      });
   }, [language, storage, conversation]);
 
   const handleScenarioSelect = async (scenario: ChatScenario | null) => {
-    await createConversation(
-      language,
-      difficulty,
-      scenario?.systemPromptAddition
-    );
+    await createConversation(language, difficulty, scenario?.systemPromptAddition);
     setShowScenarios(false);
   };
 
@@ -54,10 +50,12 @@ export default function ChatPage() {
   return (
     <div className="flex h-[calc(100vh-3.5rem)] md:h-[calc(100vh-3.5rem)]">
       {/* Conversation list sidebar (desktop) */}
-      <div className={cn(
-        'border-r border-border bg-card flex-col w-72',
-        showHistory ? 'flex' : 'hidden md:flex'
-      )}>
+      <div
+        className={cn(
+          'border-r border-border bg-card flex-col w-72',
+          showHistory ? 'flex' : 'hidden md:flex',
+        )}
+      >
         <div className="p-3 border-b border-border flex items-center justify-between">
           <h2 className="font-medium text-[11px] tracking-[0.15em]">対話 · Conversations</h2>
           <Button variant="ghost" size="sm" onClick={handleNewChat}>
@@ -68,7 +66,7 @@ export default function ChatPage() {
           {pastConversations.length === 0 && (
             <p className="text-xs text-muted-foreground p-2">No conversations yet</p>
           )}
-          {pastConversations.map(conv => (
+          {pastConversations.map((conv) => (
             <button
               key={conv.id}
               onClick={() => handleLoadConversation(conv.id)}
@@ -76,7 +74,7 @@ export default function ChatPage() {
                 'w-full text-left p-2.5 rounded-lg text-sm transition-colors',
                 conversation?.id === conv.id
                   ? 'bg-primary/10 text-primary'
-                  : 'hover:bg-muted text-foreground'
+                  : 'hover:bg-muted text-foreground',
               )}
             >
               <p className="font-medium truncate">{truncate(conv.title, 30)}</p>
@@ -92,11 +90,7 @@ export default function ChatPage() {
       <div className="flex-1 flex flex-col min-w-0">
         {/* Mobile toggle */}
         <div className="md:hidden flex items-center gap-2 p-2 border-b border-border">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowHistory(!showHistory)}
-          >
+          <Button variant="ghost" size="sm" onClick={() => setShowHistory(!showHistory)}>
             History
           </Button>
           <Button variant="ghost" size="sm" onClick={handleNewChat}>

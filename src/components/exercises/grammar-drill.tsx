@@ -20,9 +20,10 @@ export function GrammarDrill({ data, onSubmit, disabled }: GrammarDrillProps) {
 
   const handleSubmit = () => {
     const trimmed = answer.trim().toLowerCase();
-    const isCorrect = trimmed === data.answer ||
+    const isCorrect =
+      trimmed === data.answer ||
       trimmed === data.answer.toLowerCase() ||
-      data.acceptableAnswers.some(a => a.toLowerCase() === trimmed);
+      data.acceptableAnswers.some((a) => a.toLowerCase() === trimmed);
     onSubmit(answer.trim(), isCorrect);
   };
 
@@ -42,9 +43,7 @@ export function GrammarDrill({ data, onSubmit, disabled }: GrammarDrillProps) {
       </Badge>
 
       {data.pinyin && (
-        <p className="text-sm text-muted-foreground leading-relaxed tracking-wide">
-          {data.pinyin}
-        </p>
+        <p className="text-sm text-muted-foreground leading-relaxed tracking-wide">{data.pinyin}</p>
       )}
 
       <p className="text-base leading-relaxed">
@@ -70,7 +69,7 @@ export function GrammarDrill({ data, onSubmit, disabled }: GrammarDrillProps) {
               'text-[11px] px-2.5 py-1 rounded-full border transition-colors',
               mode === 'choice'
                 ? 'bg-primary/10 border-primary/30 text-primary'
-                : 'border-border text-muted-foreground hover:border-primary/30'
+                : 'border-border text-muted-foreground hover:border-primary/30',
             )}
           >
             Multiple Choice
@@ -81,7 +80,7 @@ export function GrammarDrill({ data, onSubmit, disabled }: GrammarDrillProps) {
               'text-[11px] px-2.5 py-1 rounded-full border transition-colors',
               mode === 'type'
                 ? 'bg-primary/10 border-primary/30 text-primary'
-                : 'border-border text-muted-foreground hover:border-primary/30'
+                : 'border-border text-muted-foreground hover:border-primary/30',
             )}
           >
             Type Answer
@@ -105,7 +104,7 @@ export function GrammarDrill({ data, onSubmit, disabled }: GrammarDrillProps) {
                     ? 'border-success/50 bg-success/10 text-success'
                     : selected === i
                       ? 'border-destructive/50 bg-destructive/10 text-destructive'
-                      : 'border-border/50 opacity-40'
+                      : 'border-border/50 opacity-40',
               )}
             >
               <span className="inline-flex items-center justify-center w-6 h-6 rounded-full border border-current/20 text-xs font-semibold mr-3">
@@ -132,7 +131,7 @@ export function GrammarDrill({ data, onSubmit, disabled }: GrammarDrillProps) {
                   ? 'border-success/50 bg-success/10 text-success'
                   : selected === i
                     ? 'border-destructive/50 bg-destructive/10 text-destructive'
-                    : 'border-border/50 opacity-40'
+                    : 'border-border/50 opacity-40',
               )}
             >
               <span className="inline-flex items-center justify-center w-6 h-6 rounded-full border border-current/20 text-xs font-semibold mr-3">
@@ -153,9 +152,9 @@ export function GrammarDrill({ data, onSubmit, disabled }: GrammarDrillProps) {
           <div className="flex gap-2">
             <Input
               value={answer}
-              onChange={e => setAnswer(e.target.value)}
+              onChange={(e) => setAnswer(e.target.value)}
               placeholder="Type characters, pinyin, or English..."
-              onKeyDown={e => e.key === 'Enter' && answer.trim() && handleSubmit()}
+              onKeyDown={(e) => e.key === 'Enter' && answer.trim() && handleSubmit()}
               autoFocus
             />
             <Button onClick={handleSubmit} disabled={!answer.trim()}>
@@ -166,7 +165,9 @@ export function GrammarDrill({ data, onSubmit, disabled }: GrammarDrillProps) {
       )}
 
       {disabled && data.explanation && (
-        <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-line">{data.explanation}</p>
+        <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-line">
+          {data.explanation}
+        </p>
       )}
     </div>
   );

@@ -29,7 +29,7 @@ const TYPE_LABELS: Record<string, string> = {
   'multiple-choice': 'Multiple Choice',
   'sentence-mc': 'Sentence Quiz',
   'fill-in-blank': 'Fill in the Blank',
-  'translation': 'Translation',
+  translation: 'Translation',
   'sentence-construction': 'Sentence Building',
   'character-recognition': 'Character Recognition',
   'grammar-drill': 'Grammar Drill',
@@ -82,7 +82,11 @@ export function ExerciseShell({ exercise, onComplete, onNext }: ExerciseShellPro
           body: JSON.stringify({
             language: exercise.language,
             difficulty: exercise.difficulty,
-            exercise: { question: exercise.question, instruction: exercise.instruction, data: exercise.data },
+            exercise: {
+              question: exercise.question,
+              instruction: exercise.instruction,
+              data: exercise.data,
+            },
             userAnswer: answer,
           }),
         });
@@ -111,7 +115,9 @@ export function ExerciseShell({ exercise, onComplete, onNext }: ExerciseShellPro
     // Pronounce the correct sentence/word after answering
     const speech = getAnswerSpeech(exercise);
     if (speech) {
-      speak(speech, exercise.language, speechRate).catch(() => { /* TTS unavailable */ });
+      speak(speech, exercise.language, speechRate).catch(() => {
+        /* TTS unavailable */
+      });
     }
   };
 
@@ -127,17 +133,25 @@ export function ExerciseShell({ exercise, onComplete, onNext }: ExerciseShellPro
       case 'fill-in-blank':
         return <FillInBlank data={exercise.data} onSubmit={handleSubmit} disabled={!!result} />;
       case 'translation':
-        return <TranslationExercise data={exercise.data} onSubmit={handleSubmit} disabled={!!result} />;
+        return (
+          <TranslationExercise data={exercise.data} onSubmit={handleSubmit} disabled={!!result} />
+        );
       case 'sentence-construction':
-        return <SentenceConstruction data={exercise.data} onSubmit={handleSubmit} disabled={!!result} />;
+        return (
+          <SentenceConstruction data={exercise.data} onSubmit={handleSubmit} disabled={!!result} />
+        );
       case 'character-recognition':
-        return <CharacterRecognition data={exercise.data} onSubmit={handleSubmit} disabled={!!result} />;
+        return (
+          <CharacterRecognition data={exercise.data} onSubmit={handleSubmit} disabled={!!result} />
+        );
       case 'grammar-drill':
         return <GrammarDrill data={exercise.data} onSubmit={handleSubmit} disabled={!!result} />;
       case 'dialogue-reading':
         return <DialogueReading data={exercise.data} onSubmit={handleSubmit} disabled={!!result} />;
       case 'dialogue-comprehension':
-        return <DialogueComprehension data={exercise.data} onSubmit={handleSubmit} disabled={!!result} />;
+        return (
+          <DialogueComprehension data={exercise.data} onSubmit={handleSubmit} disabled={!!result} />
+        );
       default:
         return <p className="text-sm">Unknown exercise type</p>;
     }
@@ -157,13 +171,13 @@ export function ExerciseShell({ exercise, onComplete, onNext }: ExerciseShellPro
         {/* Question */}
         <div className="space-y-1.5">
           <p className="text-lg font-semibold leading-snug">{exercise.question}</p>
-          <p className="text-xs text-muted-foreground whitespace-pre-line">{exercise.instruction}</p>
+          <p className="text-xs text-muted-foreground whitespace-pre-line">
+            {exercise.instruction}
+          </p>
         </div>
 
         {/* Exercise body */}
-        <div key={exercise.id}>
-          {renderExercise()}
-        </div>
+        <div key={exercise.id}>{renderExercise()}</div>
 
         {/* Evaluating spinner */}
         {evaluating && (
@@ -175,17 +189,19 @@ export function ExerciseShell({ exercise, onComplete, onNext }: ExerciseShellPro
 
         {/* Result feedback */}
         {result && (
-          <div className={cn(
-            'px-4 py-3 rounded-lg text-sm',
-            result.correct
-              ? 'bg-success/10 text-success'
-              : 'bg-destructive/10 text-destructive'
-          )}>
+          <div
+            className={cn(
+              'px-4 py-3 rounded-lg text-sm',
+              result.correct ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive',
+            )}
+          >
             <p className="font-semibold text-[13px]">
               {result.correct ? 'Correct!' : 'Not quite right'}
             </p>
             {result.feedback && (
-              <p className="mt-1 text-xs text-foreground/70 whitespace-pre-line">{result.feedback}</p>
+              <p className="mt-1 text-xs text-foreground/70 whitespace-pre-line">
+                {result.feedback}
+              </p>
             )}
           </div>
         )}

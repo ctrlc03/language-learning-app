@@ -26,8 +26,8 @@ export default function DashboardPage() {
   const t = todayParts();
 
   const wordsInDecks = useMemo(
-    () => decks.filter(d => d.language === language).reduce((sum, d) => sum + d.cardCount, 0),
-    [decks, language]
+    () => decks.filter((d) => d.language === language).reduce((sum, d) => sum + d.cardCount, 0),
+    [decks, language],
   );
   const corpus = useMemo(() => getVocabulary(language).length, [language]);
 
@@ -35,9 +35,10 @@ export default function DashboardPage() {
   const exercises = todayActivity?.exercises ?? 0;
   const minutesToday = Math.min((reviews + exercises) * 2, 120);
   const newToday = todayActivity?.newCards ?? 0;
-  const accuracy = todayActivity && todayActivity.totalAnswers > 0
-    ? Math.round((todayActivity.correctAnswers / todayActivity.totalAnswers) * 100)
-    : 0;
+  const accuracy =
+    todayActivity && todayActivity.totalAnswers > 0
+      ? Math.round((todayActivity.correctAnswers / todayActivity.totalAnswers) * 100)
+      : 0;
 
   // current week, Monday-first, lit up to (and including) today within the streak
   const todayIdx = (new Date().getDay() + 6) % 7;
@@ -64,7 +65,9 @@ export default function DashboardPage() {
         <InkCard className="hero">
           <div className="seal-corner" />
           <div className="hero-text">
-            <div className="eyebrow">▍ {hero.band} · {hero.topic}</div>
+            <div className="eyebrow">
+              ▍ {hero.band} · {hero.topic}
+            </div>
             <h2>{hero.title}</h2>
             <p>{hero.desc}</p>
             <div className="cta-row">
@@ -128,13 +131,15 @@ export default function DashboardPage() {
               {minutesToday}
               <small>min</small>
             </div>
-            <div className="s">Goal 30 min · {Math.min(Math.round((minutesToday / 30) * 100), 100)}% complete</div>
+            <div className="s">
+              Goal 30 min · {Math.min(Math.round((minutesToday / 30) * 100), 100)}% complete
+            </div>
           </InkCard>
         </div>
 
         <InkCard title="Your lessons" cjk="課" meta={`${native} · ${lessons.length} threads`}>
           <div className="lesson-list">
-            {lessons.map(les => (
+            {lessons.map((les) => (
               <div key={les.id} className="lesson-item" onClick={() => router.push('/flashcards')}>
                 <div className="glyph">{les.glyph}</div>
                 <div className="main">

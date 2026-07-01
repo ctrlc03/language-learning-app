@@ -45,27 +45,42 @@ function vocabFor(language: Language): VocabularyItem[] {
 }
 
 // Mirrors the difficulty filtering used by the written-exercise generator.
-function byDifficulty(items: VocabularyItem[], language: Language, difficulty: DifficultyLevel): VocabularyItem[] {
+function byDifficulty(
+  items: VocabularyItem[],
+  language: Language,
+  difficulty: DifficultyLevel,
+): VocabularyItem[] {
   if (difficulty === 'beginner') {
     if (language === 'chinese') {
-      return items.filter(v =>
-        v.level === 'HSK 1' || v.level === 'Pinyin & Adjectives' ||
-        v.level === 'Time & Daily Schedule' || v.level === 'Family & Occupations'
+      return items.filter(
+        (v) =>
+          v.level === 'HSK 1' ||
+          v.level === 'Pinyin & Adjectives' ||
+          v.level === 'Time & Daily Schedule' ||
+          v.level === 'Family & Occupations',
       );
     }
-    return items.filter(v => v.level === 'JLPT N5' || v.level === 'Irodori Starter');
+    return items.filter((v) => v.level === 'JLPT N5' || v.level === 'Irodori Starter');
   }
   if (difficulty === 'intermediate') {
     if (language === 'chinese') {
-      return items.filter(v =>
-        v.level === 'HSK 1' || v.level === 'HSK 2' ||
-        (v.level && !v.level.startsWith('HSK 3') && !v.level.startsWith('HSK 4') &&
-          !v.level.startsWith('HSK 5') && !v.level.startsWith('HSK 6'))
+      return items.filter(
+        (v) =>
+          v.level === 'HSK 1' ||
+          v.level === 'HSK 2' ||
+          (v.level &&
+            !v.level.startsWith('HSK 3') &&
+            !v.level.startsWith('HSK 4') &&
+            !v.level.startsWith('HSK 5') &&
+            !v.level.startsWith('HSK 6')),
       );
     }
-    return items.filter(v =>
-      v.level === 'JLPT N5' || v.level === 'JLPT N4' ||
-      v.level === 'Irodori Starter' || v.level === 'Irodori Elementary 1'
+    return items.filter(
+      (v) =>
+        v.level === 'JLPT N5' ||
+        v.level === 'JLPT N4' ||
+        v.level === 'Irodori Starter' ||
+        v.level === 'Irodori Elementary 1',
     );
   }
   return items;
@@ -74,13 +89,17 @@ function byDifficulty(items: VocabularyItem[], language: Language, difficulty: D
 const MAX_ITEMS = 40;
 
 /** Dictation prompts: listen and type the word/sentence. */
-export function getDictationItems(language: Language, difficulty: DifficultyLevel, seed: number): DictationItem[] {
+export function getDictationItems(
+  language: Language,
+  difficulty: DifficultyLevel,
+  seed: number,
+): DictationItem[] {
   const vocab = byDifficulty(vocabFor(language), language, difficulty);
   const rng = seededRandom(seed);
 
   const sentenceItems: DictationItem[] = vocab
-    .filter(v => v.exampleSentence && v.exampleSentence.trim().length >= 2)
-    .map(v => ({
+    .filter((v) => v.exampleSentence && v.exampleSentence.trim().length >= 2)
+    .map((v) => ({
       text: v.exampleSentence!.trim(),
       hint: v.exampleTranslation || v.meaning,
       reading: v.examplePinyin || v.reading,
@@ -88,26 +107,29 @@ export function getDictationItems(language: Language, difficulty: DifficultyLeve
     }));
 
   const wordItems: DictationItem[] = vocab
-    .filter(v => v.word && v.word.length >= 1 && v.word.length <= 4)
-    .map(v => ({ text: v.word, hint: v.meaning, reading: v.reading, translation: v.meaning }));
+    .filter((v) => v.word && v.word.length >= 1 && v.word.length <= 4)
+    .map((v) => ({ text: v.word, hint: v.meaning, reading: v.reading, translation: v.meaning }));
 
   // Beginners get short words first; higher levels lead with sentences.
-  const ordered = difficulty === 'beginner'
-    ? [...wordItems, ...sentenceItems]
-    : [...sentenceItems, ...wordItems];
+  const ordered =
+    difficulty === 'beginner' ? [...wordItems, ...sentenceItems] : [...sentenceItems, ...wordItems];
 
   const seen = new Set<string>();
-  const deduped = ordered.filter(i => (seen.has(i.text) ? false : (seen.add(i.text), true)));
+  const deduped = ordered.filter((i) => (seen.has(i.text) ? false : (seen.add(i.text), true)));
   return shuffle(deduped, rng).slice(0, MAX_ITEMS);
 }
 
 /** Listen-and-choose: hear a sentence/word, pick the English meaning. */
-export function getListenChooseItems(language: Language, difficulty: DifficultyLevel, seed: number): ListenChooseItem[] {
+export function getListenChooseItems(
+  language: Language,
+  difficulty: DifficultyLevel,
+  seed: number,
+): ListenChooseItem[] {
   const vocab = byDifficulty(vocabFor(language), language, difficulty);
   const rng = seededRandom(seed);
 
-  const sentencePool = vocab.filter(v => v.exampleSentence && v.exampleTranslation);
-  const wordPool = vocab.filter(v => v.meaning);
+  const sentencePool = vocab.filter((v) => v.exampleSentence && v.exampleTranslation);
+  const wordPool = vocab.filter((v) => v.meaning);
 
   const items: ListenChooseItem[] = [];
 
@@ -116,15 +138,15 @@ export function getListenChooseItems(language: Language, difficulty: DifficultyL
     getText: (v: VocabularyItem) => string,
     getAnswer: (v: VocabularyItem) => string,
     distractorOf: (v: VocabularyItem) => string,
-    question: string
+    question: string,
   ) => {
     const answers = Array.from(new Set(pool.map(getAnswer)));
     if (answers.length < 4) return;
     for (const v of pool) {
       const answer = getAnswer(v);
       const distractors = shuffle(
-        answers.filter(a => a !== answer),
-        rng
+        answers.filter((a) => a !== answer),
+        rng,
       ).slice(0, 3);
       if (distractors.length < 3) continue;
       const correctIndex = Math.floor(rng() * 4);
@@ -136,13 +158,19 @@ export function getListenChooseItems(language: Language, difficulty: DifficultyL
 
   build(
     sentencePool,
-    v => v.exampleSentence!,
-    v => v.exampleTranslation!,
-    v => v.exampleTranslation!,
-    'What does this sentence mean?'
+    (v) => v.exampleSentence!,
+    (v) => v.exampleTranslation!,
+    (v) => v.exampleTranslation!,
+    'What does this sentence mean?',
   );
   // Word-level items broaden the pool, especially for beginners.
-  build(wordPool, v => v.word, v => v.meaning, v => v.meaning, 'What does this word mean?');
+  build(
+    wordPool,
+    (v) => v.word,
+    (v) => v.meaning,
+    (v) => v.meaning,
+    'What does this word mean?',
+  );
 
   return shuffle(items, rng).slice(0, MAX_ITEMS);
 }

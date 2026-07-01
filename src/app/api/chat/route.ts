@@ -19,7 +19,7 @@ export async function POST(request: Request) {
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 1024,
       system: systemPrompt,
-      messages: messages.map(m => ({
+      messages: messages.map((m) => ({
         role: m.role,
         content: m.content,
       })),
@@ -29,10 +29,7 @@ export async function POST(request: Request) {
     const readableStream = new ReadableStream({
       async start(controller) {
         for await (const event of stream) {
-          if (
-            event.type === 'content_block_delta' &&
-            event.delta.type === 'text_delta'
-          ) {
+          if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
             controller.enqueue(encoder.encode(event.delta.text));
           }
         }
@@ -48,9 +45,9 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error('Chat API error:', error);
-    return new Response(
-      JSON.stringify({ error: 'Failed to process chat request' }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify({ error: 'Failed to process chat request' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }

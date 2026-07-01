@@ -35,15 +35,16 @@ export default function JournalPage() {
   }, [storage]);
 
   const jpWords = useMemo(
-    () => decks.filter(d => d.language === 'japanese').reduce((s, d) => s + d.cardCount, 0),
-    [decks]
+    () => decks.filter((d) => d.language === 'japanese').reduce((s, d) => s + d.cardCount, 0),
+    [decks],
   );
   const zhWords = useMemo(
-    () => decks.filter(d => d.language === 'chinese').reduce((s, d) => s + d.cardCount, 0),
-    [decks]
+    () => decks.filter((d) => d.language === 'chinese').reduce((s, d) => s + d.cardCount, 0),
+    [decks],
   );
 
-  const xp = progress.totalReviews * 5 + progress.totalExercises * 8 + progress.totalConversations * 10;
+  const xp =
+    progress.totalReviews * 5 + progress.totalExercises * 8 + progress.totalConversations * 10;
   const level = Math.floor(xp / 300) + 1;
   const xpFloor = (level - 1) * 300;
   const xpToNext = level * 300;
@@ -53,14 +54,44 @@ export default function JournalPage() {
   const zhFactor = clamp01(0.25 + zhWords / 300);
 
   const achievements = [
-    { id: 'a1', glyph: '続', title: '30-Day Path', sub: 'A month unbroken', on: progress.streak >= 30 },
-    { id: 'a2', glyph: '百', title: 'Hundred Glyphs', sub: '100 cards', on: jpWords + zhWords >= 100 },
+    {
+      id: 'a1',
+      glyph: '続',
+      title: '30-Day Path',
+      sub: 'A month unbroken',
+      on: progress.streak >= 30,
+    },
+    {
+      id: 'a2',
+      glyph: '百',
+      title: 'Hundred Glyphs',
+      sub: '100 cards',
+      on: jpWords + zhWords >= 100,
+    },
     { id: 'a3', glyph: '束', title: 'Deck Builder', sub: '3 decks studied', on: decks.length >= 3 },
-    { id: 'a4', glyph: '復', title: 'Steady Revisit', sub: '50 reviews', on: progress.totalReviews >= 50 },
-    { id: 'a5', glyph: '話', title: 'First Words', sub: 'A conversation', on: progress.totalConversations >= 1 },
-    { id: 'a6', glyph: '流', title: 'Flow State', sub: '100-day streak', on: progress.streak >= 100 },
+    {
+      id: 'a4',
+      glyph: '復',
+      title: 'Steady Revisit',
+      sub: '50 reviews',
+      on: progress.totalReviews >= 50,
+    },
+    {
+      id: 'a5',
+      glyph: '話',
+      title: 'First Words',
+      sub: 'A conversation',
+      on: progress.totalConversations >= 1,
+    },
+    {
+      id: 'a6',
+      glyph: '流',
+      title: 'Flow State',
+      sub: '100-day streak',
+      on: progress.streak >= 100,
+    },
   ];
-  const earned = achievements.filter(a => a.on).length;
+  const earned = achievements.filter((a) => a.on).length;
 
   return (
     <>
@@ -118,14 +149,16 @@ export default function JournalPage() {
               <span style={{ fontSize: 13, color: 'var(--ink-soft)' }}>Dual-track proficiency</span>
               <div className="lg">
                 <span>
-                  <i className="jp" />日本語
+                  <i className="jp" />
+                  日本語
                 </span>
                 <span>
-                  <i className="zh" />中文
+                  <i className="zh" />
+                  中文
                 </span>
               </div>
             </div>
-            {SKILLS.map(s => {
+            {SKILLS.map((s) => {
               const jp = Math.round(clamp01(jpFactor * s.w) * 100);
               const zh = Math.round(clamp01(zhFactor * s.w) * 100);
               return (
@@ -144,9 +177,14 @@ export default function JournalPage() {
             })}
           </InkCard>
 
-          <InkCard className="seals-card" title="Seals earned" cjk="印" meta={`${earned} / ${achievements.length}`}>
+          <InkCard
+            className="seals-card"
+            title="Seals earned"
+            cjk="印"
+            meta={`${earned} / ${achievements.length}`}
+          >
             <div className="seals-grid">
-              {achievements.map(a => (
+              {achievements.map((a) => (
                 <div key={a.id} className={`seal-item ${a.on ? 'on' : 'off'}`}>
                   <div className="stamp">{a.glyph}</div>
                   <div className="t">{a.title}</div>

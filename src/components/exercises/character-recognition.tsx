@@ -43,7 +43,7 @@ export function CharacterRecognition({ data, onSubmit, disabled }: CharacterReco
                   ? 'border-success/50 bg-success/10 text-success'
                   : selected === i
                     ? 'border-destructive/50 bg-destructive/10 text-destructive'
-                    : 'border-border/50 opacity-40'
+                    : 'border-border/50 opacity-40',
             )}
           >
             {option}

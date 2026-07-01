@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "./inkpath.css";
+@import 'tailwindcss';
+@import './inkpath.css';
 
 /* 墨 INKPATH — paper & ink language study
    Tailwind tokens are mapped onto the per-language "world" variables so that
@@ -43,7 +43,7 @@
 /* ---------- LANGUAGE WORLDS ----------
    Both the design tokens and the Tailwind-mapped tokens are set here so the
    whole subtree (including utility-styled routes) re-themes per language. */
-.app[data-lang="jp"] {
+.app[data-lang='jp'] {
   --serif: var(--serif-jp);
   --paper-img: url(/inkpath/paper-jp.png);
   --motif-img: url(/inkpath/seigaiha.png);
@@ -57,7 +57,7 @@
   --card-edge: #d4cdba;
   --line: #ccc4ae;
 
-  --primary: #284b73;     /* 藍 ai indigo */
+  --primary: #284b73; /* 藍 ai indigo */
   --primary-soft: #4a6c92;
   --gold: #9a7b3f;
   --jade: #4a7c59;
@@ -71,13 +71,13 @@
   --border: #ccc4ae;
   --card: #f1ece0;
   --card-foreground: #1b2a41;
-  --accent: #c0392b;      /* 朱 vermillion */
+  --accent: #c0392b; /* 朱 vermillion */
   --accent-foreground: #ffffff;
   --destructive: #c0392b;
   --success: #4a7c59;
 }
 
-.app[data-lang="zh"] {
+.app[data-lang='zh'] {
   --serif: var(--serif-zh);
   --paper-img: url(/inkpath/paper-zh.png);
   --motif-img: url(/inkpath/coins.png);
@@ -91,7 +91,7 @@
   --card-edge: #e0d3b4;
   --line: #ddcdab;
 
-  --primary: #b23b2e;     /* 朱 cinnabar */
+  --primary: #b23b2e; /* 朱 cinnabar */
   --primary-soft: #c8675a;
   --gold: #b8893a;
   --jade: #3f6f57;
@@ -105,7 +105,7 @@
   --border: #ddcdab;
   --card: #f8f0de;
   --card-foreground: #2b1a12;
-  --accent: #b8893a;      /* 金 gold */
+  --accent: #b8893a; /* 金 gold */
   --accent-foreground: #ffffff;
   --destructive: #b23b2e;
   --success: #3f6f57;
@@ -115,11 +115,11 @@
    Higher specificity (theme + lang) overrides the light blocks above. Both the
    design vars and the Tailwind bridge tokens are re-set so the whole subtree
    goes dark. */
-.app[data-theme="dark"] {
+.app[data-theme='dark'] {
   --bar-jp: #7aa2d6;
   --bar-zh: #e87a6b;
 }
-.app[data-theme="dark"][data-lang="jp"] {
+.app[data-theme='dark'][data-lang='jp'] {
   --paper-img: url(/inkpath/paper-jp-dark.png);
   --ink: #eceadf;
   --ink-soft: #b3bacb;
@@ -127,7 +127,7 @@
   --paper: #141b2a;
   --card-edge: #313c56;
   --line: #313c56;
-  --primary: #7aa2d6;     /* 藍 lightened */
+  --primary: #7aa2d6; /* 藍 lightened */
   --primary-soft: #9bbce6;
   --gold: #cda45c;
   --jade: #6cae84;
@@ -140,12 +140,12 @@
   --border: #313c56;
   --card: #1d2638;
   --card-foreground: #eceadf;
-  --accent: #ec7464;      /* 朱 brightened */
+  --accent: #ec7464; /* 朱 brightened */
   --accent-foreground: #141b2a;
   --destructive: #ec7464;
   --success: #6cae84;
 }
-.app[data-theme="dark"][data-lang="zh"] {
+.app[data-theme='dark'][data-lang='zh'] {
   --paper-img: url(/inkpath/paper-zh-dark.png);
   --ink: #f1e7d6;
   --ink-soft: #cbb293;
@@ -153,7 +153,7 @@
   --paper: #1d1410;
   --card-edge: #41301f;
   --line: #41301f;
-  --primary: #e8786a;     /* 朱 brightened cinnabar */
+  --primary: #e8786a; /* 朱 brightened cinnabar */
   --primary-soft: #f09a8d;
   --gold: #e0b665;
   --jade: #6cae84;
@@ -166,7 +166,7 @@
   --border: #41301f;
   --card: #281c15;
   --card-foreground: #f1e7d6;
-  --accent: #e0b665;      /* 金 brightened */
+  --accent: #e0b665; /* 金 brightened */
   --accent-foreground: #1d1410;
   --destructive: #e8786a;
   --success: #6cae84;
@@ -201,7 +201,9 @@
 
 /* Back-compat aliases: any lingering cyberpunk neon references now resolve to
    the paper-and-ink palette so older routes stay legible. */
-:root, .app[data-lang="jp"], .app[data-lang="zh"] {
+:root,
+.app[data-lang='jp'],
+.app[data-lang='zh'] {
   --neon-pink: var(--accent);
   --neon-cyan: var(--primary);
   --neon-lime: var(--success);
@@ -209,9 +211,14 @@
   --neon-violet: var(--primary);
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
-html, body { height: 100%; }
+html,
+body {
+  height: 100%;
+}
 body {
   font-family: var(--ui);
   color: var(--ink);
@@ -220,10 +227,21 @@ body {
 }
 
 /* CJK font helpers (used across the app) */
-.cjk-jp { font-family: var(--serif-jp); }
-.cjk-zh { font-family: var(--serif-zh); }
-.font-display { font-family: var(--serif); }
+.cjk-jp {
+  font-family: var(--serif-jp);
+}
+.cjk-zh {
+  font-family: var(--serif-zh);
+}
+.font-display {
+  font-family: var(--serif);
+}
 
 /* CJK ruby */
-ruby { ruby-align: center; }
-rt { font-size: 0.5em; color: var(--ink-faint); }
+ruby {
+  ruby-align: center;
+}
+rt {
+  font-size: 0.5em;
+  color: var(--ink-faint);
+}

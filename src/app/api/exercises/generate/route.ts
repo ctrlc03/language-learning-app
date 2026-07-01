@@ -4,16 +4,32 @@ import type { Language, DifficultyLevel, ExerciseType } from '@/types';
 
 function buildToolForType(exerciseType: ExerciseType) {
   const baseProperties = {
-    question: { type: 'string' as const, description: 'The main question or prompt for the student' },
-    instruction: { type: 'string' as const, description: 'Brief instructions telling the student what to do' },
+    question: {
+      type: 'string' as const,
+      description: 'The main question or prompt for the student',
+    },
+    instruction: {
+      type: 'string' as const,
+      description: 'Brief instructions telling the student what to do',
+    },
   };
 
-  const typeSchemas: Record<ExerciseType, { properties: Record<string, unknown>; required: string[] }> = {
+  const typeSchemas: Record<
+    ExerciseType,
+    { properties: Record<string, unknown>; required: string[] }
+  > = {
     'multiple-choice': {
       properties: {
         ...baseProperties,
-        options: { type: 'array' as const, items: { type: 'string' as const }, description: 'Array of 4 answer choices' },
-        correctIndex: { type: 'number' as const, description: 'Zero-based index of the correct answer (0-3)' },
+        options: {
+          type: 'array' as const,
+          items: { type: 'string' as const },
+          description: 'Array of 4 answer choices',
+        },
+        correctIndex: {
+          type: 'number' as const,
+          description: 'Zero-based index of the correct answer (0-3)',
+        },
         explanation: { type: 'string' as const, description: 'Why the correct answer is right' },
       },
       required: ['question', 'instruction', 'options', 'correctIndex', 'explanation'],
@@ -21,8 +37,15 @@ function buildToolForType(exerciseType: ExerciseType) {
     'sentence-mc': {
       properties: {
         ...baseProperties,
-        options: { type: 'array' as const, items: { type: 'string' as const }, description: 'Array of 4 answer choices' },
-        correctIndex: { type: 'number' as const, description: 'Zero-based index of the correct answer (0-3)' },
+        options: {
+          type: 'array' as const,
+          items: { type: 'string' as const },
+          description: 'Array of 4 answer choices',
+        },
+        correctIndex: {
+          type: 'number' as const,
+          description: 'Zero-based index of the correct answer (0-3)',
+        },
         explanation: { type: 'string' as const, description: 'Why the correct answer is right' },
       },
       required: ['question', 'instruction', 'options', 'correctIndex', 'explanation'],
@@ -32,27 +55,48 @@ function buildToolForType(exerciseType: ExerciseType) {
         ...baseProperties,
         sentence: { type: 'string' as const, description: 'Sentence with ___ marking the blank' },
         answer: { type: 'string' as const, description: 'The correct answer for the blank' },
-        acceptableAnswers: { type: 'array' as const, items: { type: 'string' as const }, description: 'Other acceptable answers' },
+        acceptableAnswers: {
+          type: 'array' as const,
+          items: { type: 'string' as const },
+          description: 'Other acceptable answers',
+        },
         hint: { type: 'string' as const, description: 'Optional hint for the student' },
       },
       required: ['question', 'instruction', 'sentence', 'answer', 'acceptableAnswers'],
     },
-    'translation': {
+    translation: {
       properties: {
         ...baseProperties,
         sourceText: { type: 'string' as const, description: 'Text to translate' },
-        sourceLanguage: { type: 'string' as const, description: 'Language of the source text (e.g. "english" or "chinese")' },
+        sourceLanguage: {
+          type: 'string' as const,
+          description: 'Language of the source text (e.g. "english" or "chinese")',
+        },
         targetLanguage: { type: 'string' as const, description: 'Language to translate into' },
         sampleAnswer: { type: 'string' as const, description: 'A good sample translation' },
       },
-      required: ['question', 'instruction', 'sourceText', 'sourceLanguage', 'targetLanguage', 'sampleAnswer'],
+      required: [
+        'question',
+        'instruction',
+        'sourceText',
+        'sourceLanguage',
+        'targetLanguage',
+        'sampleAnswer',
+      ],
     },
     'sentence-construction': {
       properties: {
         ...baseProperties,
-        words: { type: 'array' as const, items: { type: 'string' as const }, description: 'Scrambled words/particles to arrange' },
+        words: {
+          type: 'array' as const,
+          items: { type: 'string' as const },
+          description: 'Scrambled words/particles to arrange',
+        },
         correctOrder: { type: 'string' as const, description: 'The words joined in correct order' },
-        translation: { type: 'string' as const, description: 'English translation of the correct sentence' },
+        translation: {
+          type: 'string' as const,
+          description: 'English translation of the correct sentence',
+        },
       },
       required: ['question', 'instruction', 'words', 'correctOrder', 'translation'],
     },
@@ -60,12 +104,27 @@ function buildToolForType(exerciseType: ExerciseType) {
       properties: {
         ...baseProperties,
         character: { type: 'string' as const, description: 'The character to identify' },
-        options: { type: 'array' as const, items: { type: 'string' as const }, description: 'Array of 4 meaning choices' },
-        correctIndex: { type: 'number' as const, description: 'Zero-based index of the correct meaning (0-3)' },
+        options: {
+          type: 'array' as const,
+          items: { type: 'string' as const },
+          description: 'Array of 4 meaning choices',
+        },
+        correctIndex: {
+          type: 'number' as const,
+          description: 'Zero-based index of the correct meaning (0-3)',
+        },
         reading: { type: 'string' as const, description: 'Pinyin or hiragana reading' },
         meaning: { type: 'string' as const, description: 'Correct English meaning' },
       },
-      required: ['question', 'instruction', 'character', 'options', 'correctIndex', 'reading', 'meaning'],
+      required: [
+        'question',
+        'instruction',
+        'character',
+        'options',
+        'correctIndex',
+        'reading',
+        'meaning',
+      ],
     },
     'grammar-drill': {
       properties: {
@@ -73,10 +132,22 @@ function buildToolForType(exerciseType: ExerciseType) {
         grammarPoint: { type: 'string' as const, description: 'The grammar pattern being tested' },
         sentence: { type: 'string' as const, description: 'Sentence with ___ marking the blank' },
         answer: { type: 'string' as const, description: 'The correct answer' },
-        acceptableAnswers: { type: 'array' as const, items: { type: 'string' as const }, description: 'Other acceptable answers' },
+        acceptableAnswers: {
+          type: 'array' as const,
+          items: { type: 'string' as const },
+          description: 'Other acceptable answers',
+        },
         explanation: { type: 'string' as const, description: 'Explanation of the grammar point' },
       },
-      required: ['question', 'instruction', 'grammarPoint', 'sentence', 'answer', 'acceptableAnswers', 'explanation'],
+      required: [
+        'question',
+        'instruction',
+        'grammarPoint',
+        'sentence',
+        'answer',
+        'acceptableAnswers',
+        'explanation',
+      ],
     },
     'dialogue-reading': {
       properties: {
@@ -90,8 +161,15 @@ function buildToolForType(exerciseType: ExerciseType) {
     'dialogue-comprehension': {
       properties: {
         ...baseProperties,
-        options: { type: 'array' as const, items: { type: 'string' as const }, description: 'Array of 4 answer choices' },
-        correctIndex: { type: 'number' as const, description: 'Zero-based index of the correct answer (0-3)' },
+        options: {
+          type: 'array' as const,
+          items: { type: 'string' as const },
+          description: 'Array of 4 answer choices',
+        },
+        correctIndex: {
+          type: 'number' as const,
+          description: 'Zero-based index of the correct answer (0-3)',
+        },
       },
       required: ['question', 'instruction', 'options', 'correctIndex'],
     },
@@ -192,7 +270,13 @@ export async function POST(request: Request) {
     };
 
     const client = getAnthropicClient();
-    const prompt = buildExerciseGenerationPrompt(language, difficulty, exerciseType, topic, previousQuestions);
+    const prompt = buildExerciseGenerationPrompt(
+      language,
+      difficulty,
+      exerciseType,
+      topic,
+      previousQuestions,
+    );
     const tool = buildToolForType(exerciseType);
 
     const response = await client.messages.create({
@@ -203,7 +287,7 @@ export async function POST(request: Request) {
       messages: [{ role: 'user', content: prompt }],
     });
 
-    const toolUse = response.content.find(block => block.type === 'tool_use');
+    const toolUse = response.content.find((block) => block.type === 'tool_use');
     if (!toolUse || toolUse.type !== 'tool_use') {
       throw new Error('No tool use in response');
     }
@@ -218,9 +302,6 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error('Exercise generation error:', error);
-    return Response.json(
-      { error: 'Failed to generate exercise' },
-      { status: 500 }
-    );
+    return Response.json({ error: 'Failed to generate exercise' }, { status: 500 });
   }
 }

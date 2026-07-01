@@ -22,7 +22,7 @@ export function Furigana({ segments, className }: FuriganaProps) {
           </ruby>
         ) : (
           <span key={i}>{seg.t}</span>
-        )
+        ),
       )}
     </span>
   );

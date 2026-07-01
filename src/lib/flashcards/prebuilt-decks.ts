@@ -21,7 +21,7 @@ export interface PrebuiltDeckDef {
 
 export function getPrebuiltDecks(language: Language): PrebuiltDeckDef[] {
   if (language === 'chinese') {
-    return chineseLessons.map(lesson => ({
+    return chineseLessons.map((lesson) => ({
       id: `prebuilt-zh-lesson-${lesson.lesson}`,
       name: `Lesson ${lesson.lesson}: ${lesson.title}`,
       language: 'chinese' as const,
@@ -32,8 +32,8 @@ export function getPrebuiltDecks(language: Language): PrebuiltDeckDef[] {
   }
 
   // Japanese: group by Irodori level
-  return irodoriLevels.map(level => {
-    const words = irodoriVocabulary.filter(v => v.level === level);
+  return irodoriLevels.map((level) => {
+    const words = irodoriVocabulary.filter((v) => v.level === level);
     return {
       id: `prebuilt-ja-${level.toLowerCase().replace(/\s+/g, '-')}`,
       name: level,
@@ -50,7 +50,7 @@ export function getPrebuiltDecks(language: Language): PrebuiltDeckDef[] {
  * that can be stored. Limits to first 50 cards per deck to keep things manageable.
  */
 export function instantiatePrebuiltDeck(
-  prebuiltId: string
+  prebuiltId: string,
 ): { deck: FlashcardDeck; cards: Flashcard[] } | null {
   const now = Date.now();
 
@@ -58,7 +58,7 @@ export function instantiatePrebuiltDeck(
   const zhMatch = prebuiltId.match(/^prebuilt-zh-lesson-(\d+)$/);
   if (zhMatch) {
     const lessonNum = parseInt(zhMatch[1], 10);
-    const lesson = chineseLessons.find(l => l.lesson === lessonNum);
+    const lesson = chineseLessons.find((l) => l.lesson === lessonNum);
     if (!lesson) return null;
 
     const deckId = nanoid();
@@ -72,7 +72,7 @@ export function instantiatePrebuiltDeck(
       updatedAt: now,
     };
 
-    const cards: Flashcard[] = lesson.vocabulary.slice(0, 50).map(v => ({
+    const cards: Flashcard[] = lesson.vocabulary.slice(0, 50).map((v) => ({
       id: nanoid(),
       deckId,
       front: v.word,
@@ -93,12 +93,10 @@ export function instantiatePrebuiltDeck(
   const jaMatch = prebuiltId.match(/^prebuilt-ja-(.+)$/);
   if (jaMatch) {
     const levelSlug = jaMatch[1];
-    const level = irodoriLevels.find(
-      l => l.toLowerCase().replace(/\s+/g, '-') === levelSlug
-    );
+    const level = irodoriLevels.find((l) => l.toLowerCase().replace(/\s+/g, '-') === levelSlug);
     if (!level) return null;
 
-    const words = irodoriVocabulary.filter(v => v.level === level);
+    const words = irodoriVocabulary.filter((v) => v.level === level);
     if (words.length === 0) return null;
 
     const deckId = nanoid();
@@ -112,7 +110,7 @@ export function instantiatePrebuiltDeck(
       updatedAt: now,
     };
 
-    const cards: Flashcard[] = words.slice(0, 50).map(v => ({
+    const cards: Flashcard[] = words.slice(0, 50).map((v) => ({
       id: nanoid(),
       deckId,
       front: v.word,

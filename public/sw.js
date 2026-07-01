@@ -46,13 +46,13 @@ self.addEventListener('message', (event) => {
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys
-          .filter((k) => ![STATIC_CACHE, PAGES_CACHE].includes(k))
-          .map((k) => caches.delete(k)),
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(
+          keys.filter((k) => ![STATIC_CACHE, PAGES_CACHE].includes(k)).map((k) => caches.delete(k)),
+        ),
       ),
-    ),
   );
   self.clients.claim();
 });

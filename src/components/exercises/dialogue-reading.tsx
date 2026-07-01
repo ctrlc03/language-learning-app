@@ -29,7 +29,7 @@ export function DialogueReading({ data, onSubmit, disabled }: DialogueReadingPro
 
   const handleRevealNext = () => {
     if (!allRevealed) {
-      setRevealedLines(prev => prev + 1);
+      setRevealedLines((prev) => prev + 1);
     }
   };
 
@@ -42,16 +42,20 @@ export function DialogueReading({ data, onSubmit, disabled }: DialogueReadingPro
       setPlayingIndex(i);
       try {
         await speak(data.lines[i].text, language, speechRate);
-      } catch { /* skip */ }
+      } catch {
+        /* skip */
+      }
       if (cancelledRef.current) break;
       if (showTranslation) {
         try {
           await speakEnglish(data.lines[i].translation, speechRate);
-        } catch { /* skip */ }
+        } catch {
+          /* skip */
+        }
         if (cancelledRef.current) break;
       }
       if (!cancelledRef.current) {
-        await new Promise(r => setTimeout(r, 800));
+        await new Promise((r) => setTimeout(r, 800));
       }
     }
     setPlaying(false);
@@ -71,7 +75,7 @@ export function DialogueReading({ data, onSubmit, disabled }: DialogueReadingPro
   };
 
   // Assign colors to speakers
-  const speakers = [...new Set(data.lines.map(l => l.speaker))];
+  const speakers = [...new Set(data.lines.map((l) => l.speaker))];
   const speakerColors = [
     'text-blue-600 dark:text-blue-400',
     'text-emerald-600 dark:text-emerald-400',
@@ -87,47 +91,67 @@ export function DialogueReading({ data, onSubmit, disabled }: DialogueReadingPro
       {/* Toggle controls */}
       <div className="flex gap-2 flex-wrap">
         <button
-          onClick={() => setShowPinyin(v => !v)}
+          onClick={() => setShowPinyin((v) => !v)}
           className={cn(
             'text-[11px] px-2.5 py-1 rounded-full border transition-colors',
             showPinyin
               ? 'bg-primary/10 border-primary/30 text-primary'
-              : 'border-border text-muted-foreground hover:border-primary/30'
+              : 'border-border text-muted-foreground hover:border-primary/30',
           )}
         >
           {language === 'japanese' ? 'Furigana' : 'Pinyin'} {showPinyin ? 'ON' : 'OFF'}
         </button>
         <button
-          onClick={() => setShowTranslation(v => !v)}
+          onClick={() => setShowTranslation((v) => !v)}
           className={cn(
             'text-[11px] px-2.5 py-1 rounded-full border transition-colors',
             showTranslation
               ? 'bg-primary/10 border-primary/30 text-primary'
-              : 'border-border text-muted-foreground hover:border-primary/30'
+              : 'border-border text-muted-foreground hover:border-primary/30',
           )}
         >
           Translation {showTranslation ? 'ON' : 'OFF'}
         </button>
         <button
-          onClick={() => playing ? handleStopListening() : handleListenAll()}
+          onClick={() => (playing ? handleStopListening() : handleListenAll())}
           className={cn(
             'text-[11px] px-2.5 py-1 rounded-full border transition-colors flex items-center gap-1',
             playing
               ? 'bg-destructive/10 border-destructive/30 text-destructive'
-              : 'border-border text-muted-foreground hover:border-primary/30'
+              : 'border-border text-muted-foreground hover:border-primary/30',
           )}
         >
           {playing ? (
             <>
-              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 7.5A2.25 2.25 0 0 1 7.5 5.25h9a2.25 2.25 0 0 1 2.25 2.25v9a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-9Z" />
+              <svg
+                className="w-3 h-3"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5.25 7.5A2.25 2.25 0 0 1 7.5 5.25h9a2.25 2.25 0 0 1 2.25 2.25v9a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-9Z"
+                />
               </svg>
               Stop
             </>
           ) : (
             <>
-              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
+              <svg
+                className="w-3 h-3"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"
+                />
               </svg>
               Listen All
             </>
@@ -143,20 +167,12 @@ export function DialogueReading({ data, onSubmit, disabled }: DialogueReadingPro
           const isLeft = speakerIndex % 2 === 0;
 
           return (
-            <div
-              key={i}
-              className={cn(
-                'flex gap-2',
-                isLeft ? 'justify-start' : 'justify-end'
-              )}
-            >
+            <div key={i} className={cn('flex gap-2', isLeft ? 'justify-start' : 'justify-end')}>
               <div
                 className={cn(
                   'max-w-[85%] rounded-2xl px-4 py-2.5 space-y-1 transition-all',
-                  isLeft
-                    ? 'bg-muted rounded-tl-sm'
-                    : 'bg-primary/10 rounded-tr-sm',
-                  playingIndex === i && 'ring-2 ring-primary/50'
+                  isLeft ? 'bg-muted rounded-tl-sm' : 'bg-primary/10 rounded-tr-sm',
+                  playingIndex === i && 'ring-2 ring-primary/50',
                 )}
               >
                 {/* Speaker label */}
@@ -170,19 +186,17 @@ export function DialogueReading({ data, onSubmit, disabled }: DialogueReadingPro
                 {/* Line text — furigana ruby for Japanese, plain + reading below otherwise */}
                 {line.furigana && line.furigana.length > 0 ? (
                   <p className="text-base font-medium">
-                    {showPinyin
-                      ? <Furigana segments={line.furigana} />
-                      : <span className="leading-relaxed">{line.text}</span>}
+                    {showPinyin ? (
+                      <Furigana segments={line.furigana} />
+                    ) : (
+                      <span className="leading-relaxed">{line.text}</span>
+                    )}
                   </p>
                 ) : (
                   <>
-                    <p className="text-base font-medium leading-relaxed">
-                      {line.text}
-                    </p>
+                    <p className="text-base font-medium leading-relaxed">{line.text}</p>
                     {showPinyin && (
-                      <p className="text-xs text-muted-foreground leading-relaxed">
-                        {line.pinyin}
-                      </p>
+                      <p className="text-xs text-muted-foreground leading-relaxed">{line.pinyin}</p>
                     )}
                   </>
                 )}

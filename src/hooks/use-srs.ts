@@ -5,7 +5,12 @@ import type { Flashcard, FlashcardDeck, SRSGrade } from '@/types';
 import { useStorage } from '@/contexts/StorageContext';
 import { StorageKeys, StoragePrefixes } from '@/lib/storage/interface';
 import { calculateNextReview } from '@/lib/srs/sm2';
-import { buildReviewQueue, getNextCard, removeCardFromQueue, type ReviewQueue } from '@/lib/srs/scheduler';
+import {
+  buildReviewQueue,
+  getNextCard,
+  removeCardFromQueue,
+  type ReviewQueue,
+} from '@/lib/srs/scheduler';
 
 export function useSRS(deckId?: string) {
   const storage = useStorage();
@@ -28,12 +33,12 @@ export function useSRS(deckId?: string) {
 
       const allCards = await storage.query<Flashcard>(
         StoragePrefixes.cards,
-        (c) => c.deckId === targetDeck
+        (c) => c.deckId === targetDeck,
       );
       setCards(allCards);
       return allCards;
     },
-    [storage, deckId]
+    [storage, deckId],
   );
 
   const startReview = useCallback(
@@ -46,7 +51,7 @@ export function useSRS(deckId?: string) {
       setQueue(reviewQueue);
       setCurrentCard(getNextCard(reviewQueue));
     },
-    [deckId, loadCards]
+    [deckId, loadCards],
   );
 
   const gradeCard = useCallback(
@@ -73,11 +78,9 @@ export function useSRS(deckId?: string) {
       setCurrentCard(getNextCard(newQueue));
 
       // Update local cards state
-      setCards(prev =>
-        prev.map(c => (c.id === updatedCard.id ? updatedCard : c))
-      );
+      setCards((prev) => prev.map((c) => (c.id === updatedCard.id ? updatedCard : c)));
     },
-    [currentCard, queue, storage]
+    [currentCard, queue, storage],
   );
 
   const addCard = useCallback(
@@ -92,18 +95,18 @@ export function useSRS(deckId?: string) {
         await storage.set(StorageKeys.deck(deck.id), deck);
       }
 
-      setCards(prev => [...prev, card]);
+      setCards((prev) => [...prev, card]);
     },
-    [storage]
+    [storage],
   );
 
   const createDeck = useCallback(
     async (deck: FlashcardDeck) => {
       await storage.set(StorageKeys.deck(deck.id), deck);
-      setDecks(prev => [...prev, deck]);
+      setDecks((prev) => [...prev, deck]);
       return deck;
     },
-    [storage]
+    [storage],
   );
 
   useEffect(() => {

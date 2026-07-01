@@ -164,11 +164,11 @@ export interface MultipleChoiceData {
 export interface SentenceMcData {
   type: 'sentence-mc';
   direction: 'toMeaning' | 'toSentence' | 'pinyinToMeaning';
-  sentence: string;                          // the target sentence (native script)
-  sentenceFurigana?: FuriSegment[];          // per-kanji ruby for the sentence
-  sentencePinyin?: string;                   // romanized reading (pinyinToMeaning prompt)
-  translation: string;                       // English meaning of the sentence
-  options: string[];                         // toMeaning: translations; toSentence: sentences
+  sentence: string; // the target sentence (native script)
+  sentenceFurigana?: FuriSegment[]; // per-kanji ruby for the sentence
+  sentencePinyin?: string; // romanized reading (pinyinToMeaning prompt)
+  translation: string; // English meaning of the sentence
+  options: string[]; // toMeaning: translations; toSentence: sentences
   optionFurigana?: (FuriSegment[] | null)[]; // furigana for sentence options (toSentence)
   correctIndex: number;
   explanation?: string;
@@ -305,10 +305,7 @@ export interface ListeningExercise {
   data: ListeningExerciseData;
 }
 
-export type ListeningExerciseData =
-  | DictationData
-  | ListenAndChooseData
-  | DialogueComprehensionData;
+export type ListeningExerciseData = DictationData | ListenAndChooseData | DialogueComprehensionData;
 
 export interface DictationData {
   type: 'dictation';
