@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build:hanzi-data": "node scripts/build-hanzi-data.mjs",
-    "prebuild": "node scripts/build-hanzi-data.mjs",
+    "build:hanzi-decomp": "node scripts/build-hanzi-decomp.mjs",
+    "prebuild": "node scripts/build-hanzi-data.mjs && node scripts/build-hanzi-decomp.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -36,6 +37,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "eslint-config-prettier": "^10.1.8",
+    "hanzi": "^2.1.5",
     "prettier": "3.9.4",
     "tailwindcss": "^4",
     "typescript": "^5",

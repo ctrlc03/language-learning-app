@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { HanziPad } from '@/components/writing/hanzi-pad';
+import { HanziDecomp } from '@/components/writing/hanzi-decomp';
 import { ColoredPinyin, PlayButton } from '@/components/tones/tone-pieces';
 import { getWritingChars } from '@/lib/writing/chars';
 
@@ -22,6 +23,7 @@ export default function WritingPage() {
   useSpeechInit();
 
   const chars = useMemo(() => getWritingChars(seed), [seed]);
+  const charIndex = useMemo(() => new Map(chars.map((c, i) => [c.char, i])), [chars]);
   const current = chars[index];
 
   if (language !== 'chinese') {
@@ -101,6 +103,16 @@ export default function WritingPage() {
           <PlayButton text={current.char} label="Hear it" size="sm" />
         </div>
       </div>
+
+      <HanziDecomp
+        key={current.char}
+        char={current.char}
+        inStudySet={(c) => charIndex.has(c)}
+        onPickSibling={(c) => {
+          const i = charIndex.get(c);
+          if (i !== undefined) setIndex(i);
+        }}
+      />
 
       <div className="text-center">
         <Button variant="outline" onClick={next}>

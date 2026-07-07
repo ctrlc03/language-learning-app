@@ -45,8 +45,12 @@ next-env.d.ts
 
 # local-only files
 /Slides
-/scripts
+# Ignore one-off scripts, but keep the build scripts the prebuild step needs.
+/scripts/*
+!/scripts/build-hanzi-data.mjs
+!/scripts/build-hanzi-decomp.mjs
 session.md
 
 # Generated stroke-order data (rebuilt by prebuild)
 /public/hanzi-data/
+/public/hanzi-decomp.json
