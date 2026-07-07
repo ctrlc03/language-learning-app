@@ -71,12 +71,21 @@ export interface FlashcardDeck {
   updatedAt: number;
 }
 
+// Recall direction for a card. A single vocabulary item can spawn several
+// cards, each drilling a different skill — scheduled independently by FSRS.
+//  - 'read'    : hanzi/word → meaning (recognition)
+//  - 'listen'  : audio      → meaning (listening)
+//  - 'produce' : meaning    → hanzi/word (production, the hardest direction)
+//  - 'cloze'   : example sentence with the word blanked → recall the word
+export type CardDirection = 'read' | 'listen' | 'produce' | 'cloze';
+
 export interface Flashcard {
   id: string;
   deckId: string;
-  front: string; // character/word
+  front: string; // character/word (always the native-script term)
   back: string; // translation
   reading: string; // pinyin or hiragana
+  direction?: CardDirection; // defaults to 'read' when absent (legacy cards)
   exampleSentence?: string;
   exampleTranslation?: string;
   notes?: string;
@@ -86,13 +95,23 @@ export interface Flashcard {
   updatedAt: number;
 }
 
+// SRS state. Now backed by FSRS; the first block is kept for scheduler
+// compatibility and to migrate legacy SM2 cards, the second holds FSRS state.
 export interface SRSData {
-  easeFactor: number; // starts at 2.5
-  interval: number; // days
-  repetitions: number;
-  nextReviewDate: number; // timestamp
+  easeFactor: number; // legacy SM2 ease; retained, unused by FSRS
+  interval: number; // scheduled days until next review
+  repetitions: number; // reps (FSRS)
+  nextReviewDate: number; // due timestamp (ms)
   lastReviewDate?: number;
   grade?: SRSGrade;
+  // FSRS memory state (absent on legacy cards until first review)
+  stability?: number;
+  difficulty?: number;
+  elapsedDays?: number;
+  scheduledDays?: number;
+  learningSteps?: number;
+  lapses?: number;
+  state?: number; // 0 New, 1 Learning, 2 Review, 3 Relearning
 }
 
 export type SRSGrade = 1 | 2 | 3 | 4 | 5;

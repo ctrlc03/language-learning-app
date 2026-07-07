@@ -5,7 +5,6 @@ import { LanguageProvider, useLanguage } from '@/contexts/LanguageContext';
 import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
 import { TopBar } from '@/components/layout/top-bar';
 import { MobileNav } from '@/components/layout/mobile-nav';
-import { Tweaks } from '@/components/ink/tweaks';
 import { langCode } from '@/components/ink/primitives';
 
 function Shell({ children }: { children: React.ReactNode }) {
@@ -18,7 +17,6 @@ function Shell({ children }: { children: React.ReactNode }) {
         {children}
       </main>
       <MobileNav />
-      <Tweaks />
     </div>
   );
 }

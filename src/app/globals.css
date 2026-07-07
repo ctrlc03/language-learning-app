@@ -31,7 +31,6 @@
   --serif-jp: var(--font-shippori), 'Shippori Mincho B1', 'Noto Serif SC', serif;
   --serif-zh: var(--font-noto-serif-sc), 'Noto Serif SC', 'Shippori Mincho B1', serif;
 
-  --motif-opacity: 0.4;
   --paper-strength: 1;
   --radius: 3px;
 
@@ -45,9 +44,6 @@
    whole subtree (including utility-styled routes) re-themes per language. */
 .app[data-lang='jp'] {
   --serif: var(--serif-jp);
-  --paper-img: url(/inkpath/paper-jp.png);
-  --motif-img: url(/inkpath/seigaiha.png);
-  --motif-size: 256px;
   --seal-img: url(/inkpath/seal-jp.png);
 
   --ink: #1b2a41;
@@ -79,9 +75,6 @@
 
 .app[data-lang='zh'] {
   --serif: var(--serif-zh);
-  --paper-img: url(/inkpath/paper-zh.png);
-  --motif-img: url(/inkpath/coins.png);
-  --motif-size: 168px;
   --seal-img: url(/inkpath/seal-zh.png);
 
   --ink: #2b1a12;
@@ -120,7 +113,6 @@
   --bar-zh: #e87a6b;
 }
 .app[data-theme='dark'][data-lang='jp'] {
-  --paper-img: url(/inkpath/paper-jp-dark.png);
   --ink: #eceadf;
   --ink-soft: #b3bacb;
   --ink-faint: #818aa3;
@@ -146,7 +138,6 @@
   --success: #6cae84;
 }
 .app[data-theme='dark'][data-lang='zh'] {
-  --paper-img: url(/inkpath/paper-zh-dark.png);
   --ink: #f1e7d6;
   --ink-soft: #cbb293;
   --ink-faint: #97805f;

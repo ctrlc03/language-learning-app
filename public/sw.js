@@ -1,5 +1,5 @@
 // Bump this to invalidate old caches on deploy.
-const VERSION = 'v2';
+const VERSION = 'v3';
 const STATIC_CACHE = `kotoba-static-${VERSION}`;
 const PAGES_CACHE = `kotoba-pages-${VERSION}`;
 const OFFLINE_URL = '/offline';
@@ -35,6 +35,22 @@ self.addEventListener('install', (event) => {
           } catch {}
         }),
       );
+
+      // Warm self-hosted hanzi stroke data so writing practice works fully
+      // offline, not just for characters already visited. Best-effort.
+      try {
+        const idxRes = await fetch('/hanzi-data/index.json');
+        if (idxRes.ok) {
+          const chars = await idxRes.json();
+          await Promise.allSettled(
+            chars.map(async (char) => {
+              const url = `/hanzi-data/${encodeURIComponent(char)}.json`;
+              const res = await fetch(url);
+              if (res.ok) await staticCache.put(url, res);
+            }),
+          );
+        }
+      } catch {}
     })(),
   );
   self.skipWaiting();

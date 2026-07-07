@@ -10,15 +10,26 @@ import {
   instantiatePrebuiltDeck,
   type PrebuiltDeckDef,
 } from '@/lib/flashcards/prebuilt-decks';
+import { cardFace, directionOf, isAudioPrompt, DIRECTION_LABEL } from '@/lib/flashcards/direction';
+import { speak } from '@/lib/tts/speech';
 import type { SRSGrade } from '@/types';
 
 type View = 'decks' | 'review';
 
 export default function FlashcardsPage() {
-  const { language } = useLanguage();
+  const { language, speechRate } = useLanguage();
   const [selectedDeckId, setSelectedDeckId] = useState<string | undefined>();
-  const { decks, cards, currentCard, startReview, gradeCard, createDeck, addCard, loadDecks } =
-    useSRS(selectedDeckId);
+  const {
+    decks,
+    cards,
+    queue,
+    currentCard,
+    startReview,
+    gradeCard,
+    createDeck,
+    addCard,
+    loadDecks,
+  } = useSRS(selectedDeckId);
   const [view, setView] = useState<View>('decks');
   const [creating, setCreating] = useState(false);
   const [revealed, setRevealed] = useState(false);
@@ -75,6 +86,19 @@ export default function FlashcardsPage() {
     window.addEventListener('keydown', h);
     return () => window.removeEventListener('keydown', h);
   });
+
+  // Listen-direction cards are audio-first: play the term when the card appears.
+  useEffect(() => {
+    if (view !== 'review' || !currentCard) return;
+    if (isAudioPrompt(currentCard)) {
+      speak(currentCard.front, language, speechRate).catch(() => {});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentCard?.id, view]);
+
+  const playCurrent = () => {
+    if (currentCard) speak(currentCard.front, language, speechRate).catch(() => {});
+  };
 
   // ---------------- DECK PICKER ----------------
   if (view === 'decks') {
@@ -147,8 +171,10 @@ export default function FlashcardsPage() {
 
   // ---------------- REVIEW / FLASHCARD ----------------
   const deck = cards;
-  const totalSegs = Math.max(deck.length, reviewed + 1);
   const done = currentCard == null;
+  // Progress denominator reflects the session queue (remaining + reviewed), not
+  // the full multi-direction deck, which is ~3x larger than any one session.
+  const totalSegs = Math.max((queue?.total ?? 0) + reviewed, reviewed + (done ? 0 : 1));
 
   return (
     <>
@@ -193,23 +219,64 @@ export default function FlashcardsPage() {
           ) : (
             <>
               <div className="flash-body" key={currentCard!.id}>
-                <div className="flash-char">{currentCard!.front}</div>
-                {revealed ? (
-                  <>
-                    <div className="flash-reading">{currentCard!.reading}</div>
-                    <div className="flash-meaning">{currentCard!.back}</div>
-                    {currentCard!.exampleSentence && (
-                      <div className="flash-ex">
-                        <div className="cjk">{currentCard!.exampleSentence}</div>
-                        {currentCard!.exampleTranslation && (
-                          <div className="en">{currentCard!.exampleTranslation}</div>
-                        )}
+                {(() => {
+                  const face = cardFace(currentCard!);
+                  const dir = directionOf(currentCard!);
+                  return (
+                    <>
+                      <div className="flash-dir">
+                        {DIRECTION_LABEL[dir]} · {face.promptSub}
                       </div>
-                    )}
-                  </>
-                ) : (
-                  <div className="flash-hint">Press space to reveal</div>
-                )}
+
+                      {/* Prompt */}
+                      {face.promptKind === 'audio' ? (
+                        <button
+                          className="flash-char"
+                          onClick={playCurrent}
+                          aria-label="Replay audio"
+                          style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                        >
+                          🔊
+                        </button>
+                      ) : face.promptKind === 'text' ? (
+                        <div className="flash-meaning" style={{ fontSize: 30, fontWeight: 700 }}>
+                          {face.promptMain}
+                        </div>
+                      ) : face.promptKind === 'sentence' ? (
+                        <div className="flash-cloze cjk">{face.promptMain}</div>
+                      ) : (
+                        <div className="flash-char">{face.promptMain}</div>
+                      )}
+
+                      {/* Reveal */}
+                      {revealed ? (
+                        <>
+                          {face.revealTerm && (
+                            <div className="flash-char" style={{ marginTop: 4 }}>
+                              {currentCard!.front}
+                            </div>
+                          )}
+                          {face.revealReading && (
+                            <div className="flash-reading">{currentCard!.reading}</div>
+                          )}
+                          {face.revealMeaning && (
+                            <div className="flash-meaning">{currentCard!.back}</div>
+                          )}
+                          {currentCard!.exampleSentence && (
+                            <div className="flash-ex">
+                              <div className="cjk">{currentCard!.exampleSentence}</div>
+                              {currentCard!.exampleTranslation && (
+                                <div className="en">{currentCard!.exampleTranslation}</div>
+                              )}
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <div className="flash-hint">Press space to reveal</div>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
               <div className="flash-actions">
                 {!revealed ? (
@@ -240,17 +307,30 @@ export default function FlashcardsPage() {
 
         <div className="side-stack">
           <InkCard className="trace" title="Glyph" cjk="筆">
-            <div className="box">
-              <div className="g">{currentCard ? Array.from(currentCard.front)[0] : '—'}</div>
-            </div>
-            <div className="meta">
-              <span>
-                Reading <b>{currentCard?.reading || '—'}</b>
-              </span>
-              <span>
-                Chars <b>{currentCard ? Array.from(currentCard.front).length : 0}</b>
-              </span>
-            </div>
+            {(() => {
+              // Don't reveal the term in the side panel for audio/production
+              // prompts until the card is flipped.
+              const showTerm =
+                !currentCard || !cardFace(currentCard).hideTermUntilRevealed || revealed;
+              return (
+                <>
+                  <div className="box">
+                    <div className="g">
+                      {currentCard && showTerm ? Array.from(currentCard.front)[0] : '—'}
+                    </div>
+                  </div>
+                  <div className="meta">
+                    <span>
+                      Reading <b>{(showTerm && currentCard?.reading) || '—'}</b>
+                    </span>
+                    <span>
+                      Chars{' '}
+                      <b>{currentCard && showTerm ? Array.from(currentCard.front).length : 0}</b>
+                    </span>
+                  </div>
+                </>
+              );
+            })()}
           </InkCard>
 
           <InkCard title="This deck" cjk="束" meta={`${reviewed}/${totalSegs}`}>

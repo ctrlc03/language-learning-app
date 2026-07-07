@@ -279,8 +279,7 @@ export default function SettingsPage() {
             <span className="cjk" style={{ color: 'var(--bar-zh)', fontWeight: 700 }}>
               朱
             </span>{' '}
-            cinnabar rice-paper for Chinese. Fine-tune motif, warmth, and density from the 調 Tweaks
-            panel (bottom-right).
+            cinnabar rice-paper for Chinese.
           </p>
         </CardContent>
       </Card>

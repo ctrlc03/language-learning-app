@@ -47,3 +47,6 @@ next-env.d.ts
 /Slides
 /scripts
 session.md
+
+# Generated stroke-order data (rebuilt by prebuild)
+/public/hanzi-data/

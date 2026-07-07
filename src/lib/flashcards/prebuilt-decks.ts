@@ -8,7 +8,47 @@ import { nanoid } from 'nanoid';
 import { chineseLessons } from '@/data/chinese/vocabulary';
 import { irodoriVocabulary, irodoriLevels } from '@/data/japanese/irodori-vocab';
 import { createInitialSRSData } from '@/lib/srs/sm2';
-import type { FlashcardDeck, Flashcard, Language } from '@/types';
+import { CARD_DIRECTIONS } from '@/lib/flashcards/direction';
+import type { CardDirection, FlashcardDeck, Flashcard, Language } from '@/types';
+
+interface WordSeed {
+  word: string;
+  reading: string;
+  meaning: string;
+  topic?: string;
+  exampleSentence?: string;
+  exampleTranslation?: string;
+}
+
+/**
+ * Expand words into one card per recall direction. Ordered direction-major
+ * (all 'read', then 'listen', then 'produce') so the first session — capped at
+ * a handful of new cards — isn't dominated by sibling cards of the same word.
+ */
+function buildDirectionCards(deckId: string, words: WordSeed[], now: number): Flashcard[] {
+  const cards: Flashcard[] = [];
+  for (const direction of CARD_DIRECTIONS) {
+    for (const v of words) {
+      // Cloze needs an example sentence to blank the word out of.
+      if (direction === 'cloze' && !v.exampleSentence) continue;
+      cards.push({
+        id: nanoid(),
+        deckId,
+        front: v.word,
+        back: v.meaning,
+        reading: v.reading,
+        direction: direction as CardDirection,
+        exampleSentence: v.exampleSentence,
+        exampleTranslation: v.exampleTranslation,
+        tags: [v.topic || 'general'],
+        srs: createInitialSRSData(),
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
+  }
+  return cards;
+}
 
 export interface PrebuiltDeckDef {
   id: string;
@@ -62,29 +102,16 @@ export function instantiatePrebuiltDeck(
     if (!lesson) return null;
 
     const deckId = nanoid();
+    const cards = buildDirectionCards(deckId, lesson.vocabulary.slice(0, 50), now);
     const deck: FlashcardDeck = {
       id: deckId,
       name: `Lesson ${lesson.lesson}: ${lesson.title}`,
       language: 'chinese',
       description: `${lesson.vocabulary.length} words from ${lesson.titleChinese}`,
-      cardCount: Math.min(lesson.vocabulary.length, 50),
+      cardCount: cards.length,
       createdAt: now,
       updatedAt: now,
     };
-
-    const cards: Flashcard[] = lesson.vocabulary.slice(0, 50).map((v) => ({
-      id: nanoid(),
-      deckId,
-      front: v.word,
-      back: v.meaning,
-      reading: v.reading,
-      exampleSentence: v.exampleSentence,
-      exampleTranslation: v.exampleTranslation,
-      tags: [v.topic || 'general'],
-      srs: createInitialSRSData(),
-      createdAt: now,
-      updatedAt: now,
-    }));
 
     return { deck, cards };
   }
@@ -100,27 +127,16 @@ export function instantiatePrebuiltDeck(
     if (words.length === 0) return null;
 
     const deckId = nanoid();
+    const cards = buildDirectionCards(deckId, words.slice(0, 50), now);
     const deck: FlashcardDeck = {
       id: deckId,
       name: level,
       language: 'japanese',
       description: `${words.length} words from ${level}`,
-      cardCount: Math.min(words.length, 50),
+      cardCount: cards.length,
       createdAt: now,
       updatedAt: now,
     };
-
-    const cards: Flashcard[] = words.slice(0, 50).map((v) => ({
-      id: nanoid(),
-      deckId,
-      front: v.word,
-      back: v.meaning,
-      reading: v.reading,
-      tags: [v.topic || 'general'],
-      srs: createInitialSRSData(),
-      createdAt: now,
-      updatedAt: now,
-    }));
 
     return { deck, cards };
   }
