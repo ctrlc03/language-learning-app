@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSpeechInit } from '@/hooks/use-speech';
 import { useProgress } from '@/hooks/use-progress';
@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ColoredPinyin, PlayButton } from '@/components/tones/tone-pieces';
 import { makeRng, shuffle } from '@/lib/tones/utils';
+import { useMastery } from '@/hooks/use-mastery';
+import { pickWeight, weightedSample, type MasteryMap } from '@/lib/mastery';
 import { MEASURE_WORDS, MW_ITEMS, type MwItem } from '@/lib/measure-words/data';
 import { cn } from '@/lib/utils';
 
@@ -19,31 +21,36 @@ interface Question extends MwItem {
   options: string[]; // classifier keys, includes the correct one
 }
 
-function buildQuestions(seed: number): Question[] {
+// Bias toward nouns whose classifier you keep getting wrong.
+function buildQuestions(seed: number, mastery: MasteryMap): Question[] {
   const rng = makeRng(seed);
-  return shuffle(MW_ITEMS, rng)
-    .slice(0, QUESTIONS_PER_SESSION)
-    .map((item) => {
-      const distractors = shuffle(
-        CLASSIFIER_KEYS.filter((k) => k !== item.classifier),
-        rng,
-      ).slice(0, 3);
-      return { ...item, options: shuffle([item.classifier, ...distractors], rng) };
-    });
+  const chosen = weightedSample(
+    MW_ITEMS,
+    (item) => pickWeight(mastery[item.noun.hanzi]),
+    QUESTIONS_PER_SESSION,
+    rng,
+  );
+  return chosen.map((item) => {
+    const distractors = shuffle(
+      CLASSIFIER_KEYS.filter((k) => k !== item.classifier),
+      rng,
+    ).slice(0, 3);
+    return { ...item, options: shuffle([item.classifier, ...distractors], rng) };
+  });
 }
 
 export default function MeasureWordsPage() {
   const { language } = useLanguage();
   const { recordActivity } = useProgress();
+  const { map: mastery, record } = useMastery('classifiers');
   const [started, setStarted] = useState(false);
   const [index, setIndex] = useState(0);
   const [picked, setPicked] = useState<string | null>(null);
   const [correct, setCorrect] = useState(0);
-  const [seed, setSeed] = useState(() => Date.now());
+  const [questions, setQuestions] = useState<Question[]>([]);
 
   useSpeechInit();
 
-  const questions = useMemo(() => buildQuestions(seed), [seed]);
   const q = questions[index];
 
   if (language !== 'chinese') {
@@ -58,7 +65,7 @@ export default function MeasureWordsPage() {
   }
 
   const start = () => {
-    setSeed(Date.now());
+    setQuestions(buildQuestions(Date.now(), mastery));
     setIndex(0);
     setPicked(null);
     setCorrect(0);
@@ -71,6 +78,11 @@ export default function MeasureWordsPage() {
     const isCorrect = key === q.classifier;
     if (isCorrect) setCorrect((n) => n + 1);
     recordActivity({ exercises: 1, correctAnswers: isCorrect ? 1 : 0, totalAnswers: 1 });
+    record(q.noun.hanzi, isCorrect, {
+      label: q.noun.hanzi,
+      sublabel: q.noun.meaning,
+      group: MEASURE_WORDS[q.classifier].hanzi,
+    });
   };
 
   const next = () => {

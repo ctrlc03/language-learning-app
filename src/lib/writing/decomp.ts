@@ -26,8 +26,5 @@ export function loadDecomp(): Promise<DecompData | null> {
 
 /** Strip tone marks so pinyin can be compared phonetically (mǎ → ma). */
 export function toneless(pinyin: string): string {
-  return pinyin
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase();
+  return pinyin.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 }

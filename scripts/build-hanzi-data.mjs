@@ -3,7 +3,14 @@
  * the Chinese content into public/hanzi-data/, so the writing practice works
  * fully offline without hitting a CDN. Run via `npm run build:hanzi-data`.
  */
-import { readdirSync, readFileSync, existsSync, mkdirSync, copyFileSync, writeFileSync } from 'node:fs';
+import {
+  readdirSync,
+  readFileSync,
+  existsSync,
+  mkdirSync,
+  copyFileSync,
+  writeFileSync,
+} from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 

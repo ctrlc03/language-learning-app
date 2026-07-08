@@ -45,9 +45,7 @@ export function HanziDecomp({ char, onPickSibling, inStudySet }: HanziDecompProp
           // A component that sounds like the whole character is likely the
           // phonetic part (妈 mā ← 马 mǎ); otherwise treat it as meaning.
           const isPhonetic = charBase !== '' && baseReading(comp.c) === charBase;
-          const siblings = (data?.byComponent[comp.c] ?? [])
-            .filter((c) => c !== char)
-            .slice(0, 10);
+          const siblings = (data?.byComponent[comp.c] ?? []).filter((c) => c !== char).slice(0, 10);
 
           return (
             <div key={comp.c} className="rounded-xl border p-3">
@@ -72,7 +70,9 @@ export function HanziDecomp({ char, onPickSibling, inStudySet }: HanziDecompProp
 
               {siblings.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-1">
-                  <span className="text-[11px] text-muted-foreground self-center mr-1">shares:</span>
+                  <span className="text-[11px] text-muted-foreground self-center mr-1">
+                    shares:
+                  </span>
                   {siblings.map((s) => {
                     const jumpable = !!onPickSibling && (inStudySet?.(s) ?? false);
                     return (

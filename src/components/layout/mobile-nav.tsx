@@ -2,22 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-
-const NAV_ITEMS = [
-  { href: '/dashboard', cjk: '今', label: 'Today' },
-  { href: '/flashcards', cjk: '学', label: 'Study' },
-  { href: '/learn', cjk: '教', label: 'Learn' },
-  { href: '/review', cjk: '復', label: 'Review' },
-  { href: '/exercises', cjk: '練', label: 'Practice' },
-  { href: '/journal', cjk: '記', label: 'Journal' },
-];
+import { NAV_TABS } from './top-bar';
 
 export function MobileNav() {
   const pathname = usePathname();
 
   return (
     <nav className="ink-mobile-nav md:hidden">
-      {NAV_ITEMS.map((item) => (
+      {NAV_TABS.map((item) => (
         <Link
           key={item.href}
           href={item.href}

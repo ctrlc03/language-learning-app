@@ -1,50 +1,77 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSpeechInit } from '@/hooks/use-speech';
 import { useProgress } from '@/hooks/use-progress';
+import { useMastery } from '@/hooks/use-mastery';
+import { pickWeight, weightedSample, type MasteryMap } from '@/lib/mastery';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ToneIdentify } from '@/components/tones/tone-identify';
 import { MinimalPair, type MinimalPairPrompt } from '@/components/tones/minimal-pair';
 import { TonePair } from '@/components/tones/tone-pair';
-import { getToneIdItems, getTonePairItems, makeRng, shuffle } from '@/lib/tones/utils';
+import {
+  getToneIdItems,
+  getTonePairItems,
+  makeRng,
+  type ToneIdItem,
+  type TonePairItem,
+} from '@/lib/tones/utils';
 import { MINIMAL_PAIRS, TONES, type ToneNumber } from '@/lib/tones/data';
 
 type Mode = 'select' | 'identify' | 'minimal' | 'pair';
 
 const TONE_ORDER: ToneNumber[] = [1, 2, 3, 4, 5];
 
-function buildMinimalPrompts(seed: number, count = 30): MinimalPairPrompt[] {
-  const rng = makeRng(seed);
-  const prompts: MinimalPairPrompt[] = [];
-  // Cycle through groups until we have enough, picking a random member each time.
-  while (prompts.length < count) {
-    for (const group of shuffle(MINIMAL_PAIRS, rng)) {
-      const answer = group.members[Math.floor(rng() * group.members.length)];
-      prompts.push({ group, answer });
-      if (prompts.length >= count) break;
-    }
-  }
-  return prompts;
+// --- weighted session builders (bias toward weak / unseen items) ---
+
+function buildIdItems(mastery: MasteryMap): ToneIdItem[] {
+  const seed = Date.now();
+  const pool = getToneIdItems(seed, 500);
+  return weightedSample(pool, (i) => pickWeight(mastery[`id:${i.hanzi}`]), 30, makeRng(seed));
+}
+
+function buildMinimalPrompts(mastery: MasteryMap): MinimalPairPrompt[] {
+  const rng = makeRng(Date.now());
+  const pool: MinimalPairPrompt[] = MINIMAL_PAIRS.map((group) => ({
+    group,
+    answer: group.members[Math.floor(rng() * group.members.length)],
+  }));
+  return weightedSample(
+    pool,
+    (p) => pickWeight(mastery[`mp:${p.group.syllable}`]),
+    pool.length,
+    rng,
+  );
+}
+
+function buildPairItems(mastery: MasteryMap): TonePairItem[] {
+  const seed = Date.now();
+  const pool = getTonePairItems(seed, 500);
+  return weightedSample(
+    pool,
+    (t) => pickWeight(mastery[`tp:${t.pair[0]}-${t.pair[1]}`]),
+    30,
+    makeRng(seed),
+  );
 }
 
 export default function TonesPage() {
   const { language } = useLanguage();
   const { recordActivity } = useProgress();
+  const { map: mastery, record } = useMastery('tones');
   const [mode, setMode] = useState<Mode>('select');
   const [index, setIndex] = useState(0);
   const [correct, setCorrect] = useState(0);
   const [answered, setAnswered] = useState(0);
-  const [seed] = useState(() => Date.now());
+
+  const [idItems, setIdItems] = useState<ToneIdItem[]>([]);
+  const [minimalPrompts, setMinimalPrompts] = useState<MinimalPairPrompt[]>([]);
+  const [pairItems, setPairItems] = useState<TonePairItem[]>([]);
 
   useSpeechInit();
-
-  const idItems = useMemo(() => getToneIdItems(seed), [seed]);
-  const pairItems = useMemo(() => getTonePairItems(seed), [seed]);
-  const minimalPrompts = useMemo(() => buildMinimalPrompts(seed), [seed]);
 
   const total =
     mode === 'identify'
@@ -54,16 +81,44 @@ export default function TonesPage() {
         : minimalPrompts.length;
 
   const start = (m: Mode) => {
+    if (m === 'identify') setIdItems(buildIdItems(mastery));
+    else if (m === 'minimal') setMinimalPrompts(buildMinimalPrompts(mastery));
+    else if (m === 'pair') setPairItems(buildPairItems(mastery));
     setMode(m);
     setIndex(0);
     setCorrect(0);
     setAnswered(0);
   };
 
+  const recordCurrent = (isCorrect: boolean) => {
+    if (mode === 'identify') {
+      const i = idItems[index];
+      record(`id:${i.hanzi}`, isCorrect, {
+        label: i.hanzi,
+        sublabel: i.pinyin,
+        group: `Tone ${i.tone}`,
+      });
+    } else if (mode === 'minimal') {
+      const p = minimalPrompts[index];
+      record(`mp:${p.group.syllable}`, isCorrect, {
+        label: p.group.syllable,
+        sublabel: p.answer.pinyin,
+        group: 'Minimal pairs',
+      });
+    } else if (mode === 'pair') {
+      const t = pairItems[index];
+      record(`tp:${t.pair[0]}-${t.pair[1]}`, isCorrect, {
+        label: `${t.pair[0]}–${t.pair[1]}`,
+        group: 'Tone pairs',
+      });
+    }
+  };
+
   const handleComplete = (isCorrect: boolean) => {
     setAnswered((n) => n + 1);
     if (isCorrect) setCorrect((n) => n + 1);
     recordActivity({ exercises: 1, correctAnswers: isCorrect ? 1 : 0, totalAnswers: 1 });
+    recordCurrent(isCorrect);
   };
 
   const next = () => {
@@ -83,25 +138,10 @@ export default function TonesPage() {
   }
 
   if (mode === 'select') {
-    const cards: { m: Mode; title: string; desc: string; count: number }[] = [
-      {
-        m: 'identify',
-        title: 'Tone ID',
-        desc: 'Hear one syllable, name its tone',
-        count: idItems.length,
-      },
-      {
-        m: 'minimal',
-        title: 'Minimal Pairs',
-        desc: 'Same sound, tell the tones apart',
-        count: minimalPrompts.length,
-      },
-      {
-        m: 'pair',
-        title: 'Tone Pairs',
-        desc: 'Two syllables — spot the pattern',
-        count: pairItems.length,
-      },
+    const cards: { m: Mode; title: string; desc: string }[] = [
+      { m: 'identify', title: 'Tone ID', desc: 'Hear one syllable, name its tone' },
+      { m: 'minimal', title: 'Minimal Pairs', desc: 'Same sound, tell the tones apart' },
+      { m: 'pair', title: 'Tone Pairs', desc: 'Two syllables — spot the pattern' },
     ];
 
     return (
@@ -140,7 +180,6 @@ export default function TonesPage() {
               <Card className="p-6 hover:border-primary/50 hover:bg-primary/5 transition-all h-full">
                 <h3 className="font-semibold">{c.title}</h3>
                 <p className="text-sm text-muted-foreground mt-1">{c.desc}</p>
-                <p className="text-xs text-muted-foreground mt-2">{c.count} drills</p>
               </Card>
             </button>
           ))}
@@ -167,13 +206,13 @@ export default function TonesPage() {
         </div>
       </div>
 
-      {mode === 'identify' && (
+      {mode === 'identify' && idItems[index] && (
         <ToneIdentify key={index} item={idItems[index]} onComplete={handleComplete} />
       )}
-      {mode === 'minimal' && (
+      {mode === 'minimal' && minimalPrompts[index] && (
         <MinimalPair key={index} prompt={minimalPrompts[index]} onComplete={handleComplete} />
       )}
-      {mode === 'pair' && (
+      {mode === 'pair' && pairItems[index] && (
         <TonePair key={index} item={pairItems[index]} onComplete={handleComplete} />
       )}
 

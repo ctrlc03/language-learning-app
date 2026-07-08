@@ -10,21 +10,43 @@ import { Badge } from '@/components/ui/badge';
 import { HanziPad } from '@/components/writing/hanzi-pad';
 import { HanziDecomp } from '@/components/writing/hanzi-decomp';
 import { ColoredPinyin, PlayButton } from '@/components/tones/tone-pieces';
-import { getWritingChars } from '@/lib/writing/chars';
+import { getWritingChars, type WritingChar } from '@/lib/writing/chars';
+import { makeRng } from '@/lib/tones/utils';
+import { useMastery } from '@/hooks/use-mastery';
+import { pickWeight, weightedSample } from '@/lib/mastery';
+
+const SESSION_SIZE = 40;
 
 export default function WritingPage() {
   const { language } = useLanguage();
   const { recordActivity } = useProgress();
+  const { map: mastery, record } = useMastery('writing');
   const [started, setStarted] = useState(false);
   const [index, setIndex] = useState(0);
   const [done, setDone] = useState(0);
-  const [seed] = useState(() => Date.now());
+  const [chars, setChars] = useState<WritingChar[]>([]);
 
   useSpeechInit();
 
-  const chars = useMemo(() => getWritingChars(seed), [seed]);
+  const poolSize = useMemo(() => getWritingChars(1, 100000).length, []);
   const charIndex = useMemo(() => new Map(chars.map((c, i) => [c.char, i])), [chars]);
   const current = chars[index];
+
+  const startSession = () => {
+    const seed = Date.now();
+    const pool = getWritingChars(seed, 100000);
+    // Bias toward characters you've drawn with mistakes (or never drawn).
+    const session = weightedSample(
+      pool,
+      (c) => pickWeight(mastery[c.char]),
+      SESSION_SIZE,
+      makeRng(seed),
+    );
+    setChars(session);
+    setIndex(0);
+    setDone(0);
+    setStarted(true);
+  };
 
   if (language !== 'chinese') {
     return (
@@ -54,8 +76,8 @@ export default function WritingPage() {
               Watch the correct stroke order, then draw each character from memory. Characters are
               drawn from your vocabulary.
             </p>
-            <Button size="lg" onClick={() => setStarted(true)}>
-              Start · {chars.length} characters
+            <Button size="lg" onClick={startSession}>
+              Start · {Math.min(SESSION_SIZE, poolSize)} characters
             </Button>
           </CardContent>
         </Card>
@@ -65,11 +87,9 @@ export default function WritingPage() {
 
   const handleQuizComplete = ({ totalMistakes }: { totalMistakes: number }) => {
     setDone((n) => n + 1);
-    recordActivity({
-      exercises: 1,
-      correctAnswers: totalMistakes === 0 ? 1 : 0,
-      totalAnswers: 1,
-    });
+    const clean = totalMistakes === 0;
+    recordActivity({ exercises: 1, correctAnswers: clean ? 1 : 0, totalAnswers: 1 });
+    record(current.char, clean, { label: current.char, sublabel: current.pinyin });
   };
 
   const next = () => {
