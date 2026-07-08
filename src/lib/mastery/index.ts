@@ -6,7 +6,7 @@
  * want "show me what I keep getting wrong", not precise interval scheduling.
  */
 
-export type MasteryDomain = 'tones' | 'writing' | 'classifiers';
+export type MasteryDomain = 'tones' | 'writing' | 'classifiers' | 'typing' | 'numbers';
 
 export interface MasteryEntry {
   seen: number;

@@ -102,6 +102,8 @@ export default function ProgressPage() {
   const tones = useMastery('tones');
   const writing = useMastery('writing');
   const classifiers = useMastery('classifiers');
+  const typing = useMastery('typing');
+  const numbers = useMastery('numbers');
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -131,6 +133,18 @@ export default function ProgressPage() {
         cjk="量"
         map={classifiers.map}
         emptyHint="Run the classifier drill to see which measure words trip you up."
+      />
+      <DomainSection
+        title="Pinyin typing"
+        cjk="拼"
+        map={typing.map}
+        emptyHint="Type some pinyin and the words you spell wrong will show up here."
+      />
+      <DomainSection
+        title="Numbers"
+        cjk="数"
+        map={numbers.map}
+        emptyHint="Do the numbers drill to track numbers, money, and dates."
       />
     </div>
   );

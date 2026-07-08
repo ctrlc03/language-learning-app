@@ -9,6 +9,23 @@ import type { FuriSegment } from '@/types';
 
 const HAN_RE = /\p{Script=Han}/u;
 
+/**
+ * Normalise pinyin for lenient comparison in the typing drill: drop tone marks,
+ * spaces and punctuation, and fold ü / v / u: all to plain "u" so learners can
+ * type "nv", "nu" or "nü" interchangeably. (Trades away the rare lu/lü contrast
+ * for a much more forgiving input experience.)
+ */
+export function normalizePinyin(input: string): string {
+  return input
+    .normalize('NFD')
+    .replace(/̈/g, '') // diaeresis: ü → u
+    .replace(/[̀-ͯ]/g, '') // tone marks
+    .toLowerCase()
+    .replace(/u:/g, 'u')
+    .replace(/v/g, 'u')
+    .replace(/[^a-z]/g, '');
+}
+
 /** Whether the text contains at least one Chinese character. */
 export function hasHan(text: string): boolean {
   return HAN_RE.test(text);

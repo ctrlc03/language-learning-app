@@ -16,6 +16,8 @@ export const NAV_TABS = [
   { href: '/tones', cjk: '声', label: 'Tones' },
   { href: '/writing', cjk: '書', label: 'Write' },
   { href: '/measure-words', cjk: '量', label: 'Classifiers' },
+  { href: '/typing', cjk: '拼', label: 'Typing' },
+  { href: '/numbers', cjk: '数', label: 'Numbers' },
   { href: '/progress', cjk: '弱', label: 'Weak Spots' },
   { href: '/chat', cjk: '話', label: 'Chat' },
   { href: '/vocabulary', cjk: '庫', label: 'Archive' },
