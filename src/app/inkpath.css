@@ -1264,8 +1264,9 @@ button {
   left: 0;
   right: 0;
   z-index: 60;
-  display: flex;
-  justify-content: flex-start;
+  /* Hidden on desktop; shown only in the mobile media query below. */
+  display: none;
+  justify-content: safe center;
   flex-wrap: nowrap;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -1352,6 +1353,9 @@ button {
 @media (max-width: 767px) {
   .nav {
     display: none;
+  }
+  .ink-mobile-nav {
+    display: flex;
   }
   .topbar-inner {
     gap: 12px;
