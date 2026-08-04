@@ -9541,6 +9541,237 @@
           "examplePinyin": "Duō xiūxi, bié gōngzuò le.",
           "exampleTranslation": "Rest more, stop working."
         }
+      ],
+      "notes": [
+        {
+          "heading": "了 — change of state",
+          "body": "At the END of a sentence, 了 signals that something is now different from before. This is not the same 了 that marks a completed action after the verb.",
+          "examples": [
+            {
+              "chinese": "我饿了。",
+              "pinyin": "Wǒ è le.",
+              "english": "I'm hungry now (wasn't before)."
+            },
+            {
+              "chinese": "我感冒了。",
+              "pinyin": "Wǒ gǎnmào le.",
+              "english": "I've caught a cold."
+            },
+            {
+              "chinese": "下雨了。",
+              "pinyin": "Xià yǔ le.",
+              "english": "It's raining now."
+            },
+            {
+              "chinese": "我不去了。",
+              "pinyin": "Wǒ bú qù le.",
+              "english": "I'm not going anymore (change of plan)."
+            }
+          ],
+          "table": {
+            "headers": ["Type", "Position", "Function"],
+            "rows": [
+              ["Completed action 了", "after the verb", "我吃了 = \"I ate\""],
+              ["Change-of-state 了", "end of sentence", "我饿了 = \"I'm hungry now\""]
+            ]
+          }
+        },
+        {
+          "heading": "有点儿 — a bit (with complaint)",
+          "body": "有点儿 goes before an adjective and carries a note of complaint — something is a bit too much for comfort. Don't confuse it with 一点儿, which comes after the adjective and asks for a small change.",
+          "examples": [
+            {
+              "chinese": "我有点儿累。",
+              "pinyin": "Wǒ yǒudiǎnr lèi.",
+              "english": "I'm a bit tired."
+            },
+            {
+              "chinese": "我有点儿不舒服。",
+              "pinyin": "Wǒ yǒudiǎnr bù shūfu.",
+              "english": "I feel a bit off."
+            },
+            {
+              "chinese": "这个咖啡有点儿苦。",
+              "pinyin": "Zhège kāfēi yǒudiǎnr kǔ.",
+              "english": "This coffee is a bit bitter."
+            }
+          ],
+          "table": {
+            "headers": ["Pattern", "Use", "Example"],
+            "rows": [
+              ["有点儿 + adjective", "complaint / negative feeling", "有点儿累 — a bit tired"],
+              ["adjective + 一点儿", "request for a bit more", "便宜一点儿 — a bit cheaper"],
+              ["verb + 一点儿 + noun", "small quantity", "加一点儿糖 — add a little sugar"]
+            ]
+          }
+        },
+        {
+          "heading": "能 — can / be able to",
+          "body": "能 expresses ability, possibility or permission: Subject + 能 + verb. Negate with 不能.",
+          "examples": [
+            {
+              "chinese": "你能帮我吗？",
+              "pinyin": "Nǐ néng bāng wǒ ma?",
+              "english": "Can you help me?"
+            },
+            {
+              "chinese": "我今天不能上班。",
+              "pinyin": "Wǒ jīntiān bù néng shàngbān.",
+              "english": "I can't work today."
+            }
+          ],
+          "table": {
+            "headers": ["Word", "Pinyin", "Meaning"],
+            "rows": [
+              ["会", "huì", "know how to (learned skill) — 我会说汉语"],
+              ["能", "néng", "able to (ability, circumstance) — 我今天不能来"],
+              ["可以", "kěyǐ", "allowed to / it's OK — 我可以走了吗？"]
+            ]
+          }
+        },
+        {
+          "heading": "Asking what's wrong",
+          "body": "Three question patterns, each with its own job.",
+          "examples": [
+            {
+              "chinese": "你怎么样？",
+              "pinyin": "Nǐ zěnmeyàng?",
+              "english": "How are you? (general state)"
+            },
+            {
+              "chinese": "你怎么了？",
+              "pinyin": "Nǐ zěnme le?",
+              "english": "What happened? (something's wrong)"
+            },
+            {
+              "chinese": "你哪儿不舒服？",
+              "pinyin": "Nǐ nǎr bù shūfu?",
+              "english": "Where are you feeling unwell?"
+            },
+            {
+              "chinese": "你为什么不高兴？",
+              "pinyin": "Nǐ wèishénme bù gāoxìng?",
+              "english": "Why are you unhappy?"
+            }
+          ]
+        },
+        {
+          "heading": "还是 — two meanings",
+          "body": "In a question 还是 means \"or\". In a statement with 吧 it announces a decision reached after weighing the options — \"you'd better…\" / \"let's just…\".",
+          "examples": [
+            {
+              "chinese": "你要茶还是咖啡？",
+              "pinyin": "Nǐ yào chá háishi kāfēi?",
+              "english": "Do you want tea or coffee?"
+            },
+            {
+              "chinese": "你还是去医院吧。",
+              "pinyin": "Nǐ háishi qù yīyuàn ba.",
+              "english": "You'd better go to the hospital."
+            },
+            {
+              "chinese": "我们还是回家吧。",
+              "pinyin": "Wǒmen háishi huí jiā ba.",
+              "english": "Let's just go home."
+            }
+          ]
+        },
+        {
+          "heading": "Body part + 疼",
+          "body": "Symptoms are stated as topic + comment: person, then body part, then 疼. No verb \"to have\", no 的.",
+          "examples": [
+            {
+              "chinese": "我头疼。",
+              "pinyin": "Wǒ tóu téng.",
+              "english": "I have a headache."
+            },
+            {
+              "chinese": "我嗓子疼。",
+              "pinyin": "Wǒ sǎngzi téng.",
+              "english": "I have a sore throat."
+            },
+            {
+              "chinese": "我牙疼。",
+              "pinyin": "Wǒ yá téng.",
+              "english": "I have toothache."
+            },
+            {
+              "chinese": "我肚子疼。",
+              "pinyin": "Wǒ dùzi téng.",
+              "english": "I have stomachache."
+            }
+          ]
+        },
+        {
+          "heading": "次, 第 and 一下",
+          "body": "次 counts how many times an action happens and follows the verb. 第 turns a number into an ordinal. 一下 (or reduplicating the verb: 看看, 量量) makes an action brief and casual.",
+          "examples": [
+            {
+              "chinese": "一天吃三次，一次两片。",
+              "pinyin": "Yì tiān chī sān cì, yí cì liǎng piàn.",
+              "english": "Three times a day, two tablets each time."
+            },
+            {
+              "chinese": "这是我第一次看医生。",
+              "pinyin": "Zhè shì wǒ dì-yī cì kàn yīshēng.",
+              "english": "This is my first time seeing a doctor."
+            },
+            {
+              "chinese": "让我量一下体温。",
+              "pinyin": "Ràng wǒ liáng yíxià tǐwēn.",
+              "english": "Let me take your temperature."
+            },
+            {
+              "chinese": "你休息一下吧。",
+              "pinyin": "Nǐ xiūxi yíxià ba.",
+              "english": "Have a bit of a rest."
+            }
+          ]
+        },
+        {
+          "heading": "At the doctor's — useful phrases",
+          "body": "The core script for a clinic visit, start to finish.",
+          "table": {
+            "headers": ["Chinese", "Pinyin", "English"],
+            "rows": [
+              ["你哪儿不舒服？", "Nǐ nǎr bù shūfu?", "Where does it hurt?"],
+              ["我有点儿感冒。", "Wǒ yǒudiǎnr gǎnmào.", "I have a bit of a cold."],
+              ["我发烧了。", "Wǒ fāshāo le.", "I have a fever."],
+              ["让我量一下体温。", "Ràng wǒ liáng yíxià tǐwēn.", "Let me take your temperature."],
+              ["三十八度五。", "Sānshíbā dù wǔ.", "38.5 degrees."],
+              [
+                "一天吃三次，一次两片。",
+                "Yì tiān chī sān cì, yí cì liǎng piàn.",
+                "Three times a day, two tablets each time."
+              ],
+              ["多喝水，多休息。", "Duō hē shuǐ, duō xiūxi.", "Drink lots of water, rest a lot."],
+              ["我想请假。", "Wǒ xiǎng qǐngjià.", "I'd like to ask for leave."],
+              ["快点儿好起来！", "Kuài diǎnr hǎo qǐlái!", "Get better soon!"]
+            ]
+          }
+        }
+      ],
+      "selfCheck": [
+        {
+          "q": "How do you say \"I have a bit of a cold\" using 有点儿?",
+          "a": "我有点儿感冒。(Wǒ yǒudiǎnr gǎnmào.)"
+        },
+        {
+          "q": "How do you ask \"where does it hurt?\"",
+          "a": "你哪儿不舒服？(Nǐ nǎr bù shūfu?)"
+        },
+        {
+          "q": "What's the difference between 一次 and 第一次?",
+          "a": "一次 = \"one time / once\"; 第一次 = \"the first time\"."
+        },
+        {
+          "q": "How would you say \"you should drink more water\" with 还是…吧?",
+          "a": "你还是多喝水吧。(Nǐ háishi duō hē shuǐ ba.)"
+        },
+        {
+          "q": "What's the difference between 会, 能 and 可以?",
+          "a": "会 = learned skill; 能 = ability or circumstance; 可以 = permission."
+        }
       ]
     }
   ]

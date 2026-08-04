@@ -71,11 +71,11 @@ export default function DashboardPage() {
             <h2>{hero.title}</h2>
             <p>{hero.desc}</p>
             <div className="cta-row">
-              <button className="btn solid" onClick={() => router.push('/flashcards')}>
-                Continue lesson →
+              <button className="btn solid" onClick={() => router.push('/session')}>
+                Start session →
               </button>
-              <button className="btn outline" onClick={() => router.push('/review')}>
-                Review queue
+              <button className="btn outline" onClick={() => router.push('/flashcards')}>
+                Continue lesson
               </button>
             </div>
             <div className="meta-row">

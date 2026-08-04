@@ -1,12 +1,14 @@
 {
-  "name": "temp-init",
+  "name": "inkpath",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build:hanzi-data": "node scripts/build-hanzi-data.mjs",
     "build:hanzi-decomp": "node scripts/build-hanzi-decomp.mjs",
-    "prebuild": "node scripts/build-hanzi-data.mjs && node scripts/build-hanzi-decomp.mjs",
+    "build:sw": "node scripts/build-sw.mjs",
+    "check:data": "node scripts/check-data.mjs",
+    "prebuild": "node scripts/build-hanzi-data.mjs && node scripts/build-hanzi-decomp.mjs && node scripts/build-sw.mjs && node scripts/check-data.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",

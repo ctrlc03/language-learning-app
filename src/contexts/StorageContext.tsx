@@ -1,15 +1,24 @@
 'use client';
 
-import { createContext, useContext, useRef } from 'react';
+import { createContext, useContext, useState } from 'react';
 import type { StorageAdapter } from '@/types';
 import { LocalStorageAdapter } from '@/lib/storage/local-storage';
+import { IndexedDBAdapter, isIndexedDBAvailable } from '@/lib/storage/indexeddb';
 
 const StorageContext = createContext<StorageAdapter | null>(null);
 
-export function StorageProvider({ children }: { children: React.ReactNode }) {
-  const storageRef = useRef<StorageAdapter>(new LocalStorageAdapter());
+// IndexedDB is the real store (no 5 MB cap, async writes). localStorage remains
+// the fallback where IDB is unavailable. Existing localStorage data is copied
+// across on the IDB adapter's first open.
+function createAdapter(): StorageAdapter {
+  return isIndexedDBAvailable() ? new IndexedDBAdapter() : new LocalStorageAdapter();
+}
 
-  return <StorageContext.Provider value={storageRef.current}>{children}</StorageContext.Provider>;
+export function StorageProvider({ children }: { children: React.ReactNode }) {
+  // Lazy initialiser: one adapter per provider, created on first render only.
+  const [storage] = useState<StorageAdapter>(createAdapter);
+
+  return <StorageContext.Provider value={storage}>{children}</StorageContext.Provider>;
 }
 
 export function useStorage(): StorageAdapter {

@@ -8,6 +8,7 @@ import { useProgress } from '@/hooks/use-progress';
 
 export const NAV_TABS = [
   { href: '/dashboard', cjk: '今', label: 'Today' },
+  { href: '/session', cjk: '道', label: 'Session' },
   { href: '/flashcards', cjk: '学', label: 'Study' },
   { href: '/learn', cjk: '教', label: 'Learn' },
   { href: '/review', cjk: '復', label: 'Review' },

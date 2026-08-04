@@ -397,8 +397,58 @@ const lessonVocabulary = buildLessonVocabulary();
 // Combined vocabulary: base HSK items + lesson-extracted items
 export const chineseVocabulary: VocabularyItem[] = [...baseVocabulary, ...lessonVocabulary];
 
+// ── Lesson data ───────────────────────────────────────────────
+// lessons.json is a plain JSON import, so TypeScript infers a union of the
+// shapes it happens to contain and optional fields (notes, selfCheck) become
+// unreachable. These interfaces are the contract; the cast below applies it.
+
+export interface LessonVocabEntry {
+  word: string;
+  reading: string;
+  meaning: string;
+  partOfSpeech: string;
+  topic: string;
+  exampleSentence?: string;
+  examplePinyin?: string;
+  exampleTranslation?: string;
+}
+
+export interface LessonExample {
+  chinese: string;
+  pinyin: string;
+  english: string;
+}
+
+/** A prose section of a lesson write-up: the teaching, not just the word list. */
+export interface LessonNote {
+  heading: string;
+  body: string;
+  examples?: LessonExample[];
+  table?: { headers: string[]; rows: string[][] };
+}
+
+export interface LessonEntry {
+  lesson: number;
+  title: string;
+  titleChinese: string;
+  vocabulary: LessonVocabEntry[];
+  notes?: LessonNote[];
+  selfCheck?: { q: string; a: string }[];
+}
+
 // Export lesson data for flashcard decks
-export const chineseLessons = lessonsData.lessons;
+export const chineseLessons = lessonsData.lessons as unknown as LessonEntry[];
+
+/** Lessons that ship written notes, newest first — the Learn page's reading list. */
+export function getLessonsWithNotes(): LessonEntry[] {
+  return chineseLessons
+    .filter((l) => l.notes && l.notes.length > 0)
+    .sort((a, b) => b.lesson - a.lesson);
+}
+
+export function getLesson(lessonNumber: number): LessonEntry | undefined {
+  return chineseLessons.find((l) => l.lesson === lessonNumber);
+}
 
 // Get all unique levels
 export function getChineseLevels(): string[] {

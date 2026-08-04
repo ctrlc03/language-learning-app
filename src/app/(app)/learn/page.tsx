@@ -7,6 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { SpeakButton } from '@/components/shared/speak-button';
 import { ExerciseShell } from '@/components/exercises/exercise-shell';
 import { chineseGrammarRules, type GrammarRule } from '@/data/chinese/grammar';
+import { getLessonsWithNotes, chineseLessons, type LessonEntry } from '@/data/chinese/vocabulary';
+import { LessonNotes } from '@/components/learn/lesson-notes';
 import { buildChecksForRule } from '@/lib/learn/checks';
 import { cn } from '@/lib/utils';
 import type { Exercise, ExerciseResult } from '@/types';
@@ -14,27 +16,145 @@ import type { Exercise, ExerciseResult } from '@/types';
 // A guided study unit = one grammar rule: read the concept + examples ("teach"),
 // then work through a few auto-derived checks ("test"), then a short recap.
 type Phase = 'teach' | 'check' | 'done';
+type Tab = 'patterns' | 'lessons';
+
+// Lessons that actually have a pattern attached, newest first — the filter row.
+function lessonsWithRules(): LessonEntry[] {
+  const tagged = new Set(chineseGrammarRules.flatMap((r) => r.lessons));
+  return chineseLessons.filter((l) => tagged.has(l.lesson)).sort((a, b) => b.lesson - a.lesson);
+}
 
 export default function LearnPage() {
   const [rule, setRule] = useState<GrammarRule | null>(null);
+  const [lesson, setLesson] = useState<LessonEntry | null>(null);
 
-  if (!rule) {
-    return <RulePicker onPick={setRule} />;
-  }
-  return <StudySession rule={rule} onExit={() => setRule(null)} />;
+  if (rule) return <StudySession rule={rule} onExit={() => setRule(null)} />;
+  if (lesson) return <LessonNotes lesson={lesson} onExit={() => setLesson(null)} />;
+  return <Picker onPickRule={setRule} onPickLesson={setLesson} />;
 }
 
-function RulePicker({ onPick }: { onPick: (rule: GrammarRule) => void }) {
+function Picker({
+  onPickRule,
+  onPickLesson,
+}: {
+  onPickRule: (rule: GrammarRule) => void;
+  onPickLesson: (lesson: LessonEntry) => void;
+}) {
+  const [tab, setTab] = useState<Tab>('patterns');
+  const [lessonFilter, setLessonFilter] = useState<number | null>(null);
+
+  const lessonOptions = useMemo(() => lessonsWithRules(), []);
+  const noteLessons = useMemo(() => getLessonsWithNotes(), []);
+  const rules = useMemo(
+    () =>
+      lessonFilter === null
+        ? chineseGrammarRules
+        : chineseGrammarRules.filter((r) => r.lessons.includes(lessonFilter)),
+    [lessonFilter],
+  );
+
   return (
-    <div className="p-5 md:p-8 max-w-xl mx-auto space-y-6">
+    <div className="p-5 md:p-8 max-w-xl mx-auto space-y-5">
       <div>
         <h1 className="text-xl font-bold tracking-tight">Learn</h1>
         <p className="text-muted-foreground text-xs mt-0.5">
-          Study a pattern, then check you&apos;ve got it — {chineseGrammarRules.length} patterns
+          {tab === 'patterns'
+            ? `Study a pattern, then check you've got it — ${rules.length} patterns`
+            : `Lesson write-ups — ${noteLessons.length} available`}
         </p>
       </div>
+
+      <div className="flex gap-1.5">
+        {(['patterns', 'lessons'] as Tab[]).map((t) => (
+          <button
+            key={t}
+            onClick={() => setTab(t)}
+            className={cn(
+              'px-3 py-1.5 rounded-full text-xs capitalize transition-colors',
+              tab === t ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground',
+            )}
+          >
+            {t}
+          </button>
+        ))}
+      </div>
+
+      {tab === 'lessons' ? (
+        <div className="space-y-2">
+          {noteLessons.length === 0 && (
+            <p className="text-xs text-muted-foreground">No lesson notes yet.</p>
+          )}
+          {noteLessons.map((lesson) => (
+            <button
+              key={lesson.lesson}
+              onClick={() => onPickLesson(lesson)}
+              className="w-full text-left"
+            >
+              <Card className="p-3.5 transition-all hover:border-primary/30 hover:bg-primary/[0.02]">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <h3 className="font-semibold text-sm truncate">
+                      {lesson.titleChinese}
+                      <span className="text-muted-foreground font-normal ml-1.5">
+                        {lesson.title}
+                      </span>
+                    </h3>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      L{lesson.lesson} · {lesson.notes?.length ?? 0} sections ·{' '}
+                      {lesson.vocabulary.length} words
+                    </p>
+                  </div>
+                  <span className="text-muted-foreground text-xs shrink-0">→</span>
+                </div>
+              </Card>
+            </button>
+          ))}
+        </div>
+      ) : (
+        <RuleList
+          rules={rules}
+          lessonOptions={lessonOptions}
+          lessonFilter={lessonFilter}
+          onFilter={setLessonFilter}
+          onPick={onPickRule}
+        />
+      )}
+    </div>
+  );
+}
+
+function RuleList({
+  rules,
+  lessonOptions,
+  lessonFilter,
+  onFilter,
+  onPick,
+}: {
+  rules: GrammarRule[];
+  lessonOptions: LessonEntry[];
+  lessonFilter: number | null;
+  onFilter: (lesson: number | null) => void;
+  onPick: (rule: GrammarRule) => void;
+}) {
+  return (
+    <>
+      <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1">
+        <FilterChip active={lessonFilter === null} onClick={() => onFilter(null)}>
+          All
+        </FilterChip>
+        {lessonOptions.map((l) => (
+          <FilterChip
+            key={l.lesson}
+            active={lessonFilter === l.lesson}
+            onClick={() => onFilter(l.lesson)}
+            title={l.title}
+          >
+            L{l.lesson}
+          </FilterChip>
+        ))}
+      </div>
       <div className="space-y-2">
-        {chineseGrammarRules.map((rule) => (
+        {rules.map((rule) => (
           <button key={rule.id} onClick={() => onPick(rule)} className="w-full text-left">
             <Card className="p-3.5 transition-all hover:border-primary/30 hover:bg-primary/[0.02]">
               <div className="flex items-center justify-between gap-2">
@@ -55,7 +175,32 @@ function RulePicker({ onPick }: { onPick: (rule: GrammarRule) => void }) {
           </button>
         ))}
       </div>
-    </div>
+    </>
+  );
+}
+
+function FilterChip({
+  active,
+  onClick,
+  title,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  title?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      title={title}
+      className={cn(
+        'shrink-0 px-2.5 py-1 rounded-full text-[11px] transition-colors',
+        active ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground',
+      )}
+    >
+      {children}
+    </button>
   );
 }
 

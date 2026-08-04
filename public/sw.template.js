@@ -14,26 +14,7 @@ const CRITICAL_URLS = [OFFLINE_URL, '/manifest.webmanifest'];
 
 // Main app routes — warmed on install so first home-screen launch works even
 // offline. Generated from NAV_TABS; do not hand-edit.
-const WARM_URLS = [
-  '/',
-  '/chat',
-  '/dashboard',
-  '/exercises',
-  '/flashcards',
-  '/journal',
-  '/learn',
-  '/listening',
-  '/measure-words',
-  '/numbers',
-  '/progress',
-  '/review',
-  '/session',
-  '/settings',
-  '/tones',
-  '/typing',
-  '/vocabulary',
-  '/writing',
-];
+const WARM_URLS = __WARM_URLS__;
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

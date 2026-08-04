@@ -1,5 +1,12 @@
 export interface GrammarRule {
   id: string;
+  /**
+   * Lesson numbers (matching lessons.json) where this pattern is taught or
+   * revisited. A rule can belong to several — 了 is introduced in L25 and
+   * extended in L26 — which is what lets the Learn page and the daily session
+   * scope practice to a lesson.
+   */
+  lessons: number[];
   title: string;
   titleChinese: string;
   pattern: string;
@@ -11,6 +18,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   // ── Sentence Structure ──
   {
     id: 'gr-01',
+    lessons: [3],
     title: 'Basic Sentence Order',
     titleChinese: '基本句型',
     pattern: 'Subject + Verb + Object',
@@ -24,6 +32,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-02',
+    lessons: [3],
     title: 'Negation with 不',
     titleChinese: '用不否定',
     pattern: 'Subject + 不 + Verb/Adj',
@@ -42,6 +51,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-03',
+    lessons: [3],
     title: 'Negation with 没(有)',
     titleChinese: '用没有否定',
     pattern: 'Subject + 没(有) + Verb',
@@ -57,6 +67,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   // ── Questions ──
   {
     id: 'gr-04',
+    lessons: [13],
     title: 'Yes/No Questions with 吗',
     titleChinese: '吗字问句',
     pattern: 'Statement + 吗？',
@@ -70,6 +81,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-05',
+    lessons: [13],
     title: 'Affirmative-Negative Questions',
     titleChinese: '正反疑问句',
     pattern: 'Verb/Adj + 不 + Verb/Adj？',
@@ -97,6 +109,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-06',
+    lessons: [13],
     title: 'Question Words',
     titleChinese: '疑问词',
     pattern: 'Question word stays in place of the answer',
@@ -115,6 +128,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-07',
+    lessons: [13, 26],
     title: 'How Is...? with 怎么样',
     titleChinese: '怎么样',
     pattern: 'Subject/Verb + 怎么样？',
@@ -138,6 +152,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   // ── Intensifiers ──
   {
     id: 'gr-08',
+    lessons: [3],
     title: '很 vs 真 vs 太 — Degree Words',
     titleChinese: '很、真、太',
     pattern: 'Subject + 很/真/太 + Adj (+ 了)',
@@ -167,6 +182,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-09',
+    lessons: [3],
     title: 'Most / Superlative with 最',
     titleChinese: '用最表示最高级',
     pattern: 'Subject + 最 + Adj/Verb',
@@ -188,6 +204,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   // ── Commands & Requests ──
   {
     id: 'gr-10',
+    lessons: [19],
     title: "Don't with 别",
     titleChinese: '别字祈使句',
     pattern: '别 + Verb',
@@ -202,6 +219,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-11',
+    lessons: [10, 26],
     title: 'Can You...? with 能',
     titleChinese: '能字请求句',
     pattern: '你能 + Verb + 吗？',
@@ -228,6 +246,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   // ── Location & Direction ──
   {
     id: 'gr-12',
+    lessons: [10],
     title: 'Location with 在',
     titleChinese: '在字表示位置',
     pattern: 'Subject + 在 + Place',
@@ -248,6 +267,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-13',
+    lessons: [10],
     title: 'Direction with 往',
     titleChinese: '往字表示方向',
     pattern: '往 + Direction + Verb',
@@ -264,6 +284,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-14',
+    lessons: [10],
     title: 'From with 从...来',
     titleChinese: '从...来',
     pattern: '从 + Place + 来',
@@ -281,6 +302,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   // ── Result Complements ──
   {
     id: 'gr-15',
+    lessons: [20],
     title: 'Result Complement with 见/到',
     titleChinese: '结果补语：见/到',
     pattern: 'Verb + 见 / Verb + 到',
@@ -300,6 +322,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   // ── Duration & Time ──
   {
     id: 'gr-16',
+    lessons: [17],
     title: 'How Long with 多久/多长时间',
     titleChinese: '多久/多长时间',
     pattern: 'Verb + 多久/多长时间？',
@@ -320,6 +343,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-17',
+    lessons: [25],
     title: 'Just/Recently with 刚',
     titleChinese: '刚字表示最近',
     pattern: 'Subject + 刚 + Verb',
@@ -337,6 +361,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   // ── Comparisons & Descriptions ──
   {
     id: 'gr-18',
+    lessons: [21],
     title: 'Both...and... with 又...又...',
     titleChinese: '又...又...',
     pattern: 'Subject + 又 + Adj1 + 又 + Adj2',
@@ -356,6 +381,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-19',
+    lessons: [25],
     title: 'Completed Action with 了',
     titleChinese: '了字表示完成',
     pattern: 'Verb + 了',
@@ -373,6 +399,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-21',
+    lessons: [7],
     title: 'Chinese Discounts with 折',
     titleChinese: '打折',
     pattern: 'Number + 折 = "you pay X0%"',
@@ -401,6 +428,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-22',
+    lessons: [7],
     title: 'Bargaining with 行',
     titleChinese: '行字议价',
     pattern: '行 / 不行 / 行吗？',
@@ -419,6 +447,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-20',
+    lessons: [7],
     title: 'Measure Words',
     titleChinese: '量词',
     pattern: 'Number + Measure Word + Noun',
@@ -444,6 +473,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-23',
+    lessons: [17],
     title: 'Taking Transport with 坐',
     titleChinese: '坐交通',
     pattern: '坐 + Transport',
@@ -474,6 +504,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-24',
+    lessons: [7],
     title: 'Half with 一半',
     titleChinese: '一半',
     pattern: '一半 / 一半的 + Noun',
@@ -501,6 +532,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-25',
+    lessons: [25],
     title: 'Stopped Doing with 不 + V + 了',
     titleChinese: '不…了',
     pattern: 'Subject + 不 + Verb + 了',
@@ -526,6 +558,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   // ── Hobbies & Abilities (Lesson 21) ──
   {
     id: 'gr-26',
+    lessons: [21, 26],
     title: 'Ability with 会',
     titleChinese: '能愿动词会',
     pattern: 'Subject + 会 + Verb (+ Object)',
@@ -544,6 +577,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-27',
+    lessons: [21],
     title: 'Degree Complement with 得',
     titleChinese: '程度补语',
     pattern: 'Subject + (Object) + Verb + 得 + Adverb + Adjective',
@@ -562,6 +596,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-28',
+    lessons: [21],
     title: 'Besides … also … with 除了…还…',
     titleChinese: '除了…还…',
     pattern: '除了 + A，Subject + 还 + B',
@@ -590,6 +625,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   // ── Experiences & Aspect ──
   {
     id: 'gr-29',
+    lessons: [24],
     title: 'Experiential Aspect with 过',
     titleChinese: '动态助词「过」',
     pattern: 'Subject + Verb + 过 + (Object)',
@@ -617,6 +653,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-30',
+    lessons: [24],
     title: 'Not Yet with 还没…呢',
     titleChinese: '还没…呢',
     pattern: 'Subject + 还没(有) + Verb + (呢)',
@@ -639,6 +676,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-31',
+    lessons: [12, 26],
     title: 'Verb Reduplication',
     titleChinese: '动词重叠',
     pattern: 'VV / V一V (single) · ABAB (two-syllable)',
@@ -665,6 +703,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-32',
+    lessons: [6],
     title: 'Attributive Particle 的',
     titleChinese: '结构助词「的」',
     pattern: 'Modifier + 的 + Noun',
@@ -694,6 +733,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   // ── Aspect, Completion & Multi-Verb Sentences ──
   {
     id: 'gr-33',
+    lessons: [25],
     title: 'Progressive Aspect with 在',
     titleChinese: '进行时「在」',
     pattern: 'Subject + 在 + Verb + (Object) + (呢)',
@@ -717,6 +757,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-34',
+    lessons: [25, 26],
     title: 'Completed Action & New Situation with 了',
     titleChinese: '动态助词「了」',
     pattern: 'V + 了 + Object (completed) · Subject + … + 了 (change)',
@@ -745,6 +786,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-35',
+    lessons: [25],
     title: 'Negating 了 with 没',
     titleChinese: '「没」否定完成',
     pattern: 'Subject + 没(有) + Verb (drop 了)',
@@ -773,6 +815,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-36',
+    lessons: [25],
     title: 'Serial Verb Sentences 连动句',
     titleChinese: '连动句',
     pattern: 'Subject + V1 + (Obj) + V2 + (Obj)',
@@ -800,6 +843,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-37',
+    lessons: [25],
     title: 'Pivotal Sentences 兼语句',
     titleChinese: '兼语句',
     pattern: 'Subject + V1 (让/请/叫/要求) + Object + V2 + others',
@@ -828,6 +872,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   // ── Illness & Advice ──
   {
     id: 'gr-38',
+    lessons: [26],
     title: 'A Bit Too… with 有点儿',
     titleChinese: '有点儿 + 形容词',
     pattern: '有点儿 + Adjective',
@@ -855,6 +900,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-39',
+    lessons: [26],
     title: 'The Three "Cans" — 会 / 能 / 可以',
     titleChinese: '会、能、可以的区别',
     pattern: 'Subject + 会/能/可以 + Verb',
@@ -888,6 +934,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-40',
+    lessons: [26],
     title: 'Might As Well with 还是…吧',
     titleChinese: '还是…吧',
     pattern: 'Subject + 还是 + Verb Phrase + 吧',
@@ -919,6 +966,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-41',
+    lessons: [26],
     title: 'Saying What Hurts — Body Part + 疼',
     titleChinese: '身体部位 + 疼',
     pattern: 'Subject + Body Part + 疼 · 你哪儿不舒服？',
@@ -941,6 +989,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-42',
+    lessons: [26],
     title: 'Counting Actions with 次 and 第',
     titleChinese: '次和第',
     pattern: 'Verb + Number + 次 · 第 + Number (+ Measure Word)',
@@ -967,6 +1016,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-43',
+    lessons: [26],
     title: 'Softening with Verb + 一下',
     titleChinese: '动词 + 一下',
     pattern: 'Verb + 一下 (+ Object)',

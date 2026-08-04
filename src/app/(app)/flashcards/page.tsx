@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSRS } from '@/hooks/use-srs';
+import { useProgress } from '@/hooks/use-progress';
 import { InkCard } from '@/components/ink/primitives';
 import { getLanguageName, getLanguageNativeName } from '@/lib/language/utils';
 import {
@@ -30,6 +31,7 @@ export default function FlashcardsPage() {
     addCard,
     loadDecks,
   } = useSRS(selectedDeckId);
+  const { recordActivity } = useProgress();
   const [view, setView] = useState<View>('decks');
   const [creating, setCreating] = useState(false);
   const [revealed, setRevealed] = useState(false);
@@ -65,6 +67,16 @@ export default function FlashcardsPage() {
   };
 
   const grade = (g: SRSGrade) => {
+    // Record before grading — gradeCard mutates the card's SRS state, and a
+    // card is "new" only on the review that introduces it.
+    if (currentCard) {
+      void recordActivity({
+        reviews: 1,
+        totalAnswers: 1,
+        correctAnswers: g >= 3 ? 1 : 0,
+        newCards: currentCard.srs.repetitions === 0 ? 1 : 0,
+      });
+    }
     gradeCard(g);
     setRevealed(false);
     setReviewed((r) => r + 1);
