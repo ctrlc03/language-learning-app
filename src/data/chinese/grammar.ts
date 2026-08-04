@@ -824,4 +824,172 @@ export const chineseGrammarRules: GrammarRule[] = [
       },
     ],
   },
+
+  // ── Illness & Advice ──
+  {
+    id: 'gr-38',
+    title: 'A Bit Too… with 有点儿',
+    titleChinese: '有点儿 + 形容词',
+    pattern: '有点儿 + Adjective',
+    explanation:
+      '有点儿 yǒudiǎnr goes BEFORE an adjective and carries a note of complaint — something is a bit too much for comfort. Compare with Adjective + 一点儿, which asks for a small change (便宜一点儿 = "a bit cheaper"), and Verb + 一点儿 + Noun for a small quantity (加一点儿糖).',
+    examples: [
+      {
+        chinese: '我有点儿不舒服。',
+        pinyin: 'Wǒ yǒudiǎnr bù shūfu.',
+        english: 'I feel a bit off.',
+      },
+      { chinese: '我有点儿冷。', pinyin: 'Wǒ yǒudiǎnr lěng.', english: "I'm a bit cold." },
+      {
+        chinese: '这个咖啡有点儿苦。',
+        pinyin: 'Zhège kāfēi yǒudiǎnr kǔ.',
+        english: 'This coffee is a bit bitter.',
+      },
+      {
+        chinese: '便宜一点儿吧。',
+        pinyin: 'Piányi yìdiǎnr ba.',
+        english: 'Make it a bit cheaper.',
+        note: 'Adj + 一点儿 = request, not complaint',
+      },
+    ],
+  },
+  {
+    id: 'gr-39',
+    title: 'The Three "Cans" — 会 / 能 / 可以',
+    titleChinese: '会、能、可以的区别',
+    pattern: 'Subject + 会/能/可以 + Verb',
+    explanation:
+      '会 huì = a learned skill. 能 néng = physical ability or whether circumstances allow. 可以 kěyǐ = permission / it being OK. Negate all three with 不.',
+    examples: [
+      {
+        chinese: '我会说汉语。',
+        pinyin: 'Wǒ huì shuō Hànyǔ.',
+        english: 'I can speak Chinese.',
+        note: '会 = learned skill',
+      },
+      {
+        chinese: '我今天生病了，不能上班。',
+        pinyin: 'Wǒ jīntiān shēngbìng le, bù néng shàngbān.',
+        english: "I'm ill today, so I can't go to work.",
+        note: '能 = circumstances',
+      },
+      {
+        chinese: '我可以走了吗？',
+        pinyin: 'Wǒ kěyǐ zǒu le ma?',
+        english: 'May I go now?',
+        note: '可以 = permission',
+      },
+      {
+        chinese: '你能帮我请假吗？',
+        pinyin: 'Nǐ néng bāng wǒ qǐngjià ma?',
+        english: 'Can you ask for leave for me?',
+      },
+    ],
+  },
+  {
+    id: 'gr-40',
+    title: 'Might As Well with 还是…吧',
+    titleChinese: '还是…吧',
+    pattern: 'Subject + 还是 + Verb Phrase + 吧',
+    explanation:
+      '还是 háishi has two jobs. In a question it means "or" (你要茶还是咖啡？). In a statement with 吧 it announces a decision reached after weighing options — "you\'d better…" / "let\'s just…". The 吧 keeps the suggestion soft.',
+    examples: [
+      {
+        chinese: '你还是去医院吧。',
+        pinyin: 'Nǐ háishi qù yīyuàn ba.',
+        english: "You'd better go to the hospital.",
+      },
+      {
+        chinese: '你还是多喝水吧。',
+        pinyin: 'Nǐ háishi duō hē shuǐ ba.',
+        english: 'You should drink more water.',
+      },
+      {
+        chinese: '我们还是回家吧。',
+        pinyin: 'Wǒmen háishi huí jiā ba.',
+        english: "Let's just go home.",
+      },
+      {
+        chinese: '你要茶还是咖啡？',
+        pinyin: 'Nǐ yào chá háishi kāfēi?',
+        english: 'Do you want tea or coffee?',
+        note: '还是 = "or" in choice questions',
+      },
+    ],
+  },
+  {
+    id: 'gr-41',
+    title: 'Saying What Hurts — Body Part + 疼',
+    titleChinese: '身体部位 + 疼',
+    pattern: 'Subject + Body Part + 疼 · 你哪儿不舒服？',
+    explanation:
+      'Chinese states symptoms as "topic + comment": the person comes first, then the body part, then 疼 téng. No verb "to have" and no possessive 的 needed — 我头疼, not 我的头疼了. Ask 你哪儿不舒服？ ("Where are you unwell?") or 你怎么了？("What happened?").',
+    examples: [
+      { chinese: '我头疼。', pinyin: 'Wǒ tóu téng.', english: 'I have a headache.' },
+      { chinese: '我嗓子疼。', pinyin: 'Wǒ sǎngzi téng.', english: 'I have a sore throat.' },
+      {
+        chinese: '他肚子有点儿疼。',
+        pinyin: 'Tā dùzi yǒudiǎnr téng.',
+        english: 'His stomach hurts a little.',
+      },
+      {
+        chinese: '你哪儿不舒服？',
+        pinyin: 'Nǐ nǎr bù shūfu?',
+        english: 'Where are you feeling unwell?',
+      },
+    ],
+  },
+  {
+    id: 'gr-42',
+    title: 'Counting Actions with 次 and 第',
+    titleChinese: '次和第',
+    pattern: 'Verb + Number + 次 · 第 + Number (+ Measure Word)',
+    explanation:
+      '次 cì counts how many times an action happens and follows the verb: 吃三次 = "take (it) three times". 第 dì turns a number into an ordinal: 第一次 = "the first time", 第二天 = "the second day". Dosage instructions stack both patterns: 一天吃三次，一次两片。',
+    examples: [
+      {
+        chinese: '一天吃三次，一次两片。',
+        pinyin: 'Yì tiān chī sān cì, yí cì liǎng piàn.',
+        english: 'Three times a day, two tablets each time.',
+      },
+      {
+        chinese: '我去过一次中国。',
+        pinyin: 'Wǒ qùguo yí cì Zhōngguó.',
+        english: "I've been to China once.",
+      },
+      {
+        chinese: '这是我第一次看医生。',
+        pinyin: 'Zhè shì wǒ dì-yī cì kàn yīshēng.',
+        english: 'This is my first time seeing a doctor.',
+        note: '一次 = once · 第一次 = the first time',
+      },
+    ],
+  },
+  {
+    id: 'gr-43',
+    title: 'Softening with Verb + 一下',
+    titleChinese: '动词 + 一下',
+    pattern: 'Verb + 一下 (+ Object)',
+    explanation:
+      '一下 yíxià after a verb makes the action brief and casual — "just have a quick…". It works like verb reduplication (看看, 量量) and is common in requests and doctor-patient talk.',
+    examples: [
+      {
+        chinese: '让我量一下体温。',
+        pinyin: 'Ràng wǒ liáng yíxià tǐwēn.',
+        english: 'Let me take your temperature.',
+      },
+      { chinese: '等一下。', pinyin: 'Děng yíxià.', english: 'Wait a moment.' },
+      {
+        chinese: '你休息一下吧。',
+        pinyin: 'Nǐ xiūxi yíxià ba.',
+        english: 'Have a bit of a rest.',
+      },
+      {
+        chinese: '医生看看我的嗓子。',
+        pinyin: 'Yīshēng kànkan wǒ de sǎngzi.',
+        english: 'The doctor has a quick look at my throat.',
+        note: 'Reduplication = same brief, casual feel',
+      },
+    ],
+  },
 ];

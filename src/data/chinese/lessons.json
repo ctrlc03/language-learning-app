@@ -9175,6 +9175,373 @@
           "exampleTranslation": "He asked me to wait."
         }
       ]
+    },
+    {
+      "lesson": 26,
+      "title": "At the Doctor's",
+      "titleChinese": "哪儿不舒服？",
+      "vocabulary": [
+        {
+          "word": "有点儿",
+          "reading": "yǒu diǎnr",
+          "meaning": "a little, a bit (with a slight complaint)",
+          "partOfSpeech": "adverb",
+          "topic": "health",
+          "exampleSentence": "我今天有点儿不舒服。",
+          "examplePinyin": "Wǒ jīntiān yǒudiǎnr bù shūfu.",
+          "exampleTranslation": "I feel a bit unwell today."
+        },
+        {
+          "word": "只",
+          "reading": "zhǐ",
+          "meaning": "only, just",
+          "partOfSpeech": "adverb",
+          "topic": "grammar",
+          "exampleSentence": "我只吃了一片药。",
+          "examplePinyin": "Wǒ zhǐ chī le yí piàn yào.",
+          "exampleTranslation": "I only took one tablet."
+        },
+        {
+          "word": "头",
+          "reading": "tóu",
+          "meaning": "head",
+          "partOfSpeech": "noun",
+          "topic": "body",
+          "exampleSentence": "我头有点儿疼。",
+          "examplePinyin": "Wǒ tóu yǒudiǎnr téng.",
+          "exampleTranslation": "My head hurts a little."
+        },
+        {
+          "word": "体温",
+          "reading": "tǐwēn",
+          "meaning": "body temperature",
+          "partOfSpeech": "noun",
+          "topic": "health",
+          "exampleSentence": "我量一下体温。",
+          "examplePinyin": "Wǒ liáng yíxià tǐwēn.",
+          "exampleTranslation": "Let me take my temperature."
+        },
+        {
+          "word": "冷",
+          "reading": "lěng",
+          "meaning": "cold",
+          "partOfSpeech": "adjective",
+          "topic": "descriptions",
+          "exampleSentence": "我有点儿冷。",
+          "examplePinyin": "Wǒ yǒudiǎnr lěng.",
+          "exampleTranslation": "I'm a bit cold."
+        },
+        {
+          "word": "舒服",
+          "reading": "shūfu",
+          "meaning": "comfortable, well",
+          "partOfSpeech": "adjective",
+          "topic": "health",
+          "exampleSentence": "你哪儿不舒服？",
+          "examplePinyin": "Nǐ nǎr bù shūfu?",
+          "exampleTranslation": "Where are you feeling unwell?"
+        },
+        {
+          "word": "疼",
+          "reading": "téng",
+          "meaning": "painful, to hurt",
+          "partOfSpeech": "adjective",
+          "topic": "health",
+          "exampleSentence": "我的嗓子很疼。",
+          "examplePinyin": "Wǒ de sǎngzi hěn téng.",
+          "exampleTranslation": "My throat hurts a lot."
+        },
+        {
+          "word": "发烧",
+          "reading": "fā shāo",
+          "meaning": "to have a fever",
+          "partOfSpeech": "verb",
+          "topic": "health",
+          "exampleSentence": "他发烧了，三十八度五。",
+          "examplePinyin": "Tā fāshāo le, sānshíbā dù wǔ.",
+          "exampleTranslation": "He has a fever, 38.5 degrees."
+        },
+        {
+          "word": "觉得",
+          "reading": "juéde",
+          "meaning": "to feel, to think",
+          "partOfSpeech": "verb",
+          "topic": "emotions",
+          "exampleSentence": "我觉得有点儿累。",
+          "examplePinyin": "Wǒ juéde yǒudiǎnr lèi.",
+          "exampleTranslation": "I feel a bit tired."
+        },
+        {
+          "word": "量",
+          "reading": "liáng",
+          "meaning": "to measure, to take (temperature)",
+          "partOfSpeech": "verb",
+          "topic": "health",
+          "exampleSentence": "医生量了我的体温。",
+          "examplePinyin": "Yīshēng liáng le wǒ de tǐwēn.",
+          "exampleTranslation": "The doctor took my temperature."
+        },
+        {
+          "word": "度",
+          "reading": "dù",
+          "meaning": "degree",
+          "partOfSpeech": "measure word",
+          "topic": "health",
+          "exampleSentence": "今天三十八度。",
+          "examplePinyin": "Jīntiān sānshíbā dù.",
+          "exampleTranslation": "It's 38 degrees today."
+        },
+        {
+          "word": "还是",
+          "reading": "háishi",
+          "meaning": "had better, might as well",
+          "partOfSpeech": "adverb",
+          "topic": "grammar",
+          "exampleSentence": "你还是去医院吧。",
+          "examplePinyin": "Nǐ háishi qù yīyuàn ba.",
+          "exampleTranslation": "You'd better go to the hospital."
+        },
+        {
+          "word": "怎么",
+          "reading": "zěnme",
+          "meaning": "how, why",
+          "partOfSpeech": "pronoun",
+          "topic": "questions",
+          "exampleSentence": "你怎么了？",
+          "examplePinyin": "Nǐ zěnme le?",
+          "exampleTranslation": "What's wrong with you?"
+        },
+        {
+          "word": "水",
+          "reading": "shuǐ",
+          "meaning": "water",
+          "partOfSpeech": "noun",
+          "topic": "food",
+          "exampleSentence": "多喝水，多休息。",
+          "examplePinyin": "Duō hē shuǐ, duō xiūxi.",
+          "exampleTranslation": "Drink lots of water and rest a lot."
+        },
+        {
+          "word": "药",
+          "reading": "yào",
+          "meaning": "medicine",
+          "partOfSpeech": "noun",
+          "topic": "health",
+          "exampleSentence": "这个药一天吃三次。",
+          "examplePinyin": "Zhège yào yì tiān chī sān cì.",
+          "exampleTranslation": "Take this medicine three times a day."
+        },
+        {
+          "word": "医生",
+          "reading": "yīshēng",
+          "meaning": "doctor",
+          "partOfSpeech": "noun",
+          "topic": "people",
+          "exampleSentence": "医生说我感冒了。",
+          "examplePinyin": "Yīshēng shuō wǒ gǎnmào le.",
+          "exampleTranslation": "The doctor said I've caught a cold."
+        },
+        {
+          "word": "验血",
+          "reading": "yàn xiě",
+          "meaning": "to have a blood test",
+          "partOfSpeech": "verb",
+          "topic": "health",
+          "exampleSentence": "你先去验血吧。",
+          "examplePinyin": "Nǐ xiān qù yàn xiě ba.",
+          "exampleTranslation": "Go and have a blood test first."
+        },
+        {
+          "word": "生病",
+          "reading": "shēng bìng",
+          "meaning": "to fall ill, to be sick",
+          "partOfSpeech": "verb",
+          "topic": "health",
+          "exampleSentence": "他生病了，不能来上课。",
+          "examplePinyin": "Tā shēngbìng le, bù néng lái shàngkè.",
+          "exampleTranslation": "He is ill and can't come to class."
+        },
+        {
+          "word": "能",
+          "reading": "néng",
+          "meaning": "can, to be able to",
+          "partOfSpeech": "modal verb",
+          "topic": "grammar",
+          "exampleSentence": "我今天不能上班。",
+          "examplePinyin": "Wǒ jīntiān bù néng shàngbān.",
+          "exampleTranslation": "I can't go to work today."
+        },
+        {
+          "word": "请假",
+          "reading": "qǐng jià",
+          "meaning": "to ask for leave",
+          "partOfSpeech": "verb",
+          "topic": "work",
+          "exampleSentence": "我想请一天假。",
+          "examplePinyin": "Wǒ xiǎng qǐng yì tiān jià.",
+          "exampleTranslation": "I'd like to take one day off."
+        },
+        {
+          "word": "病",
+          "reading": "bìng",
+          "meaning": "illness, disease",
+          "partOfSpeech": "noun",
+          "topic": "health",
+          "exampleSentence": "他的病好了。",
+          "examplePinyin": "Tā de bìng hǎo le.",
+          "exampleTranslation": "He has recovered from his illness."
+        },
+        {
+          "word": "帮",
+          "reading": "bāng",
+          "meaning": "to help",
+          "partOfSpeech": "verb",
+          "topic": "actions",
+          "exampleSentence": "你能帮我请假吗？",
+          "examplePinyin": "Nǐ néng bāng wǒ qǐngjià ma?",
+          "exampleTranslation": "Can you ask for leave for me?"
+        },
+        {
+          "word": "感冒",
+          "reading": "gǎnmào",
+          "meaning": "to catch a cold",
+          "partOfSpeech": "verb",
+          "topic": "health",
+          "exampleSentence": "我有点儿感冒。",
+          "examplePinyin": "Wǒ yǒudiǎnr gǎnmào.",
+          "exampleTranslation": "I have a bit of a cold."
+        },
+        {
+          "word": "片",
+          "reading": "piàn",
+          "meaning": "tablet, piece (measure word)",
+          "partOfSpeech": "measure word",
+          "topic": "health",
+          "exampleSentence": "一次吃两片。",
+          "examplePinyin": "Yí cì chī liǎng piàn.",
+          "exampleTranslation": "Take two tablets each time."
+        },
+        {
+          "word": "先",
+          "reading": "xiān",
+          "meaning": "first, before something else",
+          "partOfSpeech": "adverb",
+          "topic": "grammar",
+          "exampleSentence": "你先吃药，再休息。",
+          "examplePinyin": "Nǐ xiān chī yào, zài xiūxi.",
+          "exampleTranslation": "Take the medicine first, then rest."
+        },
+        {
+          "word": "少",
+          "reading": "shǎo",
+          "meaning": "few, little",
+          "partOfSpeech": "adjective",
+          "topic": "descriptions",
+          "exampleSentence": "少吃点儿，多喝水。",
+          "examplePinyin": "Shǎo chī diǎnr, duō hē shuǐ.",
+          "exampleTranslation": "Eat a bit less and drink more water."
+        },
+        {
+          "word": "头疼",
+          "reading": "tóu téng",
+          "meaning": "headache",
+          "partOfSpeech": "noun",
+          "topic": "health",
+          "exampleSentence": "我头疼，想休息一下。",
+          "examplePinyin": "Wǒ tóu téng, xiǎng xiūxi yíxià.",
+          "exampleTranslation": "I have a headache and want to rest a bit."
+        },
+        {
+          "word": "嗓子",
+          "reading": "sǎngzi",
+          "meaning": "throat",
+          "partOfSpeech": "noun",
+          "topic": "body",
+          "exampleSentence": "我嗓子疼，说话很难。",
+          "examplePinyin": "Wǒ sǎngzi téng, shuōhuà hěn nán.",
+          "exampleTranslation": "My throat hurts, it's hard to talk."
+        },
+        {
+          "word": "牙",
+          "reading": "yá",
+          "meaning": "tooth",
+          "partOfSpeech": "noun",
+          "topic": "body",
+          "exampleSentence": "我牙疼，要去看医生。",
+          "examplePinyin": "Wǒ yá téng, yào qù kàn yīshēng.",
+          "exampleTranslation": "My tooth hurts, I need to see a doctor."
+        },
+        {
+          "word": "肚子",
+          "reading": "dùzi",
+          "meaning": "stomach, belly",
+          "partOfSpeech": "noun",
+          "topic": "body",
+          "exampleSentence": "我肚子疼了一天。",
+          "examplePinyin": "Wǒ dùzi téng le yì tiān.",
+          "exampleTranslation": "My stomach hurt all day."
+        },
+        {
+          "word": "咳嗽",
+          "reading": "késou",
+          "meaning": "to cough",
+          "partOfSpeech": "verb",
+          "topic": "health",
+          "exampleSentence": "我咳嗽得很厉害。",
+          "examplePinyin": "Wǒ késou de hěn lìhai.",
+          "exampleTranslation": "I'm coughing badly."
+        },
+        {
+          "word": "过敏",
+          "reading": "guòmǐn",
+          "meaning": "allergy, to be allergic",
+          "partOfSpeech": "verb",
+          "topic": "health",
+          "exampleSentence": "我对花生过敏。",
+          "examplePinyin": "Wǒ duì huāshēng guòmǐn.",
+          "exampleTranslation": "I'm allergic to peanuts."
+        },
+        {
+          "word": "次",
+          "reading": "cì",
+          "meaning": "time, occurrence (measure word)",
+          "partOfSpeech": "measure word",
+          "topic": "grammar",
+          "exampleSentence": "这个药一天吃三次。",
+          "examplePinyin": "Zhège yào yì tiān chī sān cì.",
+          "exampleTranslation": "Take this medicine three times a day."
+        },
+        {
+          "word": "第",
+          "reading": "dì",
+          "meaning": "(prefix forming ordinal numbers)",
+          "partOfSpeech": "particle",
+          "topic": "grammar",
+          "exampleSentence": "这是我第一次看中医。",
+          "examplePinyin": "Zhè shì wǒ dì-yī cì kàn zhōngyī.",
+          "exampleTranslation": "This is my first time seeing a Chinese doctor."
+        },
+        {
+          "word": "医院",
+          "reading": "yīyuàn",
+          "meaning": "hospital",
+          "partOfSpeech": "noun",
+          "topic": "places",
+          "exampleSentence": "你还是去医院看看吧。",
+          "examplePinyin": "Nǐ háishi qù yīyuàn kànkan ba.",
+          "exampleTranslation": "You'd better go to the hospital and get checked."
+        },
+        {
+          "word": "休息",
+          "reading": "xiūxi",
+          "meaning": "to rest",
+          "partOfSpeech": "verb",
+          "topic": "daily life",
+          "exampleSentence": "多休息，别工作了。",
+          "examplePinyin": "Duō xiūxi, bié gōngzuò le.",
+          "exampleTranslation": "Rest more, stop working."
+        }
+      ]
     }
   ]
 }

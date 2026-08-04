@@ -3131,4 +3131,150 @@ export const chineseDialogues: Dialogue[] = [
       },
     ],
   },
+
+  // ============================================================
+  // Lesson 26 - At the Doctor's 哪儿不舒服？
+  // ============================================================
+  {
+    id: 'dlg-l26-01',
+    title: 'Where Does It Hurt?',
+    titleChinese: '你哪儿不舒服？',
+    setting: 'A student sees the doctor at the campus clinic.',
+    lesson: 26,
+    lines: [
+      {
+        speaker: 'A (Doctor)',
+        text: '你哪儿不舒服？',
+        pinyin: 'Nǐ nǎr bù shūfu?',
+        translation: 'Where are you feeling unwell?',
+      },
+      {
+        speaker: 'B (Patient)',
+        text: '我头疼，还有点儿冷。',
+        pinyin: 'Wǒ tóu téng, hái yǒudiǎnr lěng.',
+        translation: 'I have a headache, and I feel a bit cold too.',
+      },
+      {
+        speaker: 'A (Doctor)',
+        text: '你觉得发烧了吗？让我量一下体温。',
+        pinyin: 'Nǐ juéde fāshāo le ma? Ràng wǒ liáng yíxià tǐwēn.',
+        translation: 'Do you think you have a fever? Let me take your temperature.',
+      },
+      {
+        speaker: 'A (Doctor)',
+        text: '三十八度五，你发烧了。',
+        pinyin: 'Sānshíbā dù wǔ, nǐ fāshāo le.',
+        translation: '38.5 degrees — you have a fever.',
+      },
+      {
+        speaker: 'B (Patient)',
+        text: '我是不是感冒了？要验血吗？',
+        pinyin: 'Wǒ shì bu shì gǎnmào le? Yào yàn xiě ma?',
+        translation: 'Have I caught a cold? Do I need a blood test?',
+      },
+      {
+        speaker: 'A (Doctor)',
+        text: '你先去验血吧，然后我们再看看。',
+        pinyin: 'Nǐ xiān qù yàn xiě ba, ránhòu wǒmen zài kànkan.',
+        translation: "Go and have a blood test first, then we'll take another look.",
+      },
+    ],
+  },
+  {
+    id: 'dlg-l26-02',
+    title: 'How to Take the Medicine',
+    titleChinese: '这个药怎么吃？',
+    setting: 'The doctor explains the prescription after the blood test.',
+    lesson: 26,
+    lines: [
+      {
+        speaker: 'A (Doctor)',
+        text: '你只是感冒了，不用担心。',
+        pinyin: 'Nǐ zhǐshì gǎnmào le, búyòng dānxīn.',
+        translation: "It's only a cold, don't worry.",
+      },
+      {
+        speaker: 'B (Patient)',
+        text: '这个药怎么吃？',
+        pinyin: 'Zhège yào zěnme chī?',
+        translation: 'How do I take this medicine?',
+      },
+      {
+        speaker: 'A (Doctor)',
+        text: '一天吃三次，一次两片，先吃药再睡觉。',
+        pinyin: 'Yì tiān chī sān cì, yí cì liǎng piàn, xiān chī yào zài shuìjiào.',
+        translation:
+          'Three times a day, two tablets each time. Take the medicine first, then sleep.',
+      },
+      {
+        speaker: 'B (Patient)',
+        text: '我对青霉素过敏，能吃这个药吗？',
+        pinyin: 'Wǒ duì qīngméisù guòmǐn, néng chī zhège yào ma?',
+        translation: "I'm allergic to penicillin — can I take this medicine?",
+      },
+      {
+        speaker: 'A (Doctor)',
+        text: '能，这个药没问题。多喝水，多休息，少工作。',
+        pinyin: 'Néng, zhège yào méi wèntí. Duō hē shuǐ, duō xiūxi, shǎo gōngzuò.',
+        translation: 'Yes, this one is fine. Drink lots of water, rest a lot, and work less.',
+      },
+      {
+        speaker: 'B (Patient)',
+        text: '好的，谢谢医生！',
+        pinyin: 'Hǎo de, xièxie yīshēng!',
+        translation: 'Okay, thank you, doctor!',
+      },
+    ],
+  },
+  {
+    id: 'dlg-l26-03',
+    title: 'Asking for Sick Leave',
+    titleChinese: '我想请假',
+    setting: 'A student phones a classmate to ask for help with sick leave.',
+    lesson: 26,
+    lines: [
+      {
+        speaker: 'A',
+        text: '喂，小李，你怎么了？你的声音很不好。',
+        pinyin: 'Wéi, Xiǎo Lǐ, nǐ zěnme le? Nǐ de shēngyīn hěn bù hǎo.',
+        translation: "Hello, Xiao Li, what's wrong? You don't sound good.",
+      },
+      {
+        speaker: 'B',
+        text: '我生病了，嗓子疼，还咳嗽。',
+        pinyin: 'Wǒ shēngbìng le, sǎngzi téng, hái késou.',
+        translation: 'I got sick — my throat hurts and I have a cough.',
+      },
+      {
+        speaker: 'A',
+        text: '你今天能来上课吗？',
+        pinyin: 'Nǐ jīntiān néng lái shàngkè ma?',
+        translation: 'Can you come to class today?',
+      },
+      {
+        speaker: 'B',
+        text: '不能。你能帮我请一天假吗？',
+        pinyin: 'Bù néng. Nǐ néng bāng wǒ qǐng yì tiān jià ma?',
+        translation: "No. Can you ask for one day's leave for me?",
+      },
+      {
+        speaker: 'A',
+        text: '没问题。你还是去医院看看吧。',
+        pinyin: 'Méi wèntí. Nǐ háishi qù yīyuàn kànkan ba.',
+        translation: "No problem. You'd better go to the hospital and get checked.",
+      },
+      {
+        speaker: 'B',
+        text: '我下午去。谢谢你！',
+        pinyin: 'Wǒ xiàwǔ qù. Xièxie nǐ!',
+        translation: "I'll go this afternoon. Thank you!",
+      },
+      {
+        speaker: 'A',
+        text: '快点儿好起来！',
+        pinyin: 'Kuài diǎnr hǎo qǐlái!',
+        translation: 'Get better soon!',
+      },
+    ],
+  },
 ];
