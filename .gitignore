@@ -49,6 +49,8 @@ next-env.d.ts
 /scripts/*
 !/scripts/build-hanzi-data.mjs
 !/scripts/build-hanzi-decomp.mjs
+!/scripts/build-sw.mjs
+!/scripts/check-data.mjs
 session.md
 
 # Generated stroke-order data (rebuilt by prebuild)
