@@ -3131,6 +3131,110 @@ export const chineseDialogues: Dialogue[] = [
       },
     ],
   },
+  {
+    id: 'dlg-l25-03',
+    title: 'Skiing in the Suburbs',
+    titleChinese: '周末你去哪儿了？（课文一）',
+    setting: 'Wang Xiaotian asks a student about the weekend and hears about a ski trip.',
+    lesson: 25,
+    lines: [
+      {
+        speaker: 'Wang Xiaotian',
+        text: '周末你去哪儿了？',
+        pinyin: 'Zhōumò nǐ qù nǎr le?',
+        translation: 'Where did you go on the weekend?',
+      },
+      {
+        speaker: 'Student',
+        text: '我跟同学一起去郊区滑雪了。',
+        pinyin: 'Wǒ gēn tóngxué yìqǐ qù jiāoqū huáxuě le.',
+        translation: 'I went skiing in the suburbs together with my classmates.',
+      },
+      {
+        speaker: 'Wang Xiaotian',
+        text: '滑雪？好玩儿吗？',
+        pinyin: 'Huáxuě? Hǎowánr ma?',
+        translation: 'Skiing? Was it fun?',
+      },
+      {
+        speaker: 'Student',
+        text: '很好玩儿，那儿的滑雪场特别棒，人也不多。',
+        pinyin: 'Hěn hǎowánr, nàr de huáxuěchǎng tèbié bàng, rén yě bù duō.',
+        translation:
+          "Very fun. The ski resort there is really great, and there aren't many people.",
+      },
+      {
+        speaker: 'Wang Xiaotian',
+        text: '我还没滑过雪呢。难不难？',
+        pinyin: 'Wǒ hái méi huáguo xuě ne. Nán bu nán?',
+        translation: "I've never been skiing. Is it hard?",
+      },
+      {
+        speaker: 'Student',
+        text: '不难，你不怕摔就行。下次我请你去。',
+        pinyin: 'Bù nán, nǐ bú pà shuāi jiù xíng. Xià cì wǒ qǐng nǐ qù.',
+        translation:
+          "Not hard — it's enough if you're not afraid of falling. Next time I'll take you.",
+      },
+      {
+        speaker: 'Wang Xiaotian',
+        text: '我想想吧。',
+        pinyin: 'Wǒ xiǎngxiang ba.',
+        translation: 'Let me think about it.',
+      },
+    ],
+  },
+  {
+    id: 'dlg-l25-04',
+    title: 'Friends Over for Dinner',
+    titleChinese: '星期天你都干什么了？（课文二）',
+    setting: 'An older sister asks Xiaomei what she did on Sunday and guesses what she cooked.',
+    lesson: 25,
+    lines: [
+      {
+        speaker: 'Sister',
+        text: '星期天你都干什么了？',
+        pinyin: 'Xīngqītiān nǐ dōu gàn shénme le?',
+        translation: 'What did you get up to on Sunday?',
+      },
+      {
+        speaker: 'Xiaomei',
+        text: '几个朋友来我家吃饭了。',
+        pinyin: 'Jǐ ge péngyou lái wǒ jiā chī fàn le.',
+        translation: 'A few friends came to my place for dinner.',
+      },
+      {
+        speaker: 'Sister',
+        text: '你会做饭吗？',
+        pinyin: 'Nǐ huì zuò fàn ma?',
+        translation: 'Can you cook?',
+      },
+      {
+        speaker: 'Xiaomei',
+        text: '我们要求每个人带一个菜。',
+        pinyin: 'Wǒmen yāoqiú měi ge rén dài yí ge cài.',
+        translation: 'We asked everyone to bring a dish.',
+      },
+      {
+        speaker: 'Sister',
+        text: '这真是个好办法！你也做菜了吗？',
+        pinyin: 'Zhè zhēn shì ge hǎo bànfǎ! Nǐ yě zuò cài le ma?',
+        translation: "That's a really good idea! Did you cook something too?",
+      },
+      {
+        speaker: 'Xiaomei',
+        text: '做了。你猜我做什么了。',
+        pinyin: 'Zuò le. Nǐ cāi wǒ zuò shénme le.',
+        translation: 'I did. Guess what I made.',
+      },
+      {
+        speaker: 'Sister',
+        text: '一定是沙拉。',
+        pinyin: 'Yídìng shì shālā.',
+        translation: 'It must be salad.',
+      },
+    ],
+  },
 
   // ============================================================
   // Lesson 26 - At the Doctor's 哪儿不舒服？
@@ -3274,6 +3378,1129 @@ export const chineseDialogues: Dialogue[] = [
         text: '快点儿好起来！',
         pinyin: 'Kuài diǎnr hǎo qǐlái!',
         translation: 'Get better soon!',
+      },
+    ],
+  },
+  {
+    id: 'dlg-l26-04',
+    title: "Why Aren't You Up Yet?",
+    titleChinese: '你怎么还不起床？',
+    setting: "Àihuá visits Nuòmǐn's room and finds her still in bed and feeling unwell.",
+    lesson: 26,
+    lines: [
+      { speaker: 'A (Nuòmǐn)', text: '请进。', pinyin: 'Qǐng jìn.', translation: 'Come in.' },
+      {
+        speaker: 'B (Àihuá)',
+        text: '诺敏，你怎么还不起床？今天不上课吗？',
+        pinyin: 'Nuòmǐn, nǐ zěnme hái bù qǐchuáng? Jīntiān bú shàngkè ma?',
+        translation: "Nuòmǐn, why aren't you up yet? Don't you have class today?",
+      },
+      {
+        speaker: 'A (Nuòmǐn)',
+        text: '我有点儿不舒服。',
+        pinyin: 'Wǒ yǒudiǎnr bù shūfu.',
+        translation: "I don't feel very well.",
+      },
+      { speaker: 'B (Àihuá)', text: '怎么了？', pinyin: 'Zěnme le?', translation: "What's wrong?" },
+      {
+        speaker: 'A (Nuòmǐn)',
+        text: '我头很疼，觉得特别冷。',
+        pinyin: 'Wǒ tóu hěn téng, juéde tèbié lěng.',
+        translation: 'My head hurts a lot and I feel especially cold.',
+      },
+      {
+        speaker: 'B (Àihuá)',
+        text: '是不是发烧了？量量体温吧。',
+        pinyin: 'Shì bu shì fāshāo le? Liángliang tǐwēn ba.',
+        translation: 'Do you have a fever? Take your temperature.',
+      },
+      {
+        speaker: 'A (Nuòmǐn)',
+        text: '我现在只想睡觉。',
+        pinyin: 'Wǒ xiànzài zhǐ xiǎng shuìjiào.',
+        translation: 'Right now I just want to sleep.',
+      },
+      {
+        speaker: 'B (Àihuá)',
+        text: '三十八度五。还是去医院看看吧。',
+        pinyin: 'Sānshíbā dù wǔ. Háishi qù yīyuàn kànkan ba.',
+        translation: "It's 38.5 degrees. You'd better go to the hospital and get checked.",
+      },
+    ],
+  },
+  {
+    id: 'dlg-l26-05',
+    title: 'Cold Medicine and a Leave Message',
+    titleChinese: '感冒药和请假',
+    setting:
+      'Nuòmǐn brings her blood-test report to the doctor, who prescribes cold medicine, and she then sends a WeChat message asking her classmate Lǐ Jūn to ask for leave for her.',
+    lesson: 26,
+    lines: [
+      {
+        speaker: 'A (Doctor)',
+        text: '哪儿不舒服？',
+        pinyin: 'Nǎr bù shūfu?',
+        translation: 'Where do you feel unwell?',
+      },
+      {
+        speaker: 'B (Nuòmǐn)',
+        text: '头疼，发烧。',
+        pinyin: 'Tóu téng, fāshāo.',
+        translation: 'A headache and a fever.',
+      },
+      {
+        speaker: 'A (Doctor)',
+        text: '先去验血吧。',
+        pinyin: 'Xiān qù yàn xiě ba.',
+        translation: 'Go and have a blood test first.',
+      },
+      {
+        speaker: 'A (Doctor)',
+        text: '你感冒了。吃这种感冒药，一天三次，一次两片。',
+        pinyin: 'Nǐ gǎnmào le. Chī zhè zhǒng gǎnmào yào, yì tiān sān cì, yí cì liǎng piàn.',
+        translation:
+          'You have a cold. Take this cold medicine three times a day, two tablets each time.',
+      },
+      { speaker: 'B (Nuòmǐn)', text: '好的。', pinyin: 'Hǎo de.', translation: 'OK.' },
+      {
+        speaker: 'A (Doctor)',
+        text: '多喝水，多休息，少吃辣的菜。',
+        pinyin: 'Duō hē shuǐ, duō xiūxi, shǎo chī là de cài.',
+        translation: 'Drink lots of water, rest a lot, and eat less spicy food.',
+      },
+      {
+        speaker: 'B (Nuòmǐn)',
+        text: '谢谢大夫！',
+        pinyin: 'Xièxie dàifu!',
+        translation: 'Thank you, doctor!',
+      },
+      {
+        speaker: 'B (Nuòmǐn)',
+        text: '李君，我是诺敏。我病了，今天不能去上课了，你帮我请个假吧，谢谢！',
+        pinyin:
+          'Lǐ Jūn, wǒ shì Nuòmǐn. Wǒ bìng le, jīntiān bù néng qù shàngkè le, nǐ bāng wǒ qǐng ge jià ba, xièxie!',
+        translation:
+          "Lǐ Jūn, it's Nuòmǐn. I'm ill and can't go to class today — please ask for leave for me. Thanks!",
+      },
+    ],
+  },
+
+  // ============================================================
+  // Lesson 27 - HSKK Practice Tests HSKK练习
+  // ============================================================
+  {
+    id: 'dlg-l27-01',
+    title: 'An International Student in China',
+    titleChinese: '在中国的留学生',
+    setting: 'A short reading passage about an American student who is studying Chinese in China.',
+    lesson: 27,
+    lines: [
+      {
+        speaker: 'Narrator',
+        text: '大卫是一个美国留学生，他今年二十二岁。',
+        pinyin: "Dàwèi shì yí ge Měiguó liúxuéshēng, tā jīnnián èrshí'èr suì.",
+        translation: 'David is an American international student; he is twenty-two this year.',
+      },
+      {
+        speaker: 'Narrator',
+        text: '他喜欢中国文化，所以来中国学习汉语。',
+        pinyin: 'Tā xǐhuan Zhōngguó wénhuà, suǒyǐ lái Zhōngguó xuéxí Hànyǔ.',
+        translation: 'He likes Chinese culture, so he came to China to study Chinese.',
+      },
+      {
+        speaker: 'Narrator',
+        text: '大卫去过上海和杭州，他觉得这两个城市很漂亮。',
+        pinyin: 'Dàwèi qù guo Shànghǎi hé Hángzhōu, tā juéde zhè liǎng ge chéngshì hěn piàoliang.',
+        translation:
+          'David has been to Shanghai and Hangzhou; he thinks these two cities are very beautiful.',
+      },
+      {
+        speaker: 'Narrator',
+        text: '他还没去过西安，想假期和同学一起去。',
+        pinyin: "Tā hái méi qù guo Xī'ān, xiǎng jiàqī hé tóngxué yìqǐ qù.",
+        translation:
+          "He hasn't been to Xi'an yet and wants to go there with his classmates in the holidays.",
+      },
+      {
+        speaker: 'Narrator',
+        text: '大卫会说一点儿汉语，他也会做中国菜，比如西红柿炒鸡蛋。',
+        pinyin:
+          'Dàwèi huì shuō yìdiǎnr Hànyǔ, tā yě huì zuò Zhōngguó cài, bǐrú xīhóngshì chǎo jīdàn.',
+        translation:
+          'David can speak a little Chinese, and he can also cook Chinese dishes, such as stir-fried tomato and egg.',
+      },
+      {
+        speaker: 'Narrator',
+        text: '周末的时候，他常常和朋友去咖啡店喝咖啡，或者去公园散步。',
+        pinyin:
+          'Zhōumò de shíhou, tā chángcháng hé péngyou qù kāfēidiàn hē kāfēi, huòzhě qù gōngyuán sànbù.',
+        translation:
+          'On weekends he often goes with friends to a café for coffee, or goes for a walk in the park.',
+      },
+    ],
+  },
+  {
+    id: 'dlg-l27-02',
+    title: 'My Roommate',
+    titleChinese: '我的同屋',
+    setting: 'A short reading passage about a roommate who works long hours.',
+    lesson: 27,
+    lines: [
+      {
+        speaker: 'Narrator',
+        text: '我的同屋是中国人，他在一家汽车公司工作。',
+        pinyin: 'Wǒ de tóngwū shì Zhōngguó rén, tā zài yì jiā qìchē gōngsī gōngzuò.',
+        translation: 'My roommate is Chinese; he works at a car company.',
+      },
+      {
+        speaker: 'Narrator',
+        text: '他每天都很忙，从早上八点到下午五点都在公司上班，有时候周末也去上班。',
+        pinyin:
+          'Tā měi tiān dōu hěn máng, cóng zǎoshang bā diǎn dào xiàwǔ wǔ diǎn dōu zài gōngsī shàngbān, yǒu shíhou zhōumò yě qù shàngbān.',
+        translation:
+          'He is busy every day: he is at the office from eight in the morning to five in the afternoon, and sometimes he goes to work on weekends too.',
+      },
+      {
+        speaker: 'Narrator',
+        text: '平时我在学校吃饭，他也不在家吃饭。',
+        pinyin: 'Píngshí wǒ zài xuéxiào chī fàn, tā yě bú zài jiā chī fàn.',
+        translation: "On ordinary days I eat at school, and he doesn't eat at home either.",
+      },
+      {
+        speaker: 'Narrator',
+        text: '休息的时候，我们在家做饭。',
+        pinyin: 'Xiūxi de shíhou, wǒmen zài jiā zuò fàn.',
+        translation: 'When we are off, we cook at home.',
+      },
+      {
+        speaker: 'Narrator',
+        text: '我做韩国菜，他做中国菜，我们一起吃饭聊天儿。',
+        pinyin: 'Wǒ zuò Hánguó cài, tā zuò Zhōngguó cài, wǒmen yìqǐ chī fàn liáotiānr.',
+        translation: 'I cook Korean food and he cooks Chinese food, and we eat and chat together.',
+      },
+    ],
+  },
+  {
+    id: 'dlg-l27-03',
+    title: 'Plans for the Holiday',
+    titleChinese: '假期的计划',
+    setting: 'Two friends talk about going to Shanghai together during the holiday.',
+    lesson: 27,
+    lines: [
+      {
+        speaker: 'A',
+        text: '你去过上海吗？',
+        pinyin: 'Nǐ qù guo Shànghǎi ma?',
+        translation: 'Have you ever been to Shanghai?',
+      },
+      {
+        speaker: 'B',
+        text: '没去过，我想去。',
+        pinyin: 'Méi qù guo, wǒ xiǎng qù.',
+        translation: "No, but I'd like to go.",
+      },
+      {
+        speaker: 'A',
+        text: '假期我们一起去上海吧。',
+        pinyin: 'Jiàqī wǒmen yìqǐ qù Shànghǎi ba.',
+        translation: "Let's go to Shanghai together in the holidays.",
+      },
+      {
+        speaker: 'B',
+        text: '我也想去。可是我要加班。',
+        pinyin: 'Wǒ yě xiǎng qù. Kěshì wǒ yào jiābān.',
+        translation: "I'd like to go too, but I have to work overtime.",
+      },
+    ],
+  },
+
+  // ============================================================
+  // Lesson 28 - Characters: One Person to Many 人体汉字（三）：单人到多人
+  // ============================================================
+  {
+    id: 'dlg-l28-01',
+    title: 'A Park in the City',
+    titleChinese: '西山公园',
+    setting:
+      'A short reading passage describing West Mountain Park, on the west side of the city, and what people do there.',
+    lesson: 28,
+    lines: [
+      {
+        speaker: 'Narrator',
+        text: '这个城市西边有一个公园，叫西山公园。',
+        pinyin: 'Zhège chéngshì xībian yǒu yí ge gōngyuán, jiào Xīshān Gōngyuán.',
+        translation: 'On the west side of this city there is a park called West Mountain Park.',
+      },
+      {
+        speaker: 'Narrator',
+        text: '那里有山，有水，有树，有花。',
+        pinyin: 'Nàlǐ yǒu shān, yǒu shuǐ, yǒu shù, yǒu huā.',
+        translation: 'There are mountains, water, trees and flowers.',
+      },
+      {
+        speaker: 'Narrator',
+        text: '风景非常漂亮，空气也非常新鲜。',
+        pinyin: 'Fēngjǐng fēicháng piàoliang, kōngqì yě fēicháng xīnxiān.',
+        translation: 'The scenery is very beautiful and the air is very fresh.',
+      },
+      {
+        speaker: 'Narrator',
+        text: '每天都有很多人去那儿爬山，看风景，呼吸新鲜空气。',
+        pinyin: 'Měi tiān dōu yǒu hěn duō rén qù nàr pá shān, kàn fēngjǐng, hūxī xīnxiān kōngqì.',
+        translation:
+          'Every day many people go there to climb the mountain, enjoy the scenery and breathe the fresh air.',
+      },
+      {
+        speaker: 'Narrator',
+        text: '这个星期天我们也去爬山。',
+        pinyin: 'Zhège xīngqītiān wǒmen yě qù pá shān.',
+        translation: 'This Sunday we are also going to climb the mountain.',
+      },
+    ],
+  },
+
+  // ============================================================
+  // Lesson 29 - Allergies & Health Advice 过敏和健康建议
+  // ============================================================
+  {
+    id: 'dlg-l29-01',
+    title: 'I Think I Have an Allergy',
+    titleChinese: '我觉得我过敏了',
+    setting:
+      'A patient with an itchy face and trouble breathing tells the doctor about eating peanuts that afternoon, and the doctor decides to keep the patient in the hospital overnight.',
+    lesson: 29,
+    lines: [
+      {
+        speaker: 'A (Doctor)',
+        text: '你怎么了？',
+        pinyin: 'Nǐ zěnme le?',
+        translation: "What's wrong?",
+      },
+      {
+        speaker: 'B (Patient)',
+        text: '我觉得我过敏了。',
+        pinyin: 'Wǒ juéde wǒ guòmǐn le.',
+        translation: 'I think I have an allergy.',
+      },
+      {
+        speaker: 'A (Doctor)',
+        text: '你对什么过敏？',
+        pinyin: 'Nǐ duì shénme guòmǐn?',
+        translation: 'What are you allergic to?',
+      },
+      {
+        speaker: 'B (Patient)',
+        text: '我下午吃了一些花生。我对花生有点儿过敏。',
+        pinyin: 'Wǒ xiàwǔ chī le yìxiē huāshēng. Wǒ duì huāshēng yǒudiǎnr guòmǐn.',
+        translation: "I ate some peanuts this afternoon. I'm a bit allergic to peanuts.",
+      },
+      {
+        speaker: 'A (Doctor)',
+        text: '你觉得怎么样？',
+        pinyin: 'Nǐ juéde zěnmeyàng?',
+        translation: 'How do you feel?',
+      },
+      {
+        speaker: 'B (Patient)',
+        text: '我的脸很痒。我的呼吸也不太好。我很不舒服。',
+        pinyin: 'Wǒ de liǎn hěn yǎng. Wǒ de hūxī yě bú tài hǎo. Wǒ hěn bù shūfu.',
+        translation:
+          "My face is very itchy. My breathing isn't very good either. I feel very unwell.",
+      },
+      {
+        speaker: 'A (Doctor)',
+        text: '你睡觉了吗？我先量量你的体温吧。',
+        pinyin: 'Nǐ shuìjiào le ma? Wǒ xiān liángliang nǐ de tǐwēn ba.',
+        translation: 'Have you slept? Let me take your temperature first.',
+      },
+      { speaker: 'B (Patient)', text: '好的。', pinyin: 'Hǎo de.', translation: 'OK.' },
+      {
+        speaker: 'A (Doctor)',
+        text: '你体温很高。晚上你住院，我们有一个病床。明天我再量量你的体温。',
+        pinyin:
+          'Nǐ tǐwēn hěn gāo. Wǎnshang nǐ zhùyuàn, wǒmen yǒu yí ge bìngchuáng. Míngtiān wǒ zài liángliang nǐ de tǐwēn.',
+        translation:
+          'Your temperature is high. You will stay in the hospital tonight; we have a bed. Tomorrow I will take your temperature again.',
+      },
+      {
+        speaker: 'A (Doctor)',
+        text: '晚上你喝一杯汤，吃过敏药。你可以去你的病床。你的病床在那儿。',
+        pinyin:
+          'Wǎnshang nǐ hē yì bēi tāng, chī guòmǐn yào. Nǐ kěyǐ qù nǐ de bìngchuáng. Nǐ de bìngchuáng zài nàr.',
+        translation:
+          'Tonight, drink a cup of soup and take the allergy medicine. You can go to your bed. Your bed is over there.',
+      },
+    ],
+  },
+  {
+    id: 'dlg-l29-02',
+    title: 'No Insurance, No Worries',
+    titleChinese: '没有医保，别担心',
+    setting:
+      'The patient has no medical insurance and asks the doctor how much the allergy medicine costs and how long the hospital stay will be.',
+    lesson: 29,
+    lines: [
+      {
+        speaker: 'A (Doctor)',
+        text: '你有医保吗？',
+        pinyin: 'Nǐ yǒu yībǎo ma?',
+        translation: 'Do you have medical insurance?',
+      },
+      {
+        speaker: 'B (Patient)',
+        text: '我没有医保。过敏药贵吗？',
+        pinyin: 'Wǒ méiyǒu yībǎo. Guòmǐn yào guì ma?',
+        translation: "I don't have medical insurance. Is the allergy medicine expensive?",
+      },
+      {
+        speaker: 'A (Doctor)',
+        text: '不贵。别担心。',
+        pinyin: 'Bú guì. Bié dānxīn.',
+        translation: "Not expensive. Don't worry.",
+      },
+      {
+        speaker: 'B (Patient)',
+        text: '好的，谢谢。我要在医院住几天？',
+        pinyin: 'Hǎo de, xièxie. Wǒ yào zài yīyuàn zhù jǐ tiān?',
+        translation: 'OK, thank you. How many days do I need to stay in the hospital?',
+      },
+      {
+        speaker: 'A (Doctor)',
+        text: '如果过敏药有用，你在医院一天就行。但是如果过敏药没用，你可以试试向神祷告。',
+        pinyin:
+          'Rúguǒ guòmǐn yào yǒuyòng, nǐ zài yīyuàn yì tiān jiù xíng. Dànshì rúguǒ guòmǐn yào méiyòng, nǐ kěyǐ shìshi xiàng shén dǎogào.',
+        translation:
+          "If the allergy medicine works, one day in the hospital is enough. But if the allergy medicine doesn't work, you can try praying to God.",
+      },
+    ],
+  },
+  {
+    id: 'dlg-l29-03',
+    title: 'Allergy Check-up (Short Version)',
+    titleChinese: '过敏检查（简短版）',
+    setting:
+      'A short practice version of the allergy visit, in which the doctor admits a patient who is allergic to peanuts.',
+    lesson: 29,
+    lines: [
+      {
+        speaker: 'A (Doctor)',
+        text: '你怎么了？',
+        pinyin: 'Nǐ zěnme le?',
+        translation: "What's wrong?",
+      },
+      {
+        speaker: 'B (Patient)',
+        text: '我过敏了。',
+        pinyin: 'Wǒ guòmǐn le.',
+        translation: 'I have an allergy.',
+      },
+      {
+        speaker: 'A (Doctor)',
+        text: '你对什么过敏？',
+        pinyin: 'Nǐ duì shénme guòmǐn?',
+        translation: 'What are you allergic to?',
+      },
+      {
+        speaker: 'B (Patient)',
+        text: '我对花生过敏。我的脸很痒，呼吸也不太好。',
+        pinyin: 'Wǒ duì huāshēng guòmǐn. Wǒ de liǎn hěn yǎng, hūxī yě bú tài hǎo.',
+        translation:
+          "I'm allergic to peanuts. My face is very itchy and my breathing isn't very good either.",
+      },
+      {
+        speaker: 'A (Doctor)',
+        text: '我先量量你的体温。你的体温很高。晚上你住院吧。',
+        pinyin: 'Wǒ xiān liángliang nǐ de tǐwēn. Nǐ de tǐwēn hěn gāo. Wǎnshang nǐ zhùyuàn ba.',
+        translation:
+          'Let me take your temperature first. Your temperature is high. You had better stay in the hospital tonight.',
+      },
+      {
+        speaker: 'B (Patient)',
+        text: '我要住几天？',
+        pinyin: 'Wǒ yào zhù jǐ tiān?',
+        translation: 'How many days do I need to stay?',
+      },
+      {
+        speaker: 'A (Doctor)',
+        text: '如果药有用，一天就行。',
+        pinyin: 'Rúguǒ yào yǒuyòng, yì tiān jiù xíng.',
+        translation: 'If the medicine works, one day will do.',
+      },
+    ],
+  },
+
+  // ============================================================
+  // Lesson 30 - Translation Practice (都, 一定, 怕) 翻译练习：都、一定、怕
+  // ============================================================
+  {
+    id: 'dlg-l30-01',
+    title: 'What to Do with the Sofa and Bed',
+    titleChinese: '沙发和床怎么办？',
+    setting:
+      'Two people who are moving house decide what to do with the furniture still left in the room.',
+    lesson: 30,
+    lines: [
+      {
+        speaker: 'Narrator',
+        text: '他们在搬家。',
+        pinyin: 'Tāmen zài bānjiā.',
+        translation: 'They are moving house.',
+      },
+      {
+        speaker: 'A',
+        text: '房间里还有一个沙发和一张床，我们应该怎么办？',
+        pinyin: 'Fángjiān li hái yǒu yí ge shāfā hé yì zhāng chuáng, wǒmen yīnggāi zěnme bàn?',
+        translation: "There's still a sofa and a bed in the room. What should we do with them?",
+      },
+      {
+        speaker: 'B',
+        text: '都送给邻居吧。',
+        pinyin: 'Dōu sòng gěi línjū ba.',
+        translation: 'Give them both to the neighbour.',
+      },
+    ],
+  },
+  {
+    id: 'dlg-l30-02',
+    title: 'Paying by Scanning a Code',
+    titleChinese: '扫码付款',
+    setting:
+      'A cashier gives the total and the customer asks whether they can pay by scanning a code.',
+    lesson: 30,
+    lines: [
+      {
+        speaker: 'A (Cashier)',
+        text: '一共三百二十九块。您想怎么付款？',
+        pinyin: 'Yígòng sānbǎi èrshíjiǔ kuài. Nín xiǎng zěnme fùkuǎn?',
+        translation: "That's 329 yuan in total. How would you like to pay?",
+      },
+      {
+        speaker: 'B (Customer)',
+        text: '可以扫码吗？',
+        pinyin: 'Kěyǐ sǎo mǎ ma?',
+        translation: 'Can I scan a code?',
+      },
+      {
+        speaker: 'A (Cashier)',
+        text: '好的。支付宝和微信都可以。',
+        pinyin: 'Hǎo de. Zhīfùbǎo hé Wēixìn dōu kěyǐ.',
+        translation: 'Sure. Alipay and WeChat are both fine.',
+      },
+    ],
+  },
+  {
+    id: 'dlg-l30-03',
+    title: 'The Surprise Dinner',
+    titleChinese: '惊喜的晚饭',
+    setting:
+      'A man tells how his plan for a surprise dinner with his wife was spoiled when his boss made him work overtime.',
+    lesson: 30,
+    lines: [
+      {
+        speaker: 'Narrator',
+        text: '我和我妻子打算今天晚上去一家很有名的日本餐厅吃晚饭。',
+        pinyin:
+          'Wǒ hé wǒ qīzi dǎsuàn jīntiān wǎnshang qù yì jiā hěn yǒumíng de Rìběn cāntīng chī wǎnfàn.',
+        translation:
+          'My wife and I plan to go to a very famous Japanese restaurant for dinner tonight.',
+      },
+      {
+        speaker: 'Narrator',
+        text: '我订了位子，还买了礼物，想给她一个惊喜。',
+        pinyin: 'Wǒ dìng le wèizi, hái mǎi le lǐwù, xiǎng gěi tā yí ge jīngxǐ.',
+        translation: 'I booked a table and bought a gift to give her a surprise.',
+      },
+      {
+        speaker: 'Narrator',
+        text: '但是，我老板突然告诉我要加班。',
+        pinyin: 'Dànshì, wǒ lǎobǎn tūrán gàosu wǒ yào jiābān.',
+        translation: 'But my boss suddenly told me to work overtime.',
+      },
+      {
+        speaker: 'Narrator',
+        text: '我妻子打电话的时候，我在我老板的办公室，没能接电话。',
+        pinyin:
+          'Wǒ qīzi dǎ diànhuà de shíhou, wǒ zài wǒ lǎobǎn de bàngōngshì, méi néng jiē diànhuà.',
+        translation:
+          "When my wife called me, I was in my boss's office and could not answer the phone.",
+      },
+      {
+        speaker: 'Narrator',
+        text: '我妻子生气了，因为她打了五次电话，没有人接。',
+        pinyin: 'Wǒ qīzi shēngqì le, yīnwèi tā dǎ le wǔ cì diànhuà, méiyǒu rén jiē.',
+        translation:
+          'My wife was very angry because she had called five times and nobody picked up.',
+      },
+    ],
+  },
+
+  // ============================================================
+  // Lesson 31 - I'm Jogging 我正在跑步呢
+  // ============================================================
+  {
+    id: 'dlg-l31-01',
+    title: 'Plans to Watch the Game',
+    titleChinese: '晚上去看球',
+    setting:
+      'Xītián phones Nuòmǐn, who is out jogging, to arrange an evening trip to watch a ball game.',
+    lesson: 31,
+    lines: [
+      { speaker: 'A (Nuòmǐn)', text: '喂，你好！', pinyin: 'Wèi, nǐ hǎo!', translation: 'Hello!' },
+      {
+        speaker: 'B (Xītián)',
+        text: '诺敏，我是西田。你在干吗呢？',
+        pinyin: 'Nuòmǐn, wǒ shì Xītián. Nǐ zài gànmá ne?',
+        translation: "Nuòmǐn, it's Xītián. What are you up to?",
+      },
+      {
+        speaker: 'A (Nuòmǐn)',
+        text: '我正在跑步呢。有事吗？',
+        pinyin: 'Wǒ zhèngzài pǎobù ne. Yǒu shì ma?',
+        translation: "I'm out jogging right now. What's up?",
+      },
+      {
+        speaker: 'B (Xītián)',
+        text: '我和大卫打算晚上去看球，你来吗？',
+        pinyin: 'Wǒ hé Dàwèi dǎsuàn wǎnshang qù kàn qiú, nǐ lái ma?',
+        translation:
+          'David and I are planning to go and watch a ball game tonight. Are you coming?',
+      },
+      {
+        speaker: 'A (Nuòmǐn)',
+        text: '好啊。什么时候出发？',
+        pinyin: 'Hǎo a. Shénme shíhou chūfā?',
+        translation: 'Sure. When are we setting off?',
+      },
+      {
+        speaker: 'B (Xītián)',
+        text: '我现在在外边吃饭呢，六点半在宿舍门口见，怎么样？',
+        pinyin: 'Wǒ xiànzài zài wàibian chī fàn ne, liù diǎn bàn zài sùshè ménkǒu jiàn, zěnmeyàng?',
+        translation:
+          "I'm eating outside right now. Shall we meet at the dormitory entrance at 6:30?",
+      },
+      {
+        speaker: 'A (Nuòmǐn)',
+        text: '好，不见不散。',
+        pinyin: 'Hǎo, bújiàn búsàn.',
+        translation: 'OK — see you there, no matter what.',
+      },
+    ],
+  },
+  {
+    id: 'dlg-l31-02',
+    title: 'Are You Still Asleep?',
+    titleChinese: '你还在睡觉吗？',
+    setting:
+      'Dàshù teases Xītián for sleeping in until eleven, mentions that nobody picked up the phone last night, and invites Xītián to play basketball.',
+    lesson: 31,
+    lines: [
+      {
+        speaker: 'A (Dàshù)',
+        text: '你还在睡觉吗？都十一点了。',
+        pinyin: 'Nǐ hái zài shuìjiào ma? Dōu shíyī diǎn le.',
+        translation: "Are you still asleep? It's already eleven o'clock.",
+      },
+      {
+        speaker: 'B (Xītián)',
+        text: '我昨天去看球了，睡得很晚。',
+        pinyin: 'Wǒ zuótiān qù kàn qiú le, shuì de hěn wǎn.',
+        translation: 'I went to watch a game yesterday and went to bed very late.',
+      },
+      {
+        speaker: 'A (Dàshù)',
+        text: '昨天晚上我给你打电话，一直没人接。',
+        pinyin: 'Zuótiān wǎnshang wǒ gěi nǐ dǎ diànhuà, yìzhí méi rén jiē.',
+        translation: 'I called you last night and nobody ever picked up.',
+      },
+      {
+        speaker: 'B (Xītián)',
+        text: '不好意思，你给我打电话的时候，我正在看球呢。',
+        pinyin: 'Bù hǎoyìsi, nǐ gěi wǒ dǎ diànhuà de shíhou, wǒ zhèngzài kàn qiú ne.',
+        translation: 'Sorry — when you called me, I was in the middle of watching the game.',
+      },
+      {
+        speaker: 'A (Dàshù)',
+        text: '下午两点跟我们一起去打篮球吧。',
+        pinyin: 'Xiàwǔ liǎng diǎn gēn wǒmen yìqǐ qù dǎ lánqiú ba.',
+        translation: 'Come and play basketball with us at two this afternoon.',
+      },
+      {
+        speaker: 'B (Xītián)',
+        text: '不行啊，我得去机场接朋友。',
+        pinyin: 'Bùxíng a, wǒ děi qù jīchǎng jiē péngyou.',
+        translation: "I can't — I have to go to the airport to pick up a friend.",
+      },
+      {
+        speaker: 'A (Dàshù)',
+        text: '那好吧，我们下次再约。',
+        pinyin: 'Nà hǎo ba, wǒmen xiàcì zài yuē.',
+        translation: "Oh well, let's arrange something another time.",
+      },
+    ],
+  },
+  {
+    id: 'dlg-l31-03',
+    title: 'Hello? Two Quick Calls',
+    titleChinese: '喂？两个电话',
+    setting:
+      'Two short phone exchanges: one asks whether a teacher is at home, the other asks a friend what they are doing.',
+    lesson: 31,
+    lines: [
+      {
+        speaker: 'A',
+        text: '喂，李老师在家吗？',
+        pinyin: 'Wèi, Lǐ lǎoshī zài jiā ma?',
+        translation: 'Hello, is Teacher Li at home?',
+      },
+      {
+        speaker: 'B',
+        text: '她不在家，去学校了。',
+        pinyin: 'Tā bú zài jiā, qù xuéxiào le.',
+        translation: "She isn't home — she's gone to school.",
+      },
+      {
+        speaker: 'A',
+        text: '喂，你在做什么呢？',
+        pinyin: 'Wèi, nǐ zài zuò shénme ne?',
+        translation: 'Hello, what are you doing?',
+      },
+      {
+        speaker: 'B',
+        text: '我在看书呢。',
+        pinyin: 'Wǒ zài kàn shū ne.',
+        translation: "I'm reading.",
+      },
+    ],
+  },
+  {
+    id: 'dlg-l31-04',
+    title: 'Still in Bed at Noon',
+    titleChinese: '你怎么还没起床？',
+    setting: 'A friend phones at noon to wake someone up and make plans to play tennis.',
+    lesson: 31,
+    lines: [
+      { speaker: 'A', text: '喂，你好！', pinyin: 'Wèi, nǐ hǎo!', translation: 'Hello!' },
+      {
+        speaker: 'B',
+        text: '早上好，你怎么还没起床？都十二点了！',
+        pinyin: "Zǎoshang hǎo, nǐ zěnme hái méi qǐchuáng? Dōu shí'èr diǎn le!",
+        translation: "Good morning! Why aren't you up yet? It's already twelve o'clock!",
+      },
+      {
+        speaker: 'A',
+        text: '我昨天晚上去唱歌了，唱到十一点。',
+        pinyin: 'Wǒ zuótiān wǎnshang qù chànggē le, chàng dào shíyī diǎn.',
+        translation: 'Last night I went singing, and I sang until eleven.',
+      },
+      {
+        speaker: 'B',
+        text: '今天我们去打网球，怎么样？',
+        pinyin: 'Jīntiān wǒmen qù dǎ wǎngqiú, zěnmeyàng?',
+        translation: "Let's go and play tennis today — how about it?",
+      },
+      {
+        speaker: 'A',
+        text: '好啊，咱们几点见？',
+        pinyin: 'Hǎo a, zánmen jǐ diǎn jiàn?',
+        translation: 'Sure! What time shall we meet?',
+      },
+      {
+        speaker: 'B',
+        text: '两点见，怎么样？',
+        pinyin: 'Liǎng diǎn jiàn, zěnmeyàng?',
+        translation: 'How about meeting at two?',
+      },
+      {
+        speaker: 'A',
+        text: '好，不见不散！',
+        pinyin: 'Hǎo, bújiàn búsàn!',
+        translation: 'OK — see you there, no matter what!',
+      },
+    ],
+  },
+  {
+    id: 'dlg-l31-05',
+    title: 'Our Kitten Is Sick',
+    titleChinese: '我们的猫病了',
+    setting:
+      'Two people who share a cat talk on the phone: one is on the way to the pet hospital with the sick kitten, the other is in a meeting.',
+    lesson: 31,
+    lines: [
+      {
+        speaker: 'A',
+        text: '喂，你忙吗？我们的猫病了，我们在去宠物医院的路上，你也马上来吧。',
+        pinyin:
+          'Wèi, nǐ máng ma? Wǒmen de māo bìng le, wǒmen zài qù chǒngwù yīyuàn de lùshang, nǐ yě mǎshàng lái ba.',
+        translation:
+          "Hello, are you busy? Our cat is sick — we're on the way to the pet hospital. Come right away too.",
+      },
+      {
+        speaker: 'B',
+        text: '小猫怎么了？早上还好好的。',
+        pinyin: 'Xiǎomāo zěnme le? Zǎoshang hái hǎohǎo de.',
+        translation: "What's wrong with the kitten? It was fine this morning.",
+      },
+      {
+        speaker: 'A',
+        text: '小猫吐了，我给兽医打了电话，他告诉我必须马上来宠物医院。',
+        pinyin:
+          'Xiǎomāo tù le, wǒ gěi shòuyī dǎ le diànhuà, tā gàosu wǒ bìxū mǎshàng lái chǒngwù yīyuàn.',
+        translation:
+          'The kitten threw up. I phoned the vet, who told me we have to come to the pet hospital right away.',
+      },
+      {
+        speaker: 'B',
+        text: '我正在开会呢，现在不能和你去医院。除了吐，小猫还有别的症状吗？',
+        pinyin:
+          'Wǒ zhèngzài kāihuì ne, xiànzài bù néng hé nǐ qù yīyuàn. Chúle tù, xiǎomāo hái yǒu biéde zhèngzhuàng ma?',
+        translation:
+          "I'm in a meeting right now, so I can't go to the hospital with you at the moment. Besides throwing up, does the kitten have any other symptoms?",
+      },
+      {
+        speaker: 'A',
+        text: '除了吐，它还发抖，一直叫。我不知道它怎么了，我很担心。下班以后马上来宠物医院吧。',
+        pinyin:
+          'Chúle tù, tā hái fādǒu, yìzhí jiào. Wǒ bù zhīdào tā zěnme le, wǒ hěn dānxīn. Xiàbān yǐhòu mǎshàng lái chǒngwù yīyuàn ba.',
+        translation:
+          "Besides throwing up, it's trembling and meowing non-stop. I don't know what's wrong with it, and I'm very worried. Come to the pet hospital right after work.",
+      },
+      {
+        speaker: 'B',
+        text: '好的，我下班以后就去。有事给我打电话。',
+        pinyin: 'Hǎo de, wǒ xiàbān yǐhòu jiù qù. Yǒu shì gěi wǒ dǎ diànhuà.',
+        translation: "OK, I'll go right after work. Call me if anything comes up.",
+      },
+      {
+        speaker: 'A',
+        text: '我现在就在给你打电话啊。',
+        pinyin: 'Wǒ xiànzài jiù zài gěi nǐ dǎ diànhuà a.',
+        translation: "I'm calling you right now!",
+      },
+      {
+        speaker: 'B',
+        text: '我的意思是医生检查完以后给我打电话。',
+        pinyin: 'Wǒ de yìsi shì yīshēng jiǎnchá wán yǐhòu gěi wǒ dǎ diànhuà.',
+        translation: 'What I mean is: call me after the doctor has finished examining it.',
+      },
+      { speaker: 'A', text: '好的。', pinyin: 'Hǎo de.', translation: 'OK.' },
+      {
+        speaker: 'B',
+        text: '别担心，小猫会没事的。',
+        pinyin: 'Bié dānxīn, xiǎomāo huì méishì de.',
+        translation: "Don't worry — the kitten will be fine.",
+      },
+    ],
+  },
+
+  // ============================================================
+  // Lesson 32 - It's So Hot Today 今天天气真热
+  // ============================================================
+  {
+    id: 'dlg-l32-01',
+    title: 'Hot in Beijing, Freezing in Moscow',
+    titleChinese: '今天天气真热',
+    setting:
+      'Aihua and Dashu chat about the hot weather in Beijing and compare it with winter in Moscow.',
+    lesson: 32,
+    lines: [
+      {
+        speaker: 'Aihua',
+        text: '今天天气真热！',
+        pinyin: 'Jīntiān tiānqì zhēn rè!',
+        translation: 'The weather is so hot today!',
+      },
+      {
+        speaker: 'Dashu',
+        text: '是啊。莫斯科的夏天也很热吗？',
+        pinyin: 'Shì a. Mòsīkē de xiàtiān yě hěn rè ma?',
+        translation: 'It is. Is summer in Moscow hot too?',
+      },
+      {
+        speaker: 'Aihua',
+        text: '那儿比北京凉快。',
+        pinyin: 'Nàr bǐ Běijīng liángkuai.',
+        translation: "It's cooler there than in Beijing.",
+      },
+      {
+        speaker: 'Dashu',
+        text: '听说莫斯科的冬天冷极了，是吗？',
+        pinyin: 'Tīngshuō Mòsīkē de dōngtiān lěng jíle, shì ma?',
+        translation: 'I hear winter in Moscow is extremely cold — is that right?',
+      },
+      {
+        speaker: 'Aihua',
+        text: '是，比北京冷多了。',
+        pinyin: 'Shì, bǐ Běijīng lěng duō le.',
+        translation: "Yes, it's much colder than Beijing.",
+      },
+      {
+        speaker: 'Dashu',
+        text: '大概多少度？',
+        pinyin: 'Dàgài duōshao dù?',
+        translation: 'Roughly how many degrees?',
+      },
+      {
+        speaker: 'Aihua',
+        text: '最低气温零下二十多度，不过我们习惯了，不怕冷。我冬天还在外边游过泳呢！',
+        pinyin:
+          'Zuìdī qìwēn língxià èrshí duō dù, búguò wǒmen xíguàn le, bú pà lěng. Wǒ dōngtiān hái zài wàibian yóuguo yǒng ne!',
+        translation:
+          "The lowest temperature is over twenty below zero, but we're used to it and aren't afraid of the cold. I've even gone swimming outdoors in winter!",
+      },
+    ],
+  },
+  {
+    id: 'dlg-l32-02',
+    title: 'Rain Again!',
+    titleChinese: '又下雨了',
+    setting:
+      'Wang Xiaotian and a friend talk about the rainy weather and the football match planned for tomorrow.',
+    lesson: 32,
+    lines: [
+      {
+        speaker: 'Wang Xiaotian',
+        text: '你看，又下雨了！',
+        pinyin: 'Nǐ kàn, yòu xià yǔ le!',
+        translation: "Look, it's raining again!",
+      },
+      {
+        speaker: 'Friend',
+        text: '是啊，最近常常下雨。',
+        pinyin: 'Shì a, zuìjìn chángcháng xià yǔ.',
+        translation: "Yes, it's been raining a lot lately.",
+      },
+      {
+        speaker: 'Wang Xiaotian',
+        text: '今年的雨比去年多多了。',
+        pinyin: 'Jīnnián de yǔ bǐ qùnián duōduō le.',
+        translation: "There's far more rain this year than last year.",
+      },
+      {
+        speaker: 'Friend',
+        text: '你看天气预报了吗？明天天气怎么样？',
+        pinyin: 'Nǐ kàn tiānqì yùbào le ma? Míngtiān tiānqì zěnmeyàng?',
+        translation:
+          'Have you checked the weather forecast? What will the weather be like tomorrow?',
+      },
+      {
+        speaker: 'Wang Xiaotian',
+        text: '天气预报说，明天的雨比今天更大。',
+        pinyin: 'Tiānqì yùbào shuō, míngtiān de yǔ bǐ jīntiān gèng dà.',
+        translation: "The forecast says tomorrow's rain will be even heavier than today's.",
+      },
+      {
+        speaker: 'Friend',
+        text: '那咱们明天的足球比赛怎么办啊？',
+        pinyin: 'Nà zánmen míngtiān de zúqiú bǐsài zěnme bàn a?',
+        translation: 'Then what shall we do about our football match tomorrow?',
+      },
+      {
+        speaker: 'Wang Xiaotian',
+        text: '那只能下周再比了。',
+        pinyin: 'Nà zhǐ néng xià zhōu zài bǐ le.',
+        translation: 'Then we can only play it next week.',
+      },
+    ],
+  },
+  {
+    id: 'dlg-l32-03',
+    title: 'Eating Out and Takeaway',
+    titleChinese: '我平时不常在家吃饭',
+    setting: 'A short passage about where and how often the speaker eats.',
+    lesson: 32,
+    lines: [
+      {
+        speaker: 'Narrator',
+        text: '我平时不常在家吃饭，经常在食堂吃饭，有时候也去饭馆或者快餐店。',
+        pinyin:
+          'Wǒ píngshí bù cháng zài jiā chī fàn, jīngcháng zài shítáng chī fàn, yǒushíhou yě qù fànguǎn huòzhě kuàicāndiàn.',
+        translation:
+          "I don't usually eat at home — I often eat in the canteen, and sometimes I go to a restaurant or a fast-food place.",
+      },
+      {
+        speaker: 'Narrator',
+        text: '周末我常常叫外卖。',
+        pinyin: 'Zhōumò wǒ chángcháng jiào wàimài.',
+        translation: 'At the weekend I often order takeaway.',
+      },
+      {
+        speaker: 'Narrator',
+        text: '外卖可以送到家里，特别方便。',
+        pinyin: 'Wàimài kěyǐ sòngdào jiāli, tèbié fāngbiàn.',
+        translation: 'Takeaway can be delivered to your home, which is especially convenient.',
+      },
+    ],
+  },
+
+  // ============================================================
+  // Lesson 33 - Mid-Autumn Festival 中秋节
+  // ============================================================
+  {
+    id: 'dlg-l33-01',
+    title: "The Legend of Chang'e Flying to the Moon",
+    titleChinese: '嫦娥奔月',
+    setting: "A narrator retells the legend of Chang'e and Hou Yi in simple sentences.",
+    lesson: 33,
+    lines: [
+      {
+        speaker: 'Narrator',
+        text: '很久以前，天上有十个太阳，天气太热了。',
+        pinyin: 'Hěn jiǔ yǐqián, tiānshang yǒu shí ge tàiyáng, tiānqì tài rè le.',
+        translation: 'Long ago there were ten suns in the sky, and the weather was far too hot.',
+      },
+      {
+        speaker: 'Narrator',
+        text: '后羿是一个神射手。他射下了九个太阳，救了人类，大家都说他是英雄。',
+        pinyin:
+          'Hòuyì shì yí ge shénshèshǒu. Tā shè xià le jiǔ ge tàiyáng, jiù le rénlèi, dàjiā dōu shuō tā shì yīngxióng.',
+        translation:
+          'Hou Yi was a master archer. He shot down nine suns and saved humankind, and everyone said he was a hero.',
+      },
+      {
+        speaker: 'Narrator',
+        text: '后羿和他的妻子嫦娥是一对好夫妻。',
+        pinyin: "Hòuyì hé tā de qīzi Cháng'é shì yí duì hǎo fūqī.",
+        translation: "Hou Yi and his wife Chang'e were a good married couple.",
+      },
+      {
+        speaker: 'Narrator',
+        text: '玉帝给了后羿一颗仙丹，吃了它，人就可以飞到天上。后羿请嫦娥保管。',
+        pinyin:
+          "Yùdì gěi le Hòuyì yì kē xiāndān, chī le tā, rén jiù kěyǐ fēi dào tiānshang. Hòuyì qǐng Cháng'é bǎoguǎn.",
+        translation:
+          "The Jade Emperor gave Hou Yi an elixir pill; whoever ate it could fly up to the heavens. Hou Yi asked Chang'e to keep it safe.",
+      },
+      {
+        speaker: 'Narrator',
+        text: '有一天，一个坏人来了，他想拿到仙丹。嫦娥不同意交出仙丹。',
+        pinyin:
+          "Yǒu yì tiān, yí ge huàirén lái le, tā xiǎng nádào xiāndān. Cháng'é bù tóngyì jiāochū xiāndān.",
+        translation:
+          "One day a villain came; he wanted to get the elixir. Chang'e did not agree to hand it over.",
+      },
+      {
+        speaker: 'Narrator',
+        text: '为了不让坏人拿到仙丹，嫦娥把它吃了。',
+        pinyin: "Wèile bú ràng huàirén nádào xiāndān, Cháng'é bǎ tā chī le.",
+        translation: "So that the villain would not get the elixir, Chang'e ate it.",
+      },
+      {
+        speaker: 'Narrator',
+        text: '她飞了起来，飞到了月亮上。月亮上有宫殿，还有一只小兔子陪伴她。',
+        pinyin:
+          'Tā fēi le qǐlái, fēi dào le yuèliang shang. Yuèliang shang yǒu gōngdiàn, hái yǒu yì zhī xiǎo tùzi péibàn tā.',
+        translation:
+          'She began to float, and flew up to the moon. There is a palace on the moon, and a little rabbit keeps her company.',
+      },
+      {
+        speaker: 'Narrator',
+        text: '后羿追不上嫦娥，他每天都看着月亮，思念她。',
+        pinyin: "Hòuyì zhuībushàng Cháng'é, tā měi tiān dōu kàn zhe yuèliang, sīniàn tā.",
+        translation:
+          "Hou Yi could not catch up with Chang'e. Every day he looked at the moon and missed her.",
+      },
+      {
+        speaker: 'Narrator',
+        text: '所以每年中秋节，人们看着月亮，思念自己的家人。',
+        pinyin: 'Suǒyǐ měi nián Zhōngqiūjié, rénmen kàn zhe yuèliang, sīniàn zìjǐ de jiārén.',
+        translation:
+          'So every year at the Mid-Autumn Festival, people look at the moon and think of their own families.',
+      },
+    ],
+  },
+  {
+    id: 'dlg-l33-02',
+    title: 'Mooncakes and Moon-Gazing',
+    titleChinese: '吃月饼，赏月亮',
+    setting:
+      "Two friends greet each other on Mid-Autumn night and talk about family, mooncakes and the legend of Chang'e.",
+    lesson: 33,
+    lines: [
+      {
+        speaker: '玛丽',
+        text: '小李，中秋节快乐！',
+        pinyin: 'Xiǎo Lǐ, Zhōngqiūjié kuàilè!',
+        translation: 'Xiao Li, happy Mid-Autumn Festival!',
+      },
+      {
+        speaker: '小李',
+        text: '中秋节快乐，玛丽！你看，今天的月亮真圆！',
+        pinyin: 'Zhōngqiūjié kuàilè, Mǎlì! Nǐ kàn, jīntiān de yuèliang zhēn yuán!',
+        translation: 'Happy Mid-Autumn Festival, Mary! Look, the moon is so round today!',
+      },
+      {
+        speaker: '玛丽',
+        text: '是啊。你们家今天晚上做什么？',
+        pinyin: 'Shì a. Nǐmen jiā jīntiān wǎnshang zuò shénme?',
+        translation: 'It is. What is your family doing tonight?',
+      },
+      {
+        speaker: '小李',
+        text: '我们一家人一起吃饭、吃月饼，然后赏月。',
+        pinyin: 'Wǒmen yì jiā rén yìqǐ chī fàn, chī yuèbing, ránhòu shǎngyuè.',
+        translation:
+          'The whole family eats together, we eat mooncakes, and then we admire the moon.',
+      },
+      {
+        speaker: '玛丽',
+        text: '你的家人都在这儿吗？',
+        pinyin: 'Nǐ de jiārén dōu zài zhèr ma?',
+        translation: 'Is your family all here?',
+      },
+      {
+        speaker: '小李',
+        text: '爸爸妈妈在家，哥哥今天也从上海回来了。',
+        pinyin: 'Bàba māma zài jiā, gēge jīntiān yě cóng Shànghǎi huílái le.',
+        translation:
+          'Mom and Dad are at home, and my older brother came back from Shanghai today too.',
+      },
+      {
+        speaker: '玛丽',
+        text: '太好了！一家人团圆真幸福。',
+        pinyin: 'Tài hǎo le! Yì jiā rén tuányuán zhēn xìngfú.',
+        translation: 'Great! A family reunion is such happiness.',
+      },
+      {
+        speaker: '小李',
+        text: '你呢？你想家吗？',
+        pinyin: 'Nǐ ne? Nǐ xiǎng jiā ma?',
+        translation: 'And you? Do you miss home?',
+      },
+      {
+        speaker: '玛丽',
+        text: '有点儿想。我很思念我的家人。',
+        pinyin: 'Yǒudiǎnr xiǎng. Wǒ hěn sīniàn wǒ de jiārén.',
+        translation: 'A little. I really miss my family.',
+      },
+      {
+        speaker: '小李',
+        text: '别难过，来我家吧。先吃块月饼。',
+        pinyin: 'Bié nánguò, lái wǒ jiā ba. Xiān chī kuài yuèbing.',
+        translation: "Don't be sad, come to my place. First have a mooncake.",
+      },
+      {
+        speaker: '玛丽',
+        text: '谢谢！你知道嫦娥的故事吗？',
+        pinyin: "Xièxie! Nǐ zhīdào Cháng'é de gùshi ma?",
+        translation: "Thanks! Do you know the story of Chang'e?",
+      },
+      {
+        speaker: '小李',
+        text: '知道。她吃了仙丹，飞到月亮上去了。',
+        pinyin: 'Zhīdào. Tā chī le xiāndān, fēi dào yuèliang shang qù le.',
+        translation: 'Yes. She ate the elixir and flew up to the moon.',
+      },
+      {
+        speaker: '玛丽',
+        text: '你看，月亮上好像有一只小兔子！',
+        pinyin: 'Nǐ kàn, yuèliang shang hǎoxiàng yǒu yì zhī xiǎo tùzi!',
+        translation: 'Look, it seems there is a little rabbit on the moon!',
+      },
+      {
+        speaker: '小李',
+        text: '对，它在陪伴嫦娥呢。',
+        pinyin: "Duì, tā zài péibàn Cháng'é ne.",
+        translation: "Yes, it is keeping Chang'e company.",
       },
     ],
   },
