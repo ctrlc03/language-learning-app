@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSpeechInit } from '@/hooks/use-speech';
+import { useCurrentLesson } from '@/hooks/use-current-lesson';
 import { useProgress } from '@/hooks/use-progress';
 import { DictationExercise } from '@/components/listening/dictation-exercise';
 import { ListenAndChoose } from '@/components/listening/listen-choose';
@@ -152,6 +153,7 @@ type ExerciseMode = 'select' | 'dictation' | 'listen-choose';
 
 export default function ListeningPage() {
   const { language, difficulty } = useLanguage();
+  const [currentLesson] = useCurrentLesson();
   const { recordActivity } = useProgress();
   const [mode, setMode] = useState<ExerciseMode>('select');
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -166,14 +168,14 @@ export default function ListeningPage() {
   // generated from the vocabulary pool so the drill never runs dry.
   const dictationSet = useMemo(() => {
     const curated = DICTATION_SETS[language][difficulty] ?? DICTATION_SETS[language].beginner;
-    return [...curated, ...getDictationItems(language, difficulty, seed)];
-  }, [language, difficulty, seed]);
+    return [...curated, ...getDictationItems(language, difficulty, seed, currentLesson)];
+  }, [language, difficulty, seed, currentLesson]);
 
   const listenChooseSet = useMemo(() => {
     const curated =
       LISTEN_CHOOSE_SETS[language][difficulty] ?? LISTEN_CHOOSE_SETS[language].beginner;
-    return [...curated, ...getListenChooseItems(language, difficulty, seed)];
-  }, [language, difficulty, seed]);
+    return [...curated, ...getListenChooseItems(language, difficulty, seed, currentLesson)];
+  }, [language, difficulty, seed, currentLesson]);
 
   const handleComplete = (correct: boolean) => {
     setSessionTotal((prev) => prev + 1);
@@ -200,9 +202,11 @@ export default function ListeningPage() {
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="page-top">
           <div>
-            <div className="greet">耳を澄ます · train your ear</div>
+            <div className="greet">
+              {language === 'japanese' ? '耳を澄ます' : '用心听'} · train your ear
+            </div>
             <h1>
-              Listen<span className="cjk"> · 聴解</span>
+              Listen<span className="cjk"> · {language === 'japanese' ? '聴解' : '听力'}</span>
             </h1>
           </div>
           <div className="date">

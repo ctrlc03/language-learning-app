@@ -1,4 +1,9 @@
-import { getAnthropicClient } from '@/lib/claude/client';
+import {
+  aiError,
+  aiErrorResponse,
+  getAnthropicClient,
+  missingKeyResponse,
+} from '@/lib/claude/client';
 import { buildExerciseGenerationPrompt } from '@/lib/claude/prompts/exercises';
 import type { Language, DifficultyLevel, ExerciseType } from '@/types';
 
@@ -259,6 +264,9 @@ function buildExerciseData(exerciseType: ExerciseType, input: Record<string, unk
 }
 
 export async function POST(request: Request) {
+  const missingKey = missingKeyResponse();
+  if (missingKey) return missingKey;
+
   try {
     const body = await request.json();
     const { language, difficulty, exerciseType, topic, previousQuestions } = body as {
@@ -289,7 +297,7 @@ export async function POST(request: Request) {
 
     const toolUse = response.content.find((block) => block.type === 'tool_use');
     if (!toolUse || toolUse.type !== 'tool_use') {
-      throw new Error('No tool use in response');
+      return aiError('The AI reply could not be understood. Please try again.', 502);
     }
 
     const input = toolUse.input as Record<string, unknown>;
@@ -302,6 +310,6 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error('Exercise generation error:', error);
-    return Response.json({ error: 'Failed to generate exercise' }, { status: 500 });
+    return aiErrorResponse(error, 'Failed to generate exercise');
   }
 }

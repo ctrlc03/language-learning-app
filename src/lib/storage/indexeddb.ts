@@ -13,7 +13,8 @@
  * localStorage data across, then leave the original in place as a backup.
  */
 
-import type { StorageAdapter } from '@/types';
+import type { ImportMode, StorageAdapter } from '@/types';
+import { importedValueWins, parseBackup } from './backup';
 import { STORAGE_PREFIX } from './interface';
 
 const DB_NAME = 'langbot';
@@ -115,6 +116,15 @@ export class IndexedDBAdapter implements StorageAdapter {
     await txDone(tx);
   }
 
+  async setMany(entries: Record<string, unknown>): Promise<void> {
+    if (!isIndexedDBAvailable()) return;
+    const db = await this.open();
+    const tx = db.transaction(STORE, 'readwrite');
+    const store = tx.objectStore(STORE);
+    for (const [key, value] of Object.entries(entries)) store.put(value, key);
+    await txDone(tx);
+  }
+
   async delete(key: string): Promise<void> {
     if (!isIndexedDBAvailable()) return;
     const db = await this.open();
@@ -153,24 +163,33 @@ export class IndexedDBAdapter implements StorageAdapter {
     return JSON.stringify(data, null, 2);
   }
 
-  async importData(jsonString: string): Promise<void> {
+  /**
+   * `merge` adds missing keys and overwrites only where `importedValueWins`;
+   * `replace` wipes every app key first. Both run in one transaction, so a failure
+   * leaves the existing data untouched.
+   */
+  async importData(jsonString: string, mode: ImportMode): Promise<void> {
     if (!isIndexedDBAvailable()) return;
-    const data = JSON.parse(jsonString) as Record<string, unknown>;
+    const data = parseBackup(jsonString);
     const db = await this.open();
     const tx = db.transaction(STORE, 'readwrite');
     const store = tx.objectStore(STORE);
-    for (const [key, value] of Object.entries(data)) {
-      if (key.startsWith(STORAGE_PREFIX)) store.put(value, key);
+    if (mode === 'replace') {
+      store.delete(prefixRange(STORAGE_PREFIX));
+      for (const [key, value] of Object.entries(data)) store.put(value, key);
+    } else {
+      const range = prefixRange(STORAGE_PREFIX);
+      const [keys, values] = await Promise.all([
+        promisify(store.getAllKeys(range)),
+        promisify(store.getAll(range)),
+      ]);
+      const existing = new Map<string, unknown>(keys.map((key, i) => [String(key), values[i]]));
+      for (const [key, value] of Object.entries(data)) {
+        if (!existing.has(key) || importedValueWins(existing.get(key), value)) {
+          store.put(value, key);
+        }
+      }
     }
-    await txDone(tx);
-  }
-
-  /** Wipe every app key. Used by the offline-reset button. */
-  async clearAll(): Promise<void> {
-    if (!isIndexedDBAvailable()) return;
-    const db = await this.open();
-    const tx = db.transaction(STORE, 'readwrite');
-    tx.objectStore(STORE).delete(prefixRange(STORAGE_PREFIX));
     await txDone(tx);
   }
 }

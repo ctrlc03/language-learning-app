@@ -41,6 +41,7 @@ export function Ring({
   color = 'var(--primary)',
   track = 'var(--line)',
   label,
+  title,
 }: {
   value?: number;
   size?: number;
@@ -48,11 +49,15 @@ export function Ring({
   color?: string;
   track?: string;
   label?: React.ReactNode;
+  /** Spoken description of what the ring measures, e.g. "40% of words reviewed". */
+  title?: string;
 }) {
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   return (
     <div
+      role={title ? 'img' : undefined}
+      aria-label={title}
       className="prog"
       style={{
         width: size,

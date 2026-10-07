@@ -66,7 +66,10 @@ export interface FlashcardDeck {
   name: string;
   language: Language;
   description: string;
+  /** Cards stored for this deck: up to four per word (one per direction), not words. */
   cardCount: number;
+  /** The shipped deck this was created from (e.g. 'prebuilt-zh-lesson-12'), if any. */
+  prebuiltId?: string;
   createdAt: number;
   updatedAt: number;
 }
@@ -155,6 +158,11 @@ export interface Exercise {
   instruction: string;
   data: ExerciseData;
   createdAt: number;
+  /**
+   * The item the exercise was built from (vocabulary id, dialogue id, rule id).
+   * Recently-seen filtering compares these, since `id` carries a random suffix.
+   */
+  sourceId?: string;
 }
 
 export type ExerciseData =
@@ -219,6 +227,8 @@ export interface SentenceConstructionData {
   words: string[];
   wordReadings?: (string | null)[]; // pinyin reading per word tile (aligned with words[])
   correctOrder: string;
+  /** Other valid orderings of the same tiles (e.g. time word before or after the subject). */
+  acceptableOrders?: string[];
   correctPinyin?: string; // pinyin reading of the full correct sentence
   translation: string;
 }
@@ -302,7 +312,9 @@ export interface VocabularyItem {
   reading: string; // pinyin or hiragana/katakana
   meaning: string;
   partOfSpeech?: string;
-  level?: string; // HSK1, JLPT N5, etc.
+  level?: string; // HSK1, JLPT N5, etc.; for lesson words, the lesson that first teaches it
+  /** Chinese lessons that teach this word (first lesson and any that revisit it). */
+  lessons?: number[];
   topic?: string;
   exampleSentence?: string;
   examplePinyin?: string;
@@ -353,14 +365,19 @@ export interface DialogueComprehensionData {
 // Storage Types
 // ============================================================
 
+/** `merge` keeps existing data unless the import is newer; `replace` wipes first. */
+export type ImportMode = 'merge' | 'replace';
+
 export interface StorageAdapter {
   get<T>(key: string): Promise<T | null>;
   set<T>(key: string, value: T): Promise<void>;
+  /** Plain batch write of key → value; one transaction where the backend supports it. */
+  setMany(entries: Record<string, unknown>): Promise<void>;
   delete(key: string): Promise<void>;
   getAll<T>(prefix: string): Promise<T[]>;
   query<T>(prefix: string, filter?: (item: T) => boolean): Promise<T[]>;
   exportData(): Promise<string>;
-  importData(data: string): Promise<void>;
+  importData(data: string, mode: ImportMode): Promise<void>;
 }
 
 // ============================================================
@@ -368,16 +385,15 @@ export interface StorageAdapter {
 // ============================================================
 
 export interface UserProgress {
+  /** Consecutive days with activity, ending on `lastActiveDate`. */
   streak: number;
-  lastActiveDate: string; // YYYY-MM-DD
-  dailyActivity: DailyActivity[];
+  lastActiveDate: string; // YYYY-MM-DD, local time
   totalReviews: number;
   totalExercises: number;
-  totalConversations: number;
 }
 
 export interface DailyActivity {
-  date: string; // YYYY-MM-DD
+  date: string; // YYYY-MM-DD, local time
   reviews: number;
   exercises: number;
   conversationMessages: number;
@@ -397,5 +413,7 @@ export interface AppSettings {
   showAnnotations: boolean;
   speechRate: number;
   maxNewCardsPerDay: number;
+  /** Chinese lesson the learner is on; practice draws from lessons up to it. Unset = latest. */
+  currentLesson?: number;
   apiKey?: string;
 }

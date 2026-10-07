@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { speak, stopSpeaking } from '@/lib/tts/speech';
+import { useSpeechNotice } from '@/hooks/use-speech';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { Language } from '@/types';
 import { cn } from '@/lib/utils';
@@ -14,6 +16,25 @@ interface SpeakButtonProps {
   className?: string;
 }
 
+/**
+ * Floating, non-blocking message for an audio button that couldn't play (see `useSpeechNotice`).
+ * Portalled to the body so it never shifts the layout or gets clipped by the card it sits in.
+ */
+export function SpeechNotice({ message }: { message: string | null }) {
+  if (!message) return null;
+  return createPortal(
+    <div
+      role="status"
+      className="pointer-events-none fixed inset-x-0 bottom-24 z-[70] flex justify-center px-4"
+    >
+      <p className="max-w-sm rounded-lg border border-border bg-card px-3 py-2 text-sm shadow-lg">
+        {message}
+      </p>
+    </div>,
+    document.body,
+  );
+}
+
 export function SpeakButton({
   text,
   language: langOverride,
@@ -23,6 +44,7 @@ export function SpeakButton({
   const { language: contextLang, speechRate } = useLanguage();
   const language = langOverride ?? contextLang;
   const [speaking, setSpeaking] = useState(false);
+  const { notice, reportSpeechError } = useSpeechNotice();
 
   const handleClick = useCallback(async () => {
     if (speaking) {
@@ -34,46 +56,53 @@ export function SpeakButton({
     setSpeaking(true);
     try {
       await speak(text, language, speechRate);
-    } catch {
-      // Speech not available or cancelled
+    } catch (err) {
+      reportSpeechError(err);
     } finally {
       setSpeaking(false);
     }
-  }, [text, language, speechRate, speaking]);
+  }, [text, language, speechRate, speaking, reportSpeechError]);
 
   return (
-    <Button
-      variant="ghost"
-      size={size}
-      onClick={handleClick}
-      className={cn('text-muted-foreground hover:text-primary', className)}
-      aria-label={speaking ? 'Stop speaking' : 'Speak'}
-    >
-      {speaking ? (
-        <svg
-          className="w-4 h-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
-        </svg>
-      ) : (
-        <svg
-          className="w-4 h-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z"
-          />
-        </svg>
-      )}
-    </Button>
+    <>
+      <Button
+        variant="ghost"
+        size={size}
+        onClick={handleClick}
+        className={cn('text-muted-foreground hover:text-primary', className)}
+        aria-label={speaking ? 'Stop speaking' : 'Speak'}
+      >
+        {speaking ? (
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15.75 5.25v13.5m-7.5-13.5v13.5"
+            />
+          </svg>
+        ) : (
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z"
+            />
+          </svg>
+        )}
+      </Button>
+      <SpeechNotice message={notice} />
+    </>
   );
 }

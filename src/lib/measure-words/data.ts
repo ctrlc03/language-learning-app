@@ -26,6 +26,7 @@ export const MEASURE_WORDS: Record<string, MeasureWord> = {
   把: { hanzi: '把', pinyin: 'bǎ', gloss: 'things with a handle' },
   家: { hanzi: '家', pinyin: 'jiā', gloss: 'businesses & establishments' },
   位: { hanzi: '位', pinyin: 'wèi', gloss: 'people (polite)' },
+  名: { hanzi: '名', pinyin: 'míng', gloss: 'people (jobs & roles)' },
   座: { hanzi: '座', pinyin: 'zuò', gloss: 'large structures' },
   块: { hanzi: '块', pinyin: 'kuài', gloss: 'chunks / pieces' },
   碗: { hanzi: '碗', pinyin: 'wǎn', gloss: 'bowls of' },
@@ -40,48 +41,84 @@ export interface Noun {
 
 export interface MwItem {
   noun: Noun;
-  classifier: string; // key into MEASURE_WORDS
+  /**
+   * Every classifier (key into MEASURE_WORDS) that is correct for this noun,
+   * the one to teach first leading. The drill accepts any of them.
+   */
+  classifiers: string[];
+}
+
+/**
+ * Containers can usually swap for one another (一杯水, 一瓶水, 一碗水), so for a
+ * noun counted by one of them the others are never offered as wrong answers.
+ */
+const CONTAINERS = ['杯', '瓶', '碗'];
+
+/**
+ * 个 stands in for many classifiers in everyday speech (一个狗, 一个车), so it
+ * is only a distractor where it is plainly wrong. See `geIsWrong`.
+ */
+export const GENERAL = '个';
+
+/** Taught classifiers whose nouns never take 个: pairs, containers, books, flat things, money. */
+const GE_WRONG_AFTER = new Set(['双', '杯', '瓶', '碗', '本', '张', '块']);
+
+/** True when 个 is clearly wrong for this noun, so it may be offered as a distractor. */
+export function geIsWrong(item: MwItem): boolean {
+  return GE_WRONG_AFTER.has(item.classifiers[0]) && !item.classifiers.includes(GENERAL);
+}
+
+/** Classifiers that are certainly wrong for this noun, so safe as distractors (never 个). */
+export function distractorPool(item: MwItem): string[] {
+  const blocked = new Set([...item.classifiers, GENERAL]);
+  if (item.classifiers.some((c) => CONTAINERS.includes(c))) {
+    for (const c of CONTAINERS) blocked.add(c);
+  }
+  return Object.keys(MEASURE_WORDS).filter((k) => !blocked.has(k));
 }
 
 export const MW_ITEMS: MwItem[] = [
-  { noun: { hanzi: '人', pinyin: 'rén', meaning: 'person' }, classifier: '个' },
-  { noun: { hanzi: '苹果', pinyin: 'píngguǒ', meaning: 'apple' }, classifier: '个' },
-  { noun: { hanzi: '问题', pinyin: 'wèntí', meaning: 'question' }, classifier: '个' },
-  { noun: { hanzi: '桌子', pinyin: 'zhuōzi', meaning: 'table' }, classifier: '张' },
-  { noun: { hanzi: '纸', pinyin: 'zhǐ', meaning: 'paper' }, classifier: '张' },
-  { noun: { hanzi: '票', pinyin: 'piào', meaning: 'ticket' }, classifier: '张' },
-  { noun: { hanzi: '床', pinyin: 'chuáng', meaning: 'bed' }, classifier: '张' },
-  { noun: { hanzi: '照片', pinyin: 'zhàopiàn', meaning: 'photo' }, classifier: '张' },
-  { noun: { hanzi: '河', pinyin: 'hé', meaning: 'river' }, classifier: '条' },
-  { noun: { hanzi: '路', pinyin: 'lù', meaning: 'road' }, classifier: '条' },
-  { noun: { hanzi: '鱼', pinyin: 'yú', meaning: 'fish' }, classifier: '条' },
-  { noun: { hanzi: '狗', pinyin: 'gǒu', meaning: 'dog' }, classifier: '条' },
-  { noun: { hanzi: '裤子', pinyin: 'kùzi', meaning: 'trousers' }, classifier: '条' },
-  { noun: { hanzi: '猫', pinyin: 'māo', meaning: 'cat' }, classifier: '只' },
-  { noun: { hanzi: '鸟', pinyin: 'niǎo', meaning: 'bird' }, classifier: '只' },
-  { noun: { hanzi: '书', pinyin: 'shū', meaning: 'book' }, classifier: '本' },
-  { noun: { hanzi: '杂志', pinyin: 'zázhì', meaning: 'magazine' }, classifier: '本' },
-  { noun: { hanzi: '水', pinyin: 'shuǐ', meaning: 'water' }, classifier: '杯' },
-  { noun: { hanzi: '茶', pinyin: 'chá', meaning: 'tea' }, classifier: '杯' },
-  { noun: { hanzi: '咖啡', pinyin: 'kāfēi', meaning: 'coffee' }, classifier: '杯' },
-  { noun: { hanzi: '啤酒', pinyin: 'píjiǔ', meaning: 'beer' }, classifier: '瓶' },
-  { noun: { hanzi: '衣服', pinyin: 'yīfu', meaning: 'clothes' }, classifier: '件' },
-  { noun: { hanzi: '事', pinyin: 'shì', meaning: 'matter / affair' }, classifier: '件' },
-  { noun: { hanzi: '笔', pinyin: 'bǐ', meaning: 'pen' }, classifier: '支' },
-  { noun: { hanzi: '车', pinyin: 'chē', meaning: 'car' }, classifier: '辆' },
-  { noun: { hanzi: '自行车', pinyin: 'zìxíngchē', meaning: 'bicycle' }, classifier: '辆' },
-  { noun: { hanzi: '鞋', pinyin: 'xié', meaning: 'shoes' }, classifier: '双' },
-  { noun: { hanzi: '筷子', pinyin: 'kuàizi', meaning: 'chopsticks' }, classifier: '双' },
-  { noun: { hanzi: '伞', pinyin: 'sǎn', meaning: 'umbrella' }, classifier: '把' },
-  { noun: { hanzi: '椅子', pinyin: 'yǐzi', meaning: 'chair' }, classifier: '把' },
-  { noun: { hanzi: '刀', pinyin: 'dāo', meaning: 'knife' }, classifier: '把' },
-  { noun: { hanzi: '公司', pinyin: 'gōngsī', meaning: 'company' }, classifier: '家' },
-  { noun: { hanzi: '商店', pinyin: 'shāngdiàn', meaning: 'shop' }, classifier: '家' },
-  { noun: { hanzi: '饭馆', pinyin: 'fànguǎn', meaning: 'restaurant' }, classifier: '家' },
-  { noun: { hanzi: '老师', pinyin: 'lǎoshī', meaning: 'teacher' }, classifier: '位' },
-  { noun: { hanzi: '山', pinyin: 'shān', meaning: 'mountain' }, classifier: '座' },
-  { noun: { hanzi: '桥', pinyin: 'qiáo', meaning: 'bridge' }, classifier: '座' },
-  { noun: { hanzi: '牛', pinyin: 'niú', meaning: 'cow / ox' }, classifier: '头' },
-  { noun: { hanzi: '饭', pinyin: 'fàn', meaning: 'rice / meal' }, classifier: '碗' },
-  { noun: { hanzi: '蛋糕', pinyin: 'dàngāo', meaning: 'cake' }, classifier: '块' },
+  { noun: { hanzi: '人', pinyin: 'rén', meaning: 'person' }, classifiers: ['个'] },
+  { noun: { hanzi: '苹果', pinyin: 'píngguǒ', meaning: 'apple' }, classifiers: ['个'] },
+  { noun: { hanzi: '问题', pinyin: 'wèntí', meaning: 'question' }, classifiers: ['个'] },
+  { noun: { hanzi: '桌子', pinyin: 'zhuōzi', meaning: 'table' }, classifiers: ['张'] },
+  { noun: { hanzi: '纸', pinyin: 'zhǐ', meaning: 'paper' }, classifiers: ['张'] },
+  { noun: { hanzi: '票', pinyin: 'piào', meaning: 'ticket' }, classifiers: ['张'] },
+  { noun: { hanzi: '床', pinyin: 'chuáng', meaning: 'bed' }, classifiers: ['张'] },
+  { noun: { hanzi: '照片', pinyin: 'zhàopiàn', meaning: 'photo' }, classifiers: ['张'] },
+  { noun: { hanzi: '河', pinyin: 'hé', meaning: 'river' }, classifiers: ['条'] },
+  { noun: { hanzi: '路', pinyin: 'lù', meaning: 'road' }, classifiers: ['条'] },
+  { noun: { hanzi: '鱼', pinyin: 'yú', meaning: 'fish' }, classifiers: ['条'] },
+  { noun: { hanzi: '狗', pinyin: 'gǒu', meaning: 'dog' }, classifiers: ['只', '条'] },
+  { noun: { hanzi: '裤子', pinyin: 'kùzi', meaning: 'trousers' }, classifiers: ['条'] },
+  { noun: { hanzi: '猫', pinyin: 'māo', meaning: 'cat' }, classifiers: ['只'] },
+  { noun: { hanzi: '鸟', pinyin: 'niǎo', meaning: 'bird' }, classifiers: ['只'] },
+  { noun: { hanzi: '书', pinyin: 'shū', meaning: 'book' }, classifiers: ['本'] },
+  { noun: { hanzi: '杂志', pinyin: 'zázhì', meaning: 'magazine' }, classifiers: ['本'] },
+  { noun: { hanzi: '水', pinyin: 'shuǐ', meaning: 'water' }, classifiers: ['杯', '瓶', '碗'] },
+  { noun: { hanzi: '茶', pinyin: 'chá', meaning: 'tea' }, classifiers: ['杯', '瓶'] },
+  { noun: { hanzi: '咖啡', pinyin: 'kāfēi', meaning: 'coffee' }, classifiers: ['杯', '瓶', '个'] },
+  { noun: { hanzi: '啤酒', pinyin: 'píjiǔ', meaning: 'beer' }, classifiers: ['瓶', '杯'] },
+  { noun: { hanzi: '衣服', pinyin: 'yīfu', meaning: 'clothes' }, classifiers: ['件'] },
+  { noun: { hanzi: '事', pinyin: 'shì', meaning: 'matter / affair' }, classifiers: ['件'] },
+  { noun: { hanzi: '笔', pinyin: 'bǐ', meaning: 'pen' }, classifiers: ['支'] },
+  { noun: { hanzi: '车', pinyin: 'chē', meaning: 'car' }, classifiers: ['辆'] },
+  { noun: { hanzi: '自行车', pinyin: 'zìxíngchē', meaning: 'bicycle' }, classifiers: ['辆'] },
+  { noun: { hanzi: '鞋', pinyin: 'xié', meaning: 'shoes' }, classifiers: ['双', '只'] },
+  { noun: { hanzi: '筷子', pinyin: 'kuàizi', meaning: 'chopsticks' }, classifiers: ['双'] },
+  { noun: { hanzi: '伞', pinyin: 'sǎn', meaning: 'umbrella' }, classifiers: ['把'] },
+  { noun: { hanzi: '椅子', pinyin: 'yǐzi', meaning: 'chair' }, classifiers: ['把'] },
+  { noun: { hanzi: '刀', pinyin: 'dāo', meaning: 'knife' }, classifiers: ['把'] },
+  { noun: { hanzi: '公司', pinyin: 'gōngsī', meaning: 'company' }, classifiers: ['家', '个'] },
+  { noun: { hanzi: '商店', pinyin: 'shāngdiàn', meaning: 'shop' }, classifiers: ['家', '个'] },
+  { noun: { hanzi: '饭馆', pinyin: 'fànguǎn', meaning: 'restaurant' }, classifiers: ['家', '个'] },
+  {
+    noun: { hanzi: '老师', pinyin: 'lǎoshī', meaning: 'teacher' },
+    classifiers: ['位', '名', '个'],
+  },
+  { noun: { hanzi: '山', pinyin: 'shān', meaning: 'mountain' }, classifiers: ['座'] },
+  { noun: { hanzi: '桥', pinyin: 'qiáo', meaning: 'bridge' }, classifiers: ['座', '条'] },
+  { noun: { hanzi: '牛', pinyin: 'niú', meaning: 'cow / ox' }, classifiers: ['头'] },
+  { noun: { hanzi: '饭', pinyin: 'fàn', meaning: 'rice / meal' }, classifiers: ['碗'] },
+  { noun: { hanzi: '蛋糕', pinyin: 'dàngāo', meaning: 'cake' }, classifiers: ['块', '个'] },
 ];

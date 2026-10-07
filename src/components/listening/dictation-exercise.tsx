@@ -3,7 +3,10 @@
 import { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { SpeechNotice } from '@/components/shared/speak-button';
 import { speak } from '@/lib/tts/speech';
+import { useSpeechNotice } from '@/hooks/use-speech';
+import { dictationMatches } from '@/lib/exercises/listening-offline';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 
@@ -18,32 +21,26 @@ export function DictationExercise({ text, hint, onComplete }: DictationExerciseP
   const [answer, setAnswer] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [playing, setPlaying] = useState(false);
+  const { notice, reportSpeechError } = useSpeechNotice();
 
-  const handlePlay = useCallback(async () => {
-    setPlaying(true);
-    try {
-      await speak(text, language, speechRate);
-    } catch {
-      // TTS not available
-    } finally {
-      setPlaying(false);
-    }
-  }, [text, language, speechRate]);
+  const play = useCallback(
+    async (rate: number) => {
+      setPlaying(true);
+      try {
+        await speak(text, language, rate);
+      } catch (err) {
+        reportSpeechError(err);
+      } finally {
+        setPlaying(false);
+      }
+    },
+    [text, language, reportSpeechError],
+  );
 
-  const handlePlaySlow = useCallback(async () => {
-    setPlaying(true);
-    try {
-      await speak(text, language, speechRate * 0.6);
-    } catch {
-      // TTS not available
-    } finally {
-      setPlaying(false);
-    }
-  }, [text, language, speechRate]);
+  const isCorrect = dictationMatches(answer, text);
 
   const handleSubmit = () => {
     setSubmitted(true);
-    const isCorrect = answer.trim() === text.trim();
     onComplete(isCorrect);
   };
 
@@ -52,7 +49,7 @@ export function DictationExercise({ text, hint, onComplete }: DictationExerciseP
       <div className="text-center py-6">
         <p className="text-muted-foreground text-sm mb-4">Listen and type what you hear</p>
         <div className="flex justify-center gap-3">
-          <Button onClick={handlePlay} disabled={playing} size="lg" className="gap-2">
+          <Button onClick={() => play(speechRate)} disabled={playing} size="lg" className="gap-2">
             <svg
               className="w-5 h-5"
               fill="none"
@@ -69,7 +66,7 @@ export function DictationExercise({ text, hint, onComplete }: DictationExerciseP
             Play
           </Button>
           <Button
-            onClick={handlePlaySlow}
+            onClick={() => play(speechRate * 0.6)}
             disabled={playing}
             variant="outline"
             size="lg"
@@ -117,13 +114,13 @@ export function DictationExercise({ text, hint, onComplete }: DictationExerciseP
         <div
           className={cn(
             'p-4 rounded-lg border',
-            answer.trim() === text.trim()
+            isCorrect
               ? 'bg-success/10 border-success/30'
               : 'bg-destructive/10 border-destructive/30',
           )}
         >
-          <p className="font-medium">{answer.trim() === text.trim() ? 'Correct!' : 'Not quite'}</p>
-          {answer.trim() !== text.trim() && (
+          <p className="font-medium">{isCorrect ? 'Correct!' : 'Not quite'}</p>
+          {!isCorrect && (
             <div className="mt-2 text-sm">
               <p>
                 Your answer: <span className="text-destructive">{answer}</span>
@@ -135,6 +132,8 @@ export function DictationExercise({ text, hint, onComplete }: DictationExerciseP
           )}
         </div>
       )}
+
+      <SpeechNotice message={notice} />
     </div>
   );
 }

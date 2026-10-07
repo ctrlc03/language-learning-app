@@ -8,6 +8,8 @@
  *   { chars: { "妈": { components: [{ c: "女", m: "woman" }, ...] } },
  *     byComponent: { "女": ["妈", "好", ...] } }   // restricted to our set
  *
+ * `m` (a short gloss) is omitted for components that have no usable meaning.
+ *
  * Run via `npm run build:hanzi-decomp`.
  */
 import { readdirSync, readFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
@@ -40,15 +42,22 @@ for (const dir of SRC_DIRS) {
   }
 }
 
+/** Dictionary glosses that say nothing about what a component means (notes, cross-references). */
+const NOT_A_MEANING =
+  /^(\(|surname|abbr\.|variant of|old variant|archaic|see |CL:|classifier|name of|one of the|component in)|radical|\[/i;
+const MAX_GLOSS_LENGTH = 32;
+
 /** Short meaning for a component, or null if we can't gloss it. */
 function componentMeaning(comp) {
   const rad = hanzi.getRadicalMeaning(comp);
-  if (rad) return rad;
+  // The library answers the literal string 'N/A' for anything that isn't a Kangxi radical.
+  if (rad && rad !== 'N/A') return rad;
   const def = hanzi.definitionLookup(comp);
-  if (def && def[0]?.definition) {
-    return def[0].definition.split('/')[0].trim();
-  }
-  return null;
+  const gloss = def?.[0]?.definition
+    ?.split('/')
+    .map((part) => part.trim())
+    .find((part) => part && part.length <= MAX_GLOSS_LENGTH && !NOT_A_MEANING.test(part));
+  return gloss ?? null;
 }
 
 const charsOut = {};
@@ -68,9 +77,8 @@ for (const char of chars) {
     if (comp === char || comp === 'No glyph available' || seen.has(comp)) continue;
     if ([...comp].length !== 1) continue; // skip multi-codepoint fragments
     const m = componentMeaning(comp);
-    if (!m) continue; // only keep components we can actually explain
     seen.add(comp);
-    components.push({ c: comp, m });
+    components.push(m ? { c: comp, m } : { c: comp });
   }
   if (components.length < 2) continue; // atomic char — nothing useful to show
   charsOut[char] = { components };

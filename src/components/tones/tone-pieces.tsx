@@ -2,6 +2,8 @@
 
 import { useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { SpeechNotice } from '@/components/shared/speak-button';
+import { useSpeechNotice } from '@/hooks/use-speech';
 import { speak } from '@/lib/tts/speech';
 import { getTones, toneColor } from '@/lib/tones/utils';
 import { TONES, type ToneNumber } from '@/lib/tones/data';
@@ -46,34 +48,38 @@ export function PlayButton({
   size?: 'sm' | 'lg';
 }) {
   const [playing, setPlaying] = useState(false);
+  const { notice, reportSpeechError } = useSpeechNotice();
   const play = useCallback(async () => {
     setPlaying(true);
     try {
       await speak(text, 'chinese', rate);
-    } catch {
-      // TTS unavailable
+    } catch (err) {
+      reportSpeechError(err);
     } finally {
       setPlaying(false);
     }
-  }, [text, rate]);
+  }, [text, rate, reportSpeechError]);
 
   return (
-    <Button onClick={play} disabled={playing} size={size} className="gap-2">
-      <svg
-        className="w-5 h-5"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={1.5}
-        stroke="currentColor"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"
-        />
-      </svg>
-      {playing ? 'Playing…' : label}
-    </Button>
+    <>
+      <Button onClick={play} disabled={playing} size={size} className="gap-2">
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"
+          />
+        </svg>
+        {playing ? 'Playing…' : label}
+      </Button>
+      <SpeechNotice message={notice} />
+    </>
   );
 }
 

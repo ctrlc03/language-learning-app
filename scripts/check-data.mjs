@@ -29,6 +29,7 @@ const lessons = JSON.parse(
 
 const HAN = /[一-鿿]/;
 const LATIN = /[A-Za-z]/;
+const ALL_HAN = /^[一-鿿]+$/;
 
 const lessonNumbers = new Set();
 for (const lesson of lessons) {
@@ -45,6 +46,16 @@ for (const lesson of lessons) {
     if (words.has(v.word)) warn(`${where}: duplicated within the lesson`);
     words.add(v.word);
     if (!v.reading) err(`${where}: missing reading`);
+    else if (ALL_HAN.test(v.word)) {
+      // One syllable per character, so readings line up with the hanzi; an erhua
+      // 儿 merges into the syllable before it (哪儿 nǎr).
+      const syllables = v.reading.trim().split(/\s+/).length;
+      const chars = [...v.word].length;
+      const erhua = [...v.word].slice(1).filter((c) => c === '儿').length;
+      if (syllables > chars || syllables < chars - erhua) {
+        err(`${where}: reading "${v.reading}" needs one space-separated syllable per character`);
+      }
+    }
     if (!v.meaning) err(`${where}: missing meaning`);
 
     if (v.exampleSentence) {

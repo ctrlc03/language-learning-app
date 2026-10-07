@@ -2,8 +2,8 @@
  * Generates public/sw.js from public/sw.template.js, substituting the list of
  * routes to pre-cache on install.
  *
- * The list is read from NAV_TABS in src/components/layout/top-bar.tsx — the same
- * array that renders the nav — so a new study mode is offline-ready the moment
+ * The list is read from NAV_TABS in src/components/layout/top-bar.tsx — the flat list
+ * the nav groups are built from — so a new study mode is offline-ready the moment
  * it appears in the nav. Previously the two were maintained separately and the
  * service worker warmed 7 of 15 routes.
  */

@@ -77,11 +77,6 @@ export function FillInBlank({ data, onSubmit, disabled }: FillInBlankProps) {
               )}
             >
               {option}
-              {data.optionReadings?.[i] && (
-                <span className="block text-xs text-muted-foreground font-normal mt-0.5">
-                  {data.optionReadings[i]}
-                </span>
-              )}
             </button>
           ))}
         </div>

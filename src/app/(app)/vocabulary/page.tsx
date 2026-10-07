@@ -73,9 +73,11 @@ export default function VocabularyPage() {
     <div className="p-5 md:p-8 max-w-2xl mx-auto space-y-6">
       <div className="page-top">
         <div>
-          <div className="greet">言葉を集める · the word archive</div>
+          <div className="greet">
+            {language === 'japanese' ? '言葉を集める' : '词汇库'} · the word archive
+          </div>
           <h1>
-            Archive<span className="cjk"> · 蔵</span>
+            Archive<span className="cjk"> · {language === 'japanese' ? '蔵' : '藏'}</span>
           </h1>
         </div>
         <div className="date">
@@ -99,7 +101,7 @@ export default function VocabularyPage() {
           size="sm"
           onClick={() => setMode('archive')}
         >
-          庫 Archive
+          {language === 'japanese' ? '庫' : '库'} Archive
         </Button>
       </div>
 

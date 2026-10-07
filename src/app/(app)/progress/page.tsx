@@ -1,5 +1,6 @@
 'use client';
 
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useMastery } from '@/hooks/use-mastery';
 import { Card, CardContent } from '@/components/ui/card';
 import { weakest, byGroup, type MasteryMap } from '@/lib/mastery';
@@ -99,6 +100,7 @@ function DomainSection({
 }
 
 export default function ProgressPage() {
+  const { language } = useLanguage();
   const tones = useMastery('tones');
   const writing = useMastery('writing');
   const classifiers = useMastery('classifiers');
@@ -124,7 +126,7 @@ export default function ProgressPage() {
       />
       <DomainSection
         title="Characters"
-        cjk="書"
+        cjk={language === 'japanese' ? '書' : '写'}
         map={writing.map}
         emptyHint="Practise writing and the characters you miss most will appear here."
       />

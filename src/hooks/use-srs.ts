@@ -3,17 +3,21 @@
 import { useState, useCallback, useEffect } from 'react';
 import type { Flashcard, FlashcardDeck, SRSGrade } from '@/types';
 import { useStorage } from '@/contexts/StorageContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { StorageKeys, StoragePrefixes } from '@/lib/storage/interface';
 import { calculateNextReview } from '@/lib/srs/sm2';
+import { saveDeck, syncPrebuiltDecks } from '@/lib/flashcards/prebuilt-decks';
 import {
   buildReviewQueue,
   getNextCard,
+  newCardsLeftToday,
   removeCardFromQueue,
   type ReviewQueue,
 } from '@/lib/srs/scheduler';
 
 export function useSRS(deckId?: string) {
   const storage = useStorage();
+  const { settings } = useLanguage();
   const [cards, setCards] = useState<Flashcard[]>([]);
   const [decks, setDecks] = useState<FlashcardDeck[]>([]);
   const [queue, setQueue] = useState<ReviewQueue | null>(null);
@@ -22,6 +26,8 @@ export function useSRS(deckId?: string) {
 
   const loadDecks = useCallback(async () => {
     const allDecks = await storage.getAll<FlashcardDeck>(StoragePrefixes.decks);
+    // Keys are random ids, so storage order is arbitrary: list decks in the order they were added.
+    allDecks.sort((a, b) => a.createdAt - b.createdAt);
     setDecks(allDecks);
     return allDecks;
   }, [storage]);
@@ -47,11 +53,12 @@ export function useSRS(deckId?: string) {
       if (!targetDeck) return;
 
       const deckCards = await loadCards(targetDeck);
-      const reviewQueue = buildReviewQueue(deckCards);
+      const newLeft = await newCardsLeftToday(storage, settings.maxNewCardsPerDay);
+      const reviewQueue = buildReviewQueue(deckCards, newLeft);
       setQueue(reviewQueue);
       setCurrentCard(getNextCard(reviewQueue));
     },
-    [deckId, loadCards],
+    [deckId, loadCards, storage, settings.maxNewCardsPerDay],
   );
 
   const gradeCard = useCallback(
@@ -83,31 +90,21 @@ export function useSRS(deckId?: string) {
     [currentCard, queue, storage],
   );
 
-  const addCard = useCallback(
-    async (card: Flashcard) => {
-      await storage.set(StorageKeys.card(card.id), card);
-
-      // Update deck card count
-      const deck = await storage.get<FlashcardDeck>(StorageKeys.deck(card.deckId));
-      if (deck) {
-        deck.cardCount += 1;
-        deck.updatedAt = Date.now();
-        await storage.set(StorageKeys.deck(deck.id), deck);
-      }
-
-      setCards((prev) => [...prev, card]);
-    },
-    [storage],
-  );
-
+  // Reloads rather than appends, so a deck-list load already in flight can't drop the new deck.
   const createDeck = useCallback(
-    async (deck: FlashcardDeck) => {
-      await storage.set(StorageKeys.deck(deck.id), deck);
-      setDecks((prev) => [...prev, deck]);
-      return deck;
+    async (deck: FlashcardDeck, deckCards: Flashcard[]) => {
+      const stored = await saveDeck(storage, deck, deckCards);
+      await loadDecks();
+      return stored;
     },
-    [storage],
+    [storage, loadDecks],
   );
+
+  // Bring stored copies of shipped decks in step with the current data, and
+  // reload the list if that changed anything.
+  const syncDecks = useCallback(async () => {
+    if (await syncPrebuiltDecks(storage)) await loadDecks();
+  }, [storage, loadDecks]);
 
   useEffect(() => {
     (async () => {
@@ -128,7 +125,7 @@ export function useSRS(deckId?: string) {
     loadCards,
     startReview,
     gradeCard,
-    addCard,
     createDeck,
+    syncDecks,
   };
 }

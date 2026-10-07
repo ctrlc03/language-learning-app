@@ -590,7 +590,7 @@
         },
         {
           "word": "谁",
-          "reading": "shuí",
+          "reading": "shéi",
           "meaning": "who",
           "partOfSpeech": "pronoun",
           "topic": "basic",
@@ -1446,7 +1446,7 @@
         },
         {
           "word": "外边",
-          "reading": "wài biān",
+          "reading": "wài bian",
           "meaning": "outside",
           "partOfSpeech": "noun",
           "topic": "directions"
@@ -2306,7 +2306,7 @@
         },
         {
           "word": "看上去",
-          "reading": "kàn shàng qù",
+          "reading": "kàn shàng qu",
           "meaning": "to look like, it seems",
           "partOfSpeech": "verb",
           "topic": "basic"
@@ -5438,7 +5438,7 @@
         },
         {
           "word": "告诉",
-          "reading": "gào sù",
+          "reading": "gào su",
           "meaning": "to tell",
           "partOfSpeech": "verb",
           "topic": "actions",
@@ -5468,7 +5468,7 @@
         },
         {
           "word": "事情",
-          "reading": "shì qíng",
+          "reading": "shì qing",
           "meaning": "thing, matter, affair",
           "partOfSpeech": "noun",
           "topic": "basic",
@@ -5969,7 +5969,7 @@
         },
         {
           "word": "眼睛",
-          "reading": "yǎn jīng",
+          "reading": "yǎn jing",
           "meaning": "eye",
           "partOfSpeech": "noun",
           "topic": "face",
@@ -5979,7 +5979,7 @@
         },
         {
           "word": "头发",
-          "reading": "tóu fǎ",
+          "reading": "tóu fa",
           "meaning": "hair",
           "partOfSpeech": "noun",
           "topic": "face",
@@ -6090,7 +6090,7 @@
         },
         {
           "word": "中等身高",
-          "reading": "zhōngděng shēngāo",
+          "reading": "zhōng děng shēn gāo",
           "meaning": "average height",
           "partOfSpeech": "noun",
           "topic": "height",
@@ -6157,14 +6157,14 @@
         },
         {
           "word": "身高",
-          "reading": "shēngāo",
+          "reading": "shēn gāo",
           "meaning": "height (of a person)",
           "partOfSpeech": "noun",
           "topic": "height"
         },
         {
           "word": "体型",
-          "reading": "tǐxíng",
+          "reading": "tǐ xíng",
           "meaning": "body type, build",
           "partOfSpeech": "noun",
           "topic": "body type"
@@ -6370,14 +6370,14 @@
         },
         {
           "word": "太平山顶",
-          "reading": "Tàipíng shāndǐng",
+          "reading": "Tài píng shān dǐng",
           "meaning": "Victoria Peak",
           "partOfSpeech": "noun",
           "topic": "places"
         },
         {
           "word": "北京鸭",
-          "reading": "Běijīng yā",
+          "reading": "Běi jīng yā",
           "meaning": "Peking Duck",
           "partOfSpeech": "noun",
           "topic": "food",
@@ -6387,35 +6387,35 @@
         },
         {
           "word": "香港",
-          "reading": "Xiānggǎng",
+          "reading": "Xiāng gǎng",
           "meaning": "Hong Kong",
           "partOfSpeech": "noun",
           "topic": "places"
         },
         {
           "word": "澳门",
-          "reading": "Àomén",
+          "reading": "Ào mén",
           "meaning": "Macau",
           "partOfSpeech": "noun",
           "topic": "places"
         },
         {
           "word": "成都",
-          "reading": "Chéngdū",
+          "reading": "Chéng dū",
           "meaning": "Chengdu",
           "partOfSpeech": "noun",
           "topic": "places"
         },
         {
           "word": "重庆",
-          "reading": "Chóngqìng",
+          "reading": "Chóng qìng",
           "meaning": "Chongqing",
           "partOfSpeech": "noun",
           "topic": "places"
         },
         {
           "word": "北京",
-          "reading": "Běijīng",
+          "reading": "Běi jīng",
           "meaning": "Beijing",
           "partOfSpeech": "noun",
           "topic": "places"
@@ -6439,7 +6439,7 @@
         },
         {
           "word": "维多利亚港",
-          "reading": "Wéiduōlìyà gǎng",
+          "reading": "Wéi duō lì yà gǎng",
           "meaning": "Victoria Harbour",
           "partOfSpeech": "noun",
           "topic": "places"
@@ -6535,7 +6535,7 @@
         },
         {
           "word": "滴滴",
-          "reading": "Dīdī",
+          "reading": "Dī dī",
           "meaning": "Didi (Chinese Uber)",
           "partOfSpeech": "noun",
           "topic": "transport"
@@ -6566,7 +6566,7 @@
         },
         {
           "word": "北京烤鸭",
-          "reading": "Běijīng kǎo yā",
+          "reading": "Běi jīng kǎo yā",
           "meaning": "Peking Roast Duck",
           "partOfSpeech": "noun",
           "topic": "food",
@@ -6583,7 +6583,7 @@
         },
         {
           "word": "稻香村",
-          "reading": "Dàoxiāngcūn",
+          "reading": "Dào xiāng cūn",
           "meaning": "Daoxiangcun (famous Beijing bakery)",
           "partOfSpeech": "noun",
           "topic": "places"
@@ -6695,14 +6695,14 @@
         },
         {
           "word": "劳动节",
-          "reading": "Láodòng jié",
+          "reading": "Láo dòng jié",
           "meaning": "Labour Day",
           "partOfSpeech": "noun",
           "topic": "time"
         },
         {
           "word": "假期",
-          "reading": "jiàqī",
+          "reading": "jià qī",
           "meaning": "holiday, vacation",
           "partOfSpeech": "noun",
           "topic": "time",
@@ -6719,7 +6719,7 @@
       "vocabulary": [
         {
           "word": "清明节",
-          "reading": "Qīngmíng jié",
+          "reading": "Qīng míng jié",
           "meaning": "Qingming Festival (tomb sweeping day)",
           "partOfSpeech": "noun",
           "topic": "culture",
@@ -6839,7 +6839,7 @@
         },
         {
           "word": "这里",
-          "reading": "zhèlǐ",
+          "reading": "zhè lǐ",
           "meaning": "here",
           "partOfSpeech": "pronoun",
           "topic": "demonstratives",
@@ -6849,7 +6849,7 @@
         },
         {
           "word": "那里",
-          "reading": "nàlǐ",
+          "reading": "nà lǐ",
           "meaning": "there",
           "partOfSpeech": "pronoun",
           "topic": "demonstratives",
@@ -6889,7 +6889,7 @@
         },
         {
           "word": "感冒",
-          "reading": "gǎnmào",
+          "reading": "gǎn mào",
           "meaning": "to catch a cold",
           "partOfSpeech": "verb",
           "topic": "health",
@@ -6909,7 +6909,7 @@
         },
         {
           "word": "放弃",
-          "reading": "fàngqì",
+          "reading": "fàng qì",
           "meaning": "to give up",
           "partOfSpeech": "verb",
           "topic": "actions",
@@ -6919,7 +6919,7 @@
         },
         {
           "word": "害怕",
-          "reading": "hàipà",
+          "reading": "hài pà",
           "meaning": "to be afraid",
           "partOfSpeech": "verb",
           "topic": "emotions",
@@ -7019,12 +7019,12 @@
         },
         {
           "word": "喜欢",
-          "reading": "xǐ huān",
+          "reading": "xǐ huan",
           "meaning": "to like, to love",
           "partOfSpeech": "verb",
           "topic": "emotions",
           "exampleSentence": "我喜欢吃中国菜。",
-          "examplePinyin": "Wǒ xǐhuān chī Zhōngguó cài.",
+          "examplePinyin": "Wǒ xǐhuan chī Zhōngguó cài.",
           "exampleTranslation": "I like eating Chinese food."
         },
         {
@@ -7184,7 +7184,7 @@
           "partOfSpeech": "noun",
           "topic": "body",
           "exampleSentence": "她的眼睛里有泪水。",
-          "examplePinyin": "Tā de yǎnjīng lǐ yǒu lèishuǐ.",
+          "examplePinyin": "Tā de yǎnjing lǐ yǒu lèishuǐ.",
           "exampleTranslation": "There are tears in her eyes."
         },
         {
@@ -7209,7 +7209,7 @@
         },
         {
           "word": "哪里人",
-          "reading": "nǎlǐ rén",
+          "reading": "nǎ lǐ rén",
           "meaning": "where someone is from",
           "partOfSpeech": "expression",
           "topic": "social",
@@ -7279,7 +7279,7 @@
         },
         {
           "word": "微信",
-          "reading": "Wēixìn",
+          "reading": "Wēi xìn",
           "meaning": "WeChat",
           "partOfSpeech": "noun",
           "topic": "social",
@@ -7299,7 +7299,7 @@
         },
         {
           "word": "当然",
-          "reading": "dāngrán",
+          "reading": "dāng rán",
           "meaning": "of course",
           "partOfSpeech": "adverb",
           "topic": "grammar",
@@ -7309,7 +7309,7 @@
         },
         {
           "word": "帮忙",
-          "reading": "bāngmáng",
+          "reading": "bāng máng",
           "meaning": "to help",
           "partOfSpeech": "verb",
           "topic": "social",
@@ -7319,7 +7319,7 @@
         },
         {
           "word": "随时",
-          "reading": "suíshí",
+          "reading": "suí shí",
           "meaning": "anytime",
           "partOfSpeech": "adverb",
           "topic": "time",
@@ -7329,7 +7329,7 @@
         },
         {
           "word": "告诉",
-          "reading": "gàosu",
+          "reading": "gào su",
           "meaning": "to tell",
           "partOfSpeech": "verb",
           "topic": "social",
@@ -7401,7 +7401,7 @@
           "partOfSpeech": "noun",
           "topic": "food",
           "exampleSentence": "你最喜欢吃什么肉？",
-          "examplePinyin": "Nǐ zuì xǐhuān chī shénme ròu?",
+          "examplePinyin": "Nǐ zuì xǐhuan chī shénme ròu?",
           "exampleTranslation": "What meat do you like most?"
         },
         {
@@ -7456,7 +7456,7 @@
         },
         {
           "word": "意大利面",
-          "reading": "yìdàlì miàn",
+          "reading": "yì dà lì miàn",
           "meaning": "pasta, Italian noodles",
           "partOfSpeech": "noun",
           "topic": "food",
@@ -9639,7 +9639,7 @@
         },
         {
           "word": "体温",
-          "reading": "tǐwēn",
+          "reading": "tǐ wēn",
           "meaning": "body temperature",
           "partOfSpeech": "noun",
           "topic": "health",
@@ -9659,7 +9659,7 @@
         },
         {
           "word": "舒服",
-          "reading": "shūfu",
+          "reading": "shū fu",
           "meaning": "comfortable, well",
           "partOfSpeech": "adjective",
           "topic": "health",
@@ -9689,7 +9689,7 @@
         },
         {
           "word": "觉得",
-          "reading": "juéde",
+          "reading": "jué de",
           "meaning": "to feel, to think",
           "partOfSpeech": "verb",
           "topic": "emotions",
@@ -9719,7 +9719,7 @@
         },
         {
           "word": "还是",
-          "reading": "háishi",
+          "reading": "hái shi",
           "meaning": "had better, might as well",
           "partOfSpeech": "adverb",
           "topic": "grammar",
@@ -9729,7 +9729,7 @@
         },
         {
           "word": "怎么",
-          "reading": "zěnme",
+          "reading": "zěn me",
           "meaning": "how, why",
           "partOfSpeech": "pronoun",
           "topic": "questions",
@@ -9759,7 +9759,7 @@
         },
         {
           "word": "医生",
-          "reading": "yīshēng",
+          "reading": "yī shēng",
           "meaning": "doctor",
           "partOfSpeech": "noun",
           "topic": "people",
@@ -9829,7 +9829,7 @@
         },
         {
           "word": "感冒",
-          "reading": "gǎnmào",
+          "reading": "gǎn mào",
           "meaning": "to catch a cold",
           "partOfSpeech": "verb",
           "topic": "health",
@@ -9879,7 +9879,7 @@
         },
         {
           "word": "嗓子",
-          "reading": "sǎngzi",
+          "reading": "sǎng zi",
           "meaning": "throat",
           "partOfSpeech": "noun",
           "topic": "body",
@@ -9899,7 +9899,7 @@
         },
         {
           "word": "肚子",
-          "reading": "dùzi",
+          "reading": "dù zi",
           "meaning": "stomach, belly",
           "partOfSpeech": "noun",
           "topic": "body",
@@ -9909,7 +9909,7 @@
         },
         {
           "word": "咳嗽",
-          "reading": "késou",
+          "reading": "ké sou",
           "meaning": "to cough",
           "partOfSpeech": "verb",
           "topic": "health",
@@ -9919,7 +9919,7 @@
         },
         {
           "word": "过敏",
-          "reading": "guòmǐn",
+          "reading": "guò mǐn",
           "meaning": "allergy, to be allergic",
           "partOfSpeech": "verb",
           "topic": "health",
@@ -9949,7 +9949,7 @@
         },
         {
           "word": "医院",
-          "reading": "yīyuàn",
+          "reading": "yī yuàn",
           "meaning": "hospital",
           "partOfSpeech": "noun",
           "topic": "places",
@@ -9959,7 +9959,7 @@
         },
         {
           "word": "休息",
-          "reading": "xiūxi",
+          "reading": "xiū xi",
           "meaning": "to rest",
           "partOfSpeech": "verb",
           "topic": "daily life",
@@ -14386,7 +14386,7 @@
         },
         {
           "word": "一定",
-          "reading": "yí dìng",
+          "reading": "yī dìng",
           "meaning": "definitely, certainly; must be",
           "partOfSpeech": "adverb",
           "topic": "grammar",
@@ -14396,7 +14396,7 @@
         },
         {
           "word": "不一定",
-          "reading": "bù yí dìng",
+          "reading": "bù yī dìng",
           "meaning": "not necessarily",
           "partOfSpeech": "phrase",
           "topic": "grammar",

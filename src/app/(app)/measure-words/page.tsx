@@ -8,17 +8,18 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ColoredPinyin, PlayButton } from '@/components/tones/tone-pieces';
-import { makeRng, shuffle } from '@/lib/tones/utils';
+import { makeRng } from '@/lib/tones/utils';
 import { useMastery } from '@/hooks/use-mastery';
 import { pickWeight, weightedSample, type MasteryMap } from '@/lib/mastery';
 import { MEASURE_WORDS, MW_ITEMS, type MwItem } from '@/lib/measure-words/data';
+import { buildOptions } from '@/lib/measure-words/quiz';
 import { cn } from '@/lib/utils';
 
 const CLASSIFIER_KEYS = Object.keys(MEASURE_WORDS);
 const QUESTIONS_PER_SESSION = 20;
 
 interface Question extends MwItem {
-  options: string[]; // classifier keys, includes the correct one
+  options: string[]; // classifier keys, includes at least one correct one
 }
 
 // Bias toward nouns whose classifier you keep getting wrong.
@@ -30,13 +31,7 @@ function buildQuestions(seed: number, mastery: MasteryMap): Question[] {
     QUESTIONS_PER_SESSION,
     rng,
   );
-  return chosen.map((item) => {
-    const distractors = shuffle(
-      CLASSIFIER_KEYS.filter((k) => k !== item.classifier),
-      rng,
-    ).slice(0, 3);
-    return { ...item, options: shuffle([item.classifier, ...distractors], rng) };
-  });
+  return chosen.map((item) => ({ ...item, options: buildOptions(item, rng) }));
 }
 
 export default function MeasureWordsPage() {
@@ -75,13 +70,13 @@ export default function MeasureWordsPage() {
   const pick = (key: string) => {
     if (picked !== null) return;
     setPicked(key);
-    const isCorrect = key === q.classifier;
+    const isCorrect = q.classifiers.includes(key);
     if (isCorrect) setCorrect((n) => n + 1);
     recordActivity({ exercises: 1, correctAnswers: isCorrect ? 1 : 0, totalAnswers: 1 });
     record(q.noun.hanzi, isCorrect, {
       label: q.noun.hanzi,
       sublabel: q.noun.meaning,
-      group: MEASURE_WORDS[q.classifier].hanzi,
+      group: MEASURE_WORDS[q.classifiers[0]].hanzi,
     });
   };
 
@@ -136,7 +131,10 @@ export default function MeasureWordsPage() {
     );
   }
 
-  const phrase = `一${q.classifier}${q.noun.hanzi}`;
+  // Show the classifier the learner chose when it was right, else the taught one.
+  const shown = picked !== null && q.classifiers.includes(picked) ? picked : q.classifiers[0];
+  const phrase = `一${shown}${q.noun.hanzi}`;
+  const alsoCorrect = q.classifiers.filter((c) => c !== shown);
 
   return (
     <div className="p-5 md:p-8 max-w-2xl mx-auto space-y-6">
@@ -168,7 +166,7 @@ export default function MeasureWordsPage() {
         {q.options.map((key) => {
           const mw = MEASURE_WORDS[key];
           const revealed = picked !== null;
-          const isAnswer = key === q.classifier;
+          const isAnswer = q.classifiers.includes(key);
           const isPicked = key === picked;
           return (
             <button
@@ -197,8 +195,13 @@ export default function MeasureWordsPage() {
             <div className="text-2xl cjk font-bold">{phrase}</div>
             <ColoredPinyin word={phrase} />
             <div className="text-sm text-muted-foreground">
-              a {q.noun.meaning} ({MEASURE_WORDS[q.classifier].pinyin})
+              a {q.noun.meaning} ({MEASURE_WORDS[shown].pinyin})
             </div>
+            {alsoCorrect.length > 0 && (
+              <div className="text-sm text-muted-foreground">
+                also correct: <span className="cjk">{alsoCorrect.join('、')}</span>
+              </div>
+            )}
             <PlayButton text={phrase} label="Hear it" size="sm" />
           </CardContent>
         </Card>

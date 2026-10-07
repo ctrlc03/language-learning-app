@@ -41,7 +41,7 @@ button {
   padding: 16px 40px;
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 20px;
 }
 
 .brand {
@@ -81,11 +81,16 @@ button {
 .nav {
   display: flex;
   gap: 2px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  min-width: 0;
+}
+.nav-group {
+  position: relative;
 }
 .nav a,
 .nav button {
-  padding: 9px 16px;
+  padding: 9px 12px;
   font-family: var(--ui);
   font-size: 13px;
   font-weight: 500;
@@ -122,12 +127,58 @@ button {
 .nav button.active::after {
   content: '';
   position: absolute;
-  left: 14px;
-  right: 14px;
+  left: 12px;
+  right: 12px;
   bottom: -1px;
   height: 2px;
   background: var(--primary);
   border-radius: 2px;
+}
+.nav button .chev {
+  width: 5px;
+  height: 5px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 0.2s;
+  align-self: center;
+}
+.nav button[aria-expanded='true'] .chev {
+  transform: translateY(1px) rotate(225deg);
+}
+.nav a:focus-visible,
+.nav button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+
+/* Dropdown panel under a group button */
+.nav-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 70;
+  min-width: 190px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 6px;
+  background: var(--card);
+  border: 1px solid var(--card-edge);
+  border-radius: var(--radius);
+  box-shadow: 0 14px 34px -14px rgba(0, 0, 0, 0.45);
+}
+.nav-menu[hidden] {
+  display: none;
+}
+.nav-menu a {
+  padding: 9px 12px;
+}
+.nav-menu a.active {
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+}
+.nav-menu a.active::after {
+  display: none;
 }
 
 .topbar-right {
@@ -1266,42 +1317,80 @@ button {
   z-index: 60;
   /* Hidden on desktop; shown only in the mobile media query below. */
   display: none;
-  justify-content: safe center;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
+  padding-bottom: env(safe-area-inset-bottom);
   background: color-mix(in oklab, var(--paper) 92%, transparent);
   backdrop-filter: blur(8px);
   border-top: 1px solid var(--line);
 }
-.ink-mobile-nav::-webkit-scrollbar {
-  display: none;
+.mobile-nav-group {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
 }
-.ink-mobile-nav a {
-  flex: 0 0 auto;
-  min-width: 60px;
+.ink-mobile-nav > a,
+.ink-mobile-nav .mobile-nav-group > button {
+  flex: 1 1 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 3px;
-  padding: 10px 6px 12px;
+  padding: 10px 4px 12px;
   color: var(--ink-faint);
   text-decoration: none;
+  background: none;
+  border: none;
 }
-.ink-mobile-nav a .cjk {
+.ink-mobile-nav .cjk {
   font-family: var(--serif);
   font-weight: 700;
   font-size: 20px;
   line-height: 1;
 }
-.ink-mobile-nav a .lab {
+.ink-mobile-nav .lab {
   font-size: 9px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
-.ink-mobile-nav a.active {
+.ink-mobile-nav a.active,
+.ink-mobile-nav button.active {
   color: var(--primary);
+}
+.ink-mobile-nav button[aria-expanded='true'] {
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+}
+
+/* Sheet of a group's pages, opening upward from the bar */
+.mobile-nav-sheet {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 8px;
+  right: 8px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
+  gap: 4px;
+  padding: 8px;
+  background: var(--card);
+  border: 1px solid var(--card-edge);
+  border-radius: var(--radius);
+  box-shadow: 0 -10px 34px -14px rgba(0, 0, 0, 0.45);
+}
+.mobile-nav-sheet[hidden] {
+  display: none;
+}
+.mobile-nav-sheet a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 4px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  border-radius: var(--radius);
+}
+.mobile-nav-sheet a.active {
+  color: var(--primary);
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
 }
 
 /* scrollbar */
@@ -1316,6 +1405,46 @@ button {
   border-radius: 5px;
   border: 3px solid transparent;
   background-clip: content-box;
+}
+
+/* Tablet and small laptop: keep the header on one row by tightening it. */
+@media (max-width: 1100px) {
+  .topbar-inner {
+    padding: 16px 24px;
+    gap: 16px;
+  }
+  .nav a,
+  .nav button {
+    padding: 9px 10px;
+    gap: 6px;
+  }
+  .nav a.active::after,
+  .nav button.active::after {
+    left: 10px;
+    right: 10px;
+  }
+  .topbar-right {
+    gap: 10px;
+  }
+  .streak-chip small {
+    display: none;
+  }
+  .lang-toggle button {
+    padding: 7px 12px;
+  }
+}
+
+/* Between the bottom bar and a full row there is no room for everything: the tabs drop to a
+   second row of the header, which still sits in flow above the page. */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .topbar-inner {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+  .nav {
+    order: 3;
+    flex-basis: 100%;
+  }
 }
 
 @media (max-width: 920px) {

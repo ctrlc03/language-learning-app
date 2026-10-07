@@ -2,23 +2,32 @@
 
 import { useEffect, useRef } from 'react';
 import type { Conversation } from '@/types';
+import { Button } from '@/components/ui/button';
 import { MessageBubble } from './message-bubble';
 import { ChatInput } from './chat-input';
 
 interface ChatContainerProps {
   conversation: Conversation | null;
   isStreaming: boolean;
+  error: string | null;
   onSend: (message: string) => void;
+  onRetry: () => void;
 }
 
-export function ChatContainer({ conversation, isStreaming, onSend }: ChatContainerProps) {
+export function ChatContainer({
+  conversation,
+  isStreaming,
+  error,
+  onSend,
+  onRetry,
+}: ChatContainerProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [conversation?.messages]);
+  }, [conversation?.messages, error]);
 
   if (!conversation) {
     return (
@@ -57,6 +66,18 @@ export function ChatContainer({ conversation, isStreaming, onSend }: ChatContain
               <span className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce [animation-delay:150ms]" />
               <span className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce [animation-delay:300ms]" />
             </div>
+          </div>
+        )}
+
+        {error && (
+          <div
+            role="alert"
+            className="flex items-start justify-between gap-3 rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+          >
+            <p className="min-w-0 break-words">{error}</p>
+            <Button variant="outline" size="sm" onClick={onRetry} className="shrink-0">
+              Retry
+            </Button>
           </div>
         )}
       </div>

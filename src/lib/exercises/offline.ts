@@ -5,7 +5,12 @@
  */
 
 import { nanoid } from 'nanoid';
-import { chineseVocabulary, chineseLessons } from '@/data/chinese/vocabulary';
+import {
+  chineseVocabulary,
+  chineseLessons,
+  getCourseVocabulary,
+  getLessonVocabulary,
+} from '@/data/chinese/vocabulary';
 import { japaneseVocabulary } from '@/data/japanese/vocabulary';
 import { irodoriVocabulary } from '@/data/japanese/irodori-vocab';
 import { irodoriGrammar } from '@/data/japanese/irodori-grammar';
@@ -29,7 +34,19 @@ import type {
   FuriSegment,
 } from '@/types';
 import type { GrammarPattern } from '@/data/japanese/irodori-grammar';
-import { pinyinSegments, toPinyin } from '@/lib/language/pinyin';
+import {
+  normalizePinyin,
+  piecesPinyin,
+  pinyinSegments,
+  toPinyin,
+  wordPinyin,
+} from '@/lib/language/pinyin';
+import {
+  alternativeOrders,
+  isAcceptedOrder,
+  normalizeOrder,
+  segmentByPinyin,
+} from '@/lib/exercises/tiles';
 
 // Seeded random for reproducibility within a session
 function seededRandom(seed: number): () => number {
@@ -62,37 +79,15 @@ function getVocabulary(language: Language): VocabularyItem[] {
   return language === 'chinese' ? chineseVocabulary : japaneseVocabulary;
 }
 
-function filterByDifficulty(
+// Japanese has no lesson tracking, so its pool follows the difficulty setting.
+function filterJapaneseByDifficulty(
   items: VocabularyItem[],
-  language: Language,
   difficulty: DifficultyLevel,
 ): VocabularyItem[] {
   if (difficulty === 'beginner') {
-    if (language === 'chinese') {
-      return items.filter(
-        (v) =>
-          v.level === 'HSK 1' ||
-          v.level === 'Pinyin & Adjectives' ||
-          v.level === 'Time & Daily Schedule' ||
-          v.level === 'Family & Occupations',
-      );
-    }
     return items.filter((v) => v.level === 'JLPT N5' || v.level === 'Irodori Starter');
   }
   if (difficulty === 'intermediate') {
-    if (language === 'chinese') {
-      // Include all lesson-based and HSK 1-2 levels
-      return items.filter(
-        (v) =>
-          v.level === 'HSK 1' ||
-          v.level === 'HSK 2' ||
-          (v.level &&
-            !v.level.startsWith('HSK 3') &&
-            !v.level.startsWith('HSK 4') &&
-            !v.level.startsWith('HSK 5') &&
-            !v.level.startsWith('HSK 6')),
-      );
-    }
     return items.filter(
       (v) =>
         v.level === 'JLPT N5' ||
@@ -101,8 +96,37 @@ function filterByDifficulty(
         v.level === 'Irodori Elementary 1',
     );
   }
-  // advanced: all items
   return items;
+}
+
+// Chinese practice covers the course so far, whatever the difficulty setting:
+// every lesson up to the learner's current one plus the HSK 1 core.
+function scopeVocabulary(
+  language: Language,
+  difficulty: DifficultyLevel,
+  currentLesson: number,
+): VocabularyItem[] {
+  return language === 'chinese'
+    ? getCourseVocabulary(currentLesson)
+    : filterJapaneseByDifficulty(japaneseVocabulary, difficulty);
+}
+
+/** The Chinese lesson a chapter key (a lesson title) names. */
+function chapterLesson(lessonFilter: string): number | undefined {
+  return chineseLessons.find((l) => l.title === lessonFilter)?.lesson;
+}
+
+// Words of the chosen chapter; empty when the key names no chapter of this language.
+function chapterVocabulary(language: Language, lessonFilter: string): VocabularyItem[] {
+  if (language === 'chinese') {
+    const lesson = chapterLesson(lessonFilter);
+    return lesson === undefined ? [] : getLessonVocabulary(lesson);
+  }
+  // Japanese chapter keys are "<Irodori level>|<lesson>", e.g. "Irodori Starter|3".
+  if (!lessonFilter.includes('|')) return [];
+  const [level, lessonNum] = lessonFilter.split('|');
+  const num = parseInt(lessonNum, 10);
+  return irodoriVocabulary.filter((v) => v.level === level && v.lesson === num);
 }
 
 // Offline exercise types (excludes 'translation' which needs API)
@@ -121,75 +145,105 @@ export function isOfflineExerciseType(type: ExerciseType): boolean {
   return OFFLINE_EXERCISE_TYPES.includes(type);
 }
 
+export interface OfflineExerciseRequest {
+  language: Language;
+  difficulty: DifficultyLevel;
+  type: ExerciseType;
+  /** Source ids (`Exercise.sourceId`) already shown; unseen items are preferred. */
+  seen?: string[];
+  /** Chapter key: a Chinese lesson title, or "<Irodori level>|<lesson>" for Japanese. */
+  lessonFilter?: string;
+  /** Chinese lesson the learner is on; Chinese practice draws from lessons up to it. */
+  currentLesson: number;
+  /** Favour words from the current lesson and the two before it (ignored in a chapter). */
+  focusRecent?: boolean;
+}
+
+// What a generator works from. `pool` is everything in scope (distractors and
+// sentence banks draw on it); `targets` are the candidates for the exercise's
+// subject: unseen items first, narrowed to recent lessons on request.
+interface Scope {
+  pool: VocabularyItem[];
+  targets: VocabularyItem[];
+  seen: Set<string>;
+}
+
 /**
  * Generate an offline exercise from static vocabulary data.
  */
-export function getOfflineExercise(
-  language: Language,
-  difficulty: DifficultyLevel,
-  type: ExerciseType,
-  seen: string[] = [],
-  lessonFilter?: string,
-): Exercise | null {
+export function getOfflineExercise(req: OfflineExerciseRequest): Exercise | null {
+  const { language, difficulty, type, seen = [], lessonFilter, currentLesson } = req;
   const allVocab = getVocabulary(language);
-  let vocab = filterByDifficulty(allVocab, language, difficulty);
+  let pool = scopeVocabulary(language, difficulty, currentLesson);
 
-  // If a specific lesson is selected, filter vocab to that lesson only
+  // A chosen chapter replaces the course pool, when it has enough words to quiz on.
   if (lessonFilter) {
-    let lessonVocab: VocabularyItem[];
-    // Japanese Irodori lesson filter: "Irodori Starter|3" format
-    if (lessonFilter.includes('|')) {
-      const [level, lessonNum] = lessonFilter.split('|');
-      const num = parseInt(lessonNum, 10);
-      lessonVocab = irodoriVocabulary.filter((v) => v.level === level && v.lesson === num);
-    } else {
-      lessonVocab = allVocab.filter((v) => v.level === lessonFilter);
-    }
-    if (lessonVocab.length >= 4) {
-      vocab = lessonVocab;
-    }
+    const chapter = chapterVocabulary(language, lessonFilter);
+    if (chapter.length >= 4) pool = chapter;
   }
 
-  if (vocab.length < 4) return null;
+  if (pool.length < 4) return null;
 
   const seed = Date.now() + seen.length * 7919;
   const rng = seededRandom(seed);
 
-  // Filter out recently seen items
   const seenSet = new Set(seen);
-  const available = vocab.filter((v) => !seenSet.has(v.id));
-  const pool = available.length >= 4 ? available : vocab;
+  const fresh = pool.filter((v) => !seenSet.has(v.id));
+  let targets = fresh.length > 0 ? fresh : pool;
+
+  if (req.focusRecent && language === 'chinese' && !lessonFilter) {
+    const inWindow = (v: VocabularyItem) =>
+      v.lessons?.some((n) => n > currentLesson - 3 && n <= currentLesson) ?? false;
+    const recentFresh = targets.filter(inWindow);
+    if (recentFresh.length > 0 && pool.filter(inWindow).length >= 4) targets = recentFresh;
+  }
+
+  const scope: Scope = { pool, targets, seen: seenSet };
 
   switch (type) {
     case 'multiple-choice':
-      return generateMultipleChoice(pool, allVocab, language, difficulty, rng);
+      return generateMultipleChoice(scope, allVocab, language, difficulty, rng);
     case 'sentence-mc':
-      return generateSentenceMC(pool, allVocab, language, difficulty, rng, lessonFilter);
+      return generateSentenceMC(scope, allVocab, language, difficulty, rng, lessonFilter);
     case 'fill-in-blank':
-      return generateFillInBlank(pool, language, difficulty, rng);
+      return generateFillInBlank(scope, language, difficulty, rng);
     case 'sentence-construction':
-      return generateSentenceConstruction(pool, language, difficulty, rng);
+      return generateSentenceConstruction(scope, language, difficulty, rng);
     case 'character-recognition':
-      return generateCharacterRecognition(pool, allVocab, language, difficulty, rng);
+      return generateCharacterRecognition(scope, allVocab, language, difficulty, rng);
     case 'grammar-drill':
-      return generateGrammarDrill(pool, language, difficulty, rng);
+      return generateGrammarDrill(scope, language, difficulty, rng);
     case 'dialogue-reading':
-      return generateDialogueReading(language, difficulty, rng, seenSet, lessonFilter);
+      return generateDialogueReading(
+        language,
+        difficulty,
+        rng,
+        seenSet,
+        lessonFilter,
+        currentLesson,
+      );
     case 'dialogue-comprehension':
-      return generateDialogueComprehension(language, difficulty, rng, seenSet, lessonFilter);
+      return generateDialogueComprehension(
+        language,
+        difficulty,
+        rng,
+        seenSet,
+        lessonFilter,
+        currentLesson,
+      );
     default:
       return null;
   }
 }
 
 function generateMultipleChoice(
-  pool: VocabularyItem[],
+  { targets }: Scope,
   allVocab: VocabularyItem[],
   language: Language,
   difficulty: DifficultyLevel,
   rng: () => number,
 ): Exercise {
-  const target = pickRandom(pool, rng);
+  const target = pickRandom(targets, rng);
 
   // Pick 3 distractors from the same level or nearby
   const distractors = allVocab
@@ -223,6 +277,7 @@ function generateMultipleChoice(
 
   return {
     id: target.id + '_mc_' + nanoid(6),
+    sourceId: target.id,
     type: 'multiple-choice',
     language,
     difficulty,
@@ -261,6 +316,7 @@ const japaneseSentenceBank: JpSentence[] = japaneseDialogues.flatMap((d) =>
 function generateJapaneseSentenceMC(
   difficulty: DifficultyLevel,
   rng: () => number,
+  seen: Set<string>,
   lessonFilter?: string,
 ): Exercise | null {
   if (japaneseSentenceBank.length < 4) return null;
@@ -275,7 +331,8 @@ function generateJapaneseSentenceMC(
     if (scoped.length > 0) targetPool = scoped;
   }
 
-  const target = pickRandom(targetPool, rng);
+  const unseen = targetPool.filter((s) => !seen.has(s.id));
+  const target = pickRandom(unseen.length > 0 ? unseen : targetPool, rng);
   const distractors = japaneseSentenceBank
     .filter((s) => s.id !== target.id && s.translation !== target.translation)
     .sort(() => rng() - 0.5)
@@ -324,6 +381,7 @@ function generateJapaneseSentenceMC(
 
   return {
     id: target.id + '_jsmc_' + nanoid(6),
+    sourceId: target.id,
     type: 'sentence-mc',
     language: 'japanese',
     difficulty,
@@ -335,7 +393,7 @@ function generateJapaneseSentenceMC(
 }
 
 function generateSentenceMC(
-  pool: VocabularyItem[],
+  scope: Scope,
   allVocab: VocabularyItem[],
   language: Language,
   difficulty: DifficultyLevel,
@@ -346,20 +404,22 @@ function generateSentenceMC(
   // with furigana + translation, so they stay sentence-level (not single words)
   // and render with readings even when scoped to a chapter.
   if (language === 'japanese') {
-    const ex = generateJapaneseSentenceMC(difficulty, rng, lessonFilter);
+    const ex = generateJapaneseSentenceMC(difficulty, rng, scope.seen, lessonFilter);
     if (ex) return ex;
     // else fall through to the vocab-based path below
   }
 
   // Find items with both example sentence and translation
-  const withSentences = pool.filter((v) => v.exampleSentence && v.exampleTranslation);
+  const hasSentence = (v: VocabularyItem) => Boolean(v.exampleSentence && v.exampleTranslation);
+  const withSentences = scope.pool.filter(hasSentence);
+  const candidates = scope.targets.filter(hasSentence);
 
-  if (withSentences.length < 4) {
+  if (withSentences.length < 4 || candidates.length === 0) {
     // Not enough sentence data, fall back to word-level MC
-    return generateMultipleChoice(pool, allVocab, language, difficulty, rng);
+    return generateMultipleChoice(scope, allVocab, language, difficulty, rng);
   }
 
-  const target = pickRandom(withSentences, rng);
+  const target = pickRandom(candidates, rng);
 
   // Pick 3 distractors — other items with distinct sentences and translations
   const distractors = withSentences
@@ -373,7 +433,7 @@ function generateSentenceMC(
     .slice(0, 3);
 
   if (distractors.length < 3) {
-    return generateMultipleChoice(pool, allVocab, language, difficulty, rng);
+    return generateMultipleChoice(scope, allVocab, language, difficulty, rng);
   }
 
   const correctIndex = Math.floor(rng() * 4);
@@ -443,6 +503,7 @@ function generateSentenceMC(
 
   return {
     id: target.id + '_smc_' + nanoid(6),
+    sourceId: target.id,
     type: 'sentence-mc',
     language,
     difficulty,
@@ -454,21 +515,27 @@ function generateSentenceMC(
 }
 
 function generateFillInBlank(
-  pool: VocabularyItem[],
+  scope: Scope,
   language: Language,
   difficulty: DifficultyLevel,
   rng: () => number,
 ): Exercise {
+  const { pool, targets } = scope;
   // Find items with example sentences
-  const withSentences = pool.filter((v) => v.exampleSentence);
-  const target = withSentences.length > 0 ? pickRandom(withSentences, rng) : pickRandom(pool, rng);
+  const withSentences = targets.filter((v) => v.exampleSentence);
+  const target = pickRandom(withSentences.length > 0 ? withSentences : targets, rng);
 
   if (target.exampleSentence) {
-    // Replace the target word in the sentence with a blank
-    const sentence = target.exampleSentence.replace(target.word, '___');
+    // Chinese blanks the word only where it stands as a word: 天 is left alone
+    // inside 今天 and 天气, and a word that only occurs inside longer words
+    // falls back to the definition prompt below.
+    const blanked =
+      language === 'chinese'
+        ? blankChineseWord(target)
+        : { sentence: target.exampleSentence.replace(target.word, '___'), pinyin: undefined };
 
     // If the word wasn't found in the sentence (different form), create a simpler fill-in
-    if (!sentence.includes('___')) {
+    if (!blanked || !blanked.sentence.includes('___')) {
       return createSimpleFillInBlank(target, pool, language, difficulty, rng);
     }
 
@@ -486,32 +553,99 @@ function generateFillInBlank(
 
     const data: FillInBlankData = {
       type: 'fill-in-blank',
-      sentence,
+      sentence: blanked.sentence,
       // Reading line for the blanked sentence so beginners can read the
-      // context, not just the missing word (___ passes through unchanged).
-      sentencePinyin: language === 'chinese' ? toPinyin(sentence) : undefined,
+      // context, not just the missing word; it keeps the blank.
+      sentencePinyin: blanked.pinyin,
       translation: target.exampleTranslation,
       answer: target.word,
       acceptableAnswers: [target.word],
       hint: target.reading,
       options: options.slice(0, 4),
+      // Shown once the learner has answered; before that they would give the answer away.
       optionReadings: optionReadings.slice(0, 4),
       correctIndex,
     };
 
     return {
       id: target.id + '_fb_' + nanoid(6),
+      sourceId: target.id,
       type: 'fill-in-blank',
       language,
       difficulty,
       question: `Choose the word that completes the sentence.`,
-      instruction: `Meaning: ${target.meaning} (${target.reading})`,
+      instruction: `Meaning: ${target.meaning}`,
       data,
       createdAt: Date.now(),
     };
   }
 
   return createSimpleFillInBlank(target, pool, language, difficulty, rng);
+}
+
+// The example sentence with every whole-word occurrence of the target replaced
+// by a blank, plus its pinyin line with the same blanks. Null when the word only
+// occurs inside longer words (or not at all).
+function blankChineseWord(target: VocabularyItem): { sentence: string; pinyin?: string } | null {
+  const text = target.exampleSentence ?? '';
+  const word = normalizeOrder(target.word);
+  if (!word) return null;
+
+  // Word boundaries: the course pinyin where it lines up, else the dictionary cut.
+  const seg = target.examplePinyin ? segmentByPinyin(text, target.examplePinyin) : null;
+  const tiles = seg ? seg.words : segmentChinese(normalizeOrder(text));
+
+  // Runs of consecutive tiles that spell the whole word; runStart maps each tile of a run to its first tile.
+  const runStart = new Map<number, number>();
+  let i = 0;
+  while (i < tiles.length) {
+    let end = i;
+    let joined = '';
+    while (end < tiles.length && joined.length < word.length) joined += tiles[end++];
+    if (joined === word) {
+      for (let t = i; t < end; t++) runStart.set(t, i);
+      i = end;
+    } else {
+      i++;
+    }
+  }
+  if (runStart.size === 0) return null;
+
+  const tileOfChar = tiles.flatMap((tile, index) => Array.from(tile, () => index));
+  let sentence = '';
+  let k = 0;
+  let lastRun = -1;
+  for (const ch of Array.from(text)) {
+    if (normalizeOrder(ch) === '') {
+      sentence += ch;
+      continue;
+    }
+    const run = runStart.get(tileOfChar[k++]);
+    if (run === undefined) {
+      sentence += ch;
+      lastRun = -1;
+    } else if (run !== lastRun) {
+      sentence += '___';
+      lastRun = run;
+    }
+  }
+  if (k !== tileOfChar.length || normalizeOrder(sentence.replace(/___/g, '')) === '') return null;
+
+  if (!seg) return { sentence, pinyin: toPinyin(sentence) || undefined };
+
+  const parts: string[] = [];
+  lastRun = -1;
+  tiles.forEach((_, t) => {
+    const run = runStart.get(t);
+    if (run === undefined) {
+      parts.push(seg.readings[t]);
+      lastRun = -1;
+    } else if (run !== lastRun) {
+      parts.push('___');
+      lastRun = run;
+    }
+  });
+  return { sentence, pinyin: parts.join(' ') };
 }
 
 function createSimpleFillInBlank(
@@ -546,6 +680,7 @@ function createSimpleFillInBlank(
 
   return {
     id: target.id + '_fb_' + nanoid(6),
+    sourceId: target.id,
     type: 'fill-in-blank',
     language,
     difficulty,
@@ -556,17 +691,21 @@ function createSimpleFillInBlank(
   };
 }
 
+// Most tiles a pinyin-cut sentence may have; past that the dictionary cut (which
+// merges stray single characters) keeps the puzzle manageable.
+const MAX_TILES = 9;
+
 function generateSentenceConstruction(
-  pool: VocabularyItem[],
+  scope: Scope,
   language: Language,
   difficulty: DifficultyLevel,
   rng: () => number,
 ): Exercise {
   // Find items with example sentences
-  const withSentences = pool.filter((v) => v.exampleSentence && v.exampleTranslation);
+  const withSentences = scope.targets.filter((v) => v.exampleSentence && v.exampleTranslation);
   if (withSentences.length === 0) {
     // Fallback to multiple choice
-    return generateMultipleChoice(pool, getVocabulary(language), language, difficulty, rng);
+    return generateMultipleChoice(scope, getVocabulary(language), language, difficulty, rng);
   }
 
   const target = pickRandom(withSentences, rng);
@@ -574,9 +713,18 @@ function generateSentenceConstruction(
 
   // Split sentence into words/segments
   let words: string[];
+  let readings: string[] | null = null;
   if (language === 'chinese') {
-    // Chinese: dictionary-based segmentation along real word boundaries
-    words = splitChineseSentence(sentence);
+    // Cut along the course pinyin where it lines up (those are the words the
+    // learner was taught, with their course readings); otherwise along
+    // dictionary word boundaries.
+    const seg = target.examplePinyin ? segmentByPinyin(sentence, target.examplePinyin) : null;
+    if (seg && seg.words.length >= 3 && seg.words.length <= MAX_TILES) {
+      words = seg.words;
+      readings = seg.readings;
+    } else {
+      words = splitChineseSentence(sentence);
+    }
   } else {
     // Japanese: split by particles and word boundaries
     words = splitJapaneseSentence(sentence);
@@ -584,27 +732,36 @@ function generateSentenceConstruction(
 
   if (words.length < 3) {
     // Too short, try another approach
-    return generateMultipleChoice(pool, getVocabulary(language), language, difficulty, rng);
+    return generateMultipleChoice(scope, getVocabulary(language), language, difficulty, rng);
   }
 
   const correctOrder = words.join('');
-  const shuffledWords = shuffle(words, rng);
+  // A time word may also follow the subject: 昨天我… ≡ 我昨天…
+  const acceptableOrders = language === 'chinese' ? alternativeOrders(words) : [];
+  const accepted = { correctOrder, acceptableOrders };
 
-  // Prevent the shuffled order from being the same as correct
-  if (shuffledWords.join('') === correctOrder && words.length > 2) {
-    [shuffledWords[0], shuffledWords[shuffledWords.length - 1]] = [
-      shuffledWords[shuffledWords.length - 1],
-      shuffledWords[0],
-    ];
+  // Shuffle tile positions (readings stay attached) and never hand over a
+  // sentence that is already right.
+  let order = shuffle(
+    words.map((_, i) => i),
+    rng,
+  );
+  for (let attempt = 0; attempt < 8; attempt++) {
+    if (!isAcceptedOrder(order.map((i) => words[i]).join(''), accepted)) break;
+    order = shuffle(order, rng);
   }
+
+  // Pinyin per tile so beginners can read the pieces they're arranging; lower
+  // case, so no tile gives away where the sentence starts. Tiles not cut along
+  // the course pinyin are read in the sentence's context (了 le, not liǎo).
+  const tileReadings = language === 'chinese' ? (readings ?? piecesPinyin(words)) : null;
 
   const data: SentenceConstructionData = {
     type: 'sentence-construction',
-    words: shuffledWords,
-    // Pinyin per tile so beginners can read the pieces they're arranging
-    wordReadings:
-      language === 'chinese' ? shuffledWords.map((w) => toPinyin(w) || null) : undefined,
+    words: order.map((i) => words[i]),
+    wordReadings: tileReadings ? order.map((i) => tileReadings[i] || null) : undefined,
     correctOrder,
+    acceptableOrders: acceptableOrders.length > 0 ? acceptableOrders : undefined,
     correctPinyin:
       language === 'chinese' ? (target.examplePinyin ?? toPinyin(correctOrder)) : undefined,
     translation: target.exampleTranslation || target.meaning,
@@ -612,6 +769,7 @@ function generateSentenceConstruction(
 
   return {
     id: target.id + '_sc_' + nanoid(6),
+    sourceId: target.id,
     type: 'sentence-construction',
     language,
     difficulty,
@@ -629,10 +787,9 @@ const chineseWordSet: Set<string> = new Set(
 );
 const maxChineseWordLength = Math.max(2, ...[...chineseWordSet].map((w) => w.length));
 
-function splitChineseSentence(sentence: string): string[] {
-  // Remove punctuation, then segment by greedy longest match against the
-  // vocabulary dictionary; unknown characters become single-char segments.
-  const clean = sentence.replace(/[，。！？、；：""''（）《》【】\s]/g, '');
+// Greedy longest-match cut of punctuation-free text along dictionary words;
+// unknown characters become single-char segments.
+function segmentChinese(clean: string): string[] {
   const segments: string[] = [];
 
   let i = 0;
@@ -654,6 +811,12 @@ function splitChineseSentence(sentence: string): string[] {
       i++;
     }
   }
+
+  return segments;
+}
+
+function splitChineseSentence(sentence: string): string[] {
+  const segments = segmentChinese(normalizeOrder(sentence));
 
   // Merge stray single characters into the previous segment so tiles stay
   // meaningful, but keep the total count manageable.
@@ -708,13 +871,13 @@ function splitJapaneseSentence(sentence: string): string[] {
 }
 
 function generateCharacterRecognition(
-  pool: VocabularyItem[],
+  { targets }: Scope,
   allVocab: VocabularyItem[],
   language: Language,
   difficulty: DifficultyLevel,
   rng: () => number,
 ): Exercise {
-  const target = pickRandom(pool, rng);
+  const target = pickRandom(targets, rng);
 
   // Pick 3 distractors
   const distractors = allVocab
@@ -737,6 +900,7 @@ function generateCharacterRecognition(
 
   return {
     id: target.id + '_cr_' + nanoid(6),
+    sourceId: target.id,
     type: 'character-recognition',
     language,
     difficulty,
@@ -748,18 +912,18 @@ function generateCharacterRecognition(
 }
 
 function generateGrammarDrill(
-  pool: VocabularyItem[],
+  scope: Scope,
   language: Language,
   difficulty: DifficultyLevel,
   rng: () => number,
 ): Exercise {
   // For Japanese, use Irodori grammar patterns if available
   if (language === 'japanese' && irodoriGrammar.length > 0) {
-    return generateGrammarDrillFromPatterns(irodoriGrammar, language, difficulty, rng);
+    return generateGrammarDrillFromPatterns(irodoriGrammar, scope, language, difficulty, rng);
   }
 
   // For Chinese or when no patterns available, generate from vocab
-  return generateGrammarDrillFromVocab(pool, language, difficulty, rng);
+  return generateGrammarDrillFromVocab(scope, language, difficulty, rng);
 }
 
 /**
@@ -853,8 +1017,11 @@ const PARTICLE_DISTRACTORS: Record<string, string[]> = {
   たく: ['ます', 'ない', 'た', 'ている', 'てください'],
 };
 
+const grammarPatternId = (p: GrammarPattern) => `${p.level}|${p.lesson}|${p.pattern}`;
+
 function generateGrammarDrillFromPatterns(
   patterns: GrammarPattern[],
+  scope: Scope,
   language: Language,
   difficulty: DifficultyLevel,
   rng: () => number,
@@ -862,11 +1029,15 @@ function generateGrammarDrillFromPatterns(
   // Filter patterns with examples — pick the first non-multiline example line
   const withExamples = patterns.filter((p) => p.example && p.example.length > 0);
   if (withExamples.length === 0) {
-    return generateGrammarDrillFromVocab(getVocabulary(language), language, difficulty, rng);
+    return generateGrammarDrillFromVocab(scope, language, difficulty, rng);
   }
 
   // Shuffle patterns and try each until we produce a good exercise
-  const shuffled = shuffle(withExamples, rng);
+  // (stable sort: patterns not shown yet come first, each group in shuffled order)
+  const shuffled = shuffle(withExamples, rng).sort(
+    (a, b) =>
+      Number(scope.seen.has(grammarPatternId(a))) - Number(scope.seen.has(grammarPatternId(b))),
+  );
 
   for (const pattern of shuffled) {
     // Many Irodori examples have multiple lines separated by \r\n — pick one at random
@@ -962,6 +1133,7 @@ function generateGrammarDrillFromPatterns(
 
     return {
       id: 'gram_' + nanoid(8),
+      sourceId: grammarPatternId(pattern),
       type: 'grammar-drill',
       language,
       difficulty,
@@ -973,56 +1145,108 @@ function generateGrammarDrillFromPatterns(
   }
 
   // All patterns failed — fall back to vocab-based grammar drill
-  return generateGrammarDrillFromVocab(getVocabulary(language), language, difficulty, rng);
+  return generateGrammarDrillFromVocab(scope, language, difficulty, rng);
+}
+
+// The Chinese drills are filled from hand-picked words. Part of speech alone is
+// too loose in the vocabulary data (永, 每 and 相 are tagged adjectives; 秒 is a
+// noun), so a frame like 太___了 or 没有___ only takes words that make a natural
+// sentence in it.
+const GRADABLE_ADJECTIVES =
+  '大 小 好 饿 渴 忙 累 好看 好听 好吃 好喝 好玩 漂亮 帅 多 少 远 近 长 短 高 矮 低 胖 瘦 厚 便宜 贵 热 冷 新 慢 辣 甜 酸 咸 苦 难 棒 舒服 疼 晚 早 聪明 可爱 快乐 高兴 暖和 凉快 难过 满意 方便 有名 勇敢 奇怪 幸运'.split(
+    ' ',
+  );
+// Verbs and adjectives that follow 不 as they stand (不去, 不对), besides the gradable adjectives.
+const NEGATABLE_WORDS =
+  '去 来 吃 喝 看 听 说 写 读 学习 买 卖 做 住 坐 走 玩 睡觉 喜欢 想 爱 懂 知道 认识 是 回 开 唱 吃饭 说话 起床 上班 上课 看书 跑步 打算 同意 担心 觉得 明白 对'.split(
+    ' ',
+  );
+// Concrete nouns that 没有 takes and that no adverb (很, 也, 都) can precede on its own.
+const CONCRETE_NOUNS =
+  '手机 钱 面包 西瓜 苹果 书 时间 朋友 哥哥 姐姐 弟弟 妹妹 车 电脑 米饭 咖啡 茶 问题 电视 房子 衣服 桌子 椅子 牛奶 鸡蛋 面条 水果 蔬菜 鱼 汽车 自行车 照片 地图 药 孩子 男朋友 女朋友 水 肉 狗 猫'.split(
+    ' ',
+  );
+
+const isGradableAdjective = (v: VocabularyItem) =>
+  v.partOfSpeech === 'adjective' && GRADABLE_ADJECTIVES.includes(v.word);
+
+// "to eat; to have a meal" → "eat": the first sense, without the infinitive marker.
+function briefMeaning(w: VocabularyItem): string {
+  return w.meaning.split(/[;,(]/)[0].trim().replace(/^to /, '');
+}
+
+interface DrillTemplate {
+  pattern: string;
+  template: (w: VocabularyItem) => string;
+  blank: (w: VocabularyItem) => string;
+  answer: (w: VocabularyItem) => string;
+  pinyin: (w: VocabularyItem) => string;
+  translation: (w: VocabularyItem) => string;
+  filter: (v: VocabularyItem) => boolean;
+  /**
+   * Chinese: choices that are wrong in the blank for every word `filter` admits.
+   * Absent when the answer is the word itself: any other word of its kind fits
+   * just as well, so the learner types it instead of choosing.
+   */
+  distractors?: string[];
+  /** Chinese: other typed answers that are also right in the blank. */
+  alsoAccept?: string[];
 }
 
 function generateGrammarDrillFromVocab(
-  pool: VocabularyItem[],
+  scope: Scope,
   language: Language,
   difficulty: DifficultyLevel,
   rng: () => number,
 ): Exercise {
   // Chinese grammar patterns
-  const chineseGrammarPatterns = [
+  const chineseGrammarPatterns: DrillTemplate[] = [
     {
       pattern: '太...了',
-      template: (w: VocabularyItem) => `太${w.word}了`,
-      blank: (w: VocabularyItem) => `太___了`,
-      answer: (w: VocabularyItem) => w.word,
-      pinyin: (w: VocabularyItem) => `tài ___ le`,
-      translation: (w: VocabularyItem) => `too ${w.meaning}`,
-      filter: (v: VocabularyItem) => v.partOfSpeech === 'adjective',
+      template: (w) => `太${w.word}了`,
+      blank: () => `太___了`,
+      answer: (w) => w.word,
+      pinyin: () => `tài ___ le`,
+      translation: (w) => `too ${briefMeaning(w)}`,
+      filter: isGradableAdjective,
     },
     {
       pattern: '很 + adj',
-      template: (w: VocabularyItem) => `很${w.word}`,
-      blank: (w: VocabularyItem) => `很___`,
-      answer: (w: VocabularyItem) => w.word,
-      pinyin: (w: VocabularyItem) => `hěn ___`,
-      translation: (w: VocabularyItem) => `very ${w.meaning}`,
-      filter: (v: VocabularyItem) => v.partOfSpeech === 'adjective',
+      template: (w) => `很${w.word}`,
+      blank: () => `很___`,
+      answer: (w) => w.word,
+      pinyin: () => `hěn ___`,
+      translation: (w) => `very ${briefMeaning(w)}`,
+      filter: isGradableAdjective,
     },
     {
       pattern: '不 + verb/adj',
-      template: (w: VocabularyItem) => `不${w.word}`,
-      blank: (w: VocabularyItem) => `___${w.word}`,
-      answer: (_w: VocabularyItem) => '不',
-      pinyin: (w: VocabularyItem) => `___ ${w.reading}`,
-      translation: (w: VocabularyItem) => `not ${w.meaning}`,
-      filter: (v: VocabularyItem) => v.partOfSpeech === 'verb' || v.partOfSpeech === 'adjective',
+      template: (w) => `不${w.word}`,
+      blank: (w) => `___${w.word}`,
+      answer: () => '不',
+      pinyin: (w) => `___ ${w.reading}`,
+      translation: (w) => `not ${briefMeaning(w)}`,
+      filter: (v) =>
+        isGradableAdjective(v) ||
+        (NEGATABLE_WORDS.includes(v.word) &&
+          (v.partOfSpeech === 'verb' || v.partOfSpeech === 'adjective')),
+      // Particles that only follow a word can never open one: wrong before any verb or adjective.
+      distractors: ['吗', '吧', '了', '的', '呢'],
     },
     {
       pattern: '没有 + noun',
-      template: (w: VocabularyItem) => `没有${w.word}`,
-      blank: (w: VocabularyItem) => `___${w.word}`,
-      answer: (_w: VocabularyItem) => '没有',
-      pinyin: (w: VocabularyItem) => `___ ${w.reading}`,
-      translation: (w: VocabularyItem) => `don't have ${w.meaning}`,
-      filter: (v: VocabularyItem) => v.partOfSpeech === 'noun',
+      template: (w) => `没有${w.word}`,
+      blank: (w) => `___${w.word}`,
+      answer: () => '没有',
+      pinyin: (w) => `___ ${w.reading}`,
+      translation: (w) => `don't have ${briefMeaning(w)}`,
+      filter: (v) => v.partOfSpeech === 'noun' && CONCRETE_NOUNS.includes(v.word),
+      distractors: ['不', '也', '都'],
+      alsoAccept: ['没'],
     },
   ];
 
-  const japaneseGrammarPatterns = [
+  const japaneseGrammarPatterns: DrillTemplate[] = [
     // --- Original patterns ---
     {
       pattern: 'N + です',
@@ -1180,18 +1404,14 @@ function generateGrammarDrillFromVocab(
     },
   ];
 
-  // Plausible wrong answers for Chinese function-word blanks (不/没有 patterns)
-  const CHINESE_FUNCTION_DISTRACTORS: Record<string, string[]> = {
-    不: ['没', '没有', '很', '太', '也'],
-    没有: ['不', '很', '也', '都', '太'],
-  };
-
   const grammarPatterns = language === 'chinese' ? chineseGrammarPatterns : japaneseGrammarPatterns;
 
   // Try each pattern until one works
   const shuffledPatterns = shuffle(grammarPatterns, rng);
   for (const gp of shuffledPatterns) {
-    const matching = pool.filter(gp.filter);
+    // A frame with no fresh word is skipped (the fallback quiz takes a fresh one)
+    // rather than repeating a word already shown.
+    const matching = scope.targets.filter(gp.filter);
     if (matching.length === 0) continue;
 
     const word = pickRandom(matching, rng);
@@ -1199,19 +1419,23 @@ function generateGrammarDrillFromVocab(
     const answer = gp.answer(word);
 
     // Build distractor options for multiple choice
-    // For particle/grammar answers, use the category-aware distractor pool
-    const functionWordPool = PARTICLE_DISTRACTORS[answer] ?? CHINESE_FUNCTION_DISTRACTORS[answer];
     let uniqueDistractors: string[] = [];
-    if (answer !== word.word && functionWordPool) {
-      uniqueDistractors = shuffle(functionWordPool, rng).slice(0, 3);
-    } else {
-      // For word-based answers, use other vocab words
-      const otherWords = pool
-        .filter((v) => v.id !== word.id && v.word !== answer && gp.filter(v))
-        .sort(() => rng() - 0.5)
-        .slice(0, 3)
-        .map((v) => (answer === word.word ? v.word : v.word.slice(0, answer.length) || v.word));
-      uniqueDistractors = [...new Set(otherWords.filter((d) => d !== answer))].slice(0, 3);
+    const particlePool = PARTICLE_DISTRACTORS[answer];
+    if (gp.distractors) {
+      uniqueDistractors = shuffle(gp.distractors, rng).slice(0, 3);
+    } else if (language === 'japanese') {
+      if (particlePool) {
+        // For particle/grammar answers, use the category-aware distractor pool
+        uniqueDistractors = shuffle(particlePool, rng).slice(0, 3);
+      } else {
+        // For word-based answers, use other vocab words
+        const otherWords = scope.pool
+          .filter((v) => v.id !== word.id && v.word !== answer && gp.filter(v))
+          .sort(() => rng() - 0.5)
+          .slice(0, 3)
+          .map((v) => v.word.slice(0, answer.length) || v.word);
+        uniqueDistractors = [...new Set(otherWords.filter((d) => d !== answer))].slice(0, 3);
+      }
     }
 
     let options: string[] | undefined;
@@ -1222,6 +1446,13 @@ function generateGrammarDrillFromVocab(
       options.splice(correctIndex, 0, answer);
     }
 
+    // Typed answers: the blank's word itself may be given as characters, pinyin
+    // (with or without tone marks) or its English meaning.
+    const typedWordAnswers =
+      answer === word.word
+        ? [word.reading, normalizePinyin(word.reading), word.meaning, briefMeaning(word)]
+        : [];
+
     const data: GrammarDrillData = {
       type: 'grammar-drill',
       grammarPoint: gp.pattern,
@@ -1229,13 +1460,13 @@ function generateGrammarDrillFromVocab(
       answer,
       acceptableAnswers:
         language === 'chinese'
-          ? [answer, ...(answer === word.word ? [word.reading, word.meaning] : [])]
+          ? [...new Set([answer, ...(gp.alsoAccept ?? []), ...typedWordAnswers])]
           : [answer],
       explanation: `Full expression: ${gp.template(word)} — Pattern: ${gp.pattern}`,
       options,
       // Pinyin under each option so beginners can read the choices
       optionReadings:
-        options && language === 'chinese' ? options.map((o) => toPinyin(o) || null) : undefined,
+        options && language === 'chinese' ? options.map((o) => wordPinyin(o) || null) : undefined,
       correctIndex,
       ...(gp.pinyin(word)
         ? {
@@ -1252,6 +1483,7 @@ function generateGrammarDrillFromVocab(
 
     return {
       id: word.id + '_gd_' + nanoid(6),
+      sourceId: word.id,
       type: 'grammar-drill',
       language,
       difficulty,
@@ -1263,7 +1495,7 @@ function generateGrammarDrillFromVocab(
   }
 
   // Final fallback: generate a multiple choice instead
-  return generateMultipleChoice(pool, getVocabulary(language), language, difficulty, rng);
+  return generateMultipleChoice(scope, getVocabulary(language), language, difficulty, rng);
 }
 
 // A language-neutral view of a dialogue used by the dialogue generators below.
@@ -1351,24 +1583,25 @@ function getDialogues(language: Language): DialogueSource[] {
   }));
 }
 
-// Filter dialogues to a chapter when a lesson filter is active. Japanese
-// filters use the "<level>|<lesson>" format (e.g. "Irodori Starter|1");
-// Chinese filters carry the lesson title. When no dialogue matches the
-// chapter, returns an empty list so the caller can bail.
-function filterDialoguesByChapter(
+// Dialogues in scope. With a chapter key: that chapter's dialogues (Japanese
+// keys are "<level>|<lesson>", e.g. "Irodori Starter|1"; Chinese keys are lesson
+// titles), which may be none, so the caller can bail. Without one, Chinese
+// dialogues are limited to the lessons the learner has reached.
+function scopeDialogues(
   dialogues: DialogueSource[],
-  lessonFilter?: string,
+  language: Language,
+  lessonFilter: string | undefined,
+  currentLesson: number,
 ): DialogueSource[] {
-  if (!lessonFilter) return dialogues;
-  if (lessonFilter.includes('|')) {
+  if (lessonFilter?.includes('|')) {
     const [level, lessonNum] = lessonFilter.split('|');
     const num = parseInt(lessonNum, 10);
     return dialogues.filter((d) => d.level === level && d.lesson === num);
   }
-  // Chinese: map the lesson title to its lesson number
-  const lesson = chineseLessons.find((l) => l.title === lessonFilter);
-  if (!lesson) return dialogues;
-  return dialogues.filter((d) => d.lesson === lesson.lesson);
+  if (language !== 'chinese') return dialogues;
+  const chapter = lessonFilter ? chapterLesson(lessonFilter) : undefined;
+  if (chapter !== undefined) return dialogues.filter((d) => d.lesson === chapter);
+  return dialogues.filter((d) => d.lesson === undefined || d.lesson <= currentLesson);
 }
 
 function generateDialogueReading(
@@ -1376,9 +1609,10 @@ function generateDialogueReading(
   difficulty: DifficultyLevel,
   rng: () => number,
   seenSet: Set<string>,
-  lessonFilter?: string,
+  lessonFilter: string | undefined,
+  currentLesson: number,
 ): Exercise | null {
-  const dialogues = filterDialoguesByChapter(getDialogues(language), lessonFilter);
+  const dialogues = scopeDialogues(getDialogues(language), language, lessonFilter, currentLesson);
   if (dialogues.length === 0) return null;
 
   const available = dialogues.filter((d) => !seenSet.has(d.id));
@@ -1395,6 +1629,7 @@ function generateDialogueReading(
 
   return {
     id: dialogue.id,
+    sourceId: dialogue.id,
     type: 'dialogue-reading',
     language,
     difficulty,
@@ -1410,17 +1645,19 @@ function generateDialogueComprehension(
   difficulty: DifficultyLevel,
   rng: () => number,
   seenSet: Set<string>,
-  lessonFilter?: string,
+  lessonFilter: string | undefined,
+  currentLesson: number,
 ): Exercise | null {
   // Only dialogues that ship with comprehension questions qualify.
-  const dialogues = filterDialoguesByChapter(getDialogues(language), lessonFilter).filter(
-    (d) => d.questions.length > 0,
-  );
+  const dialogues = scopeDialogues(
+    getDialogues(language),
+    language,
+    lessonFilter,
+    currentLesson,
+  ).filter((d) => d.questions.length > 0);
   if (dialogues.length === 0) return null;
 
-  // Exercise IDs carry a `_dc_<nanoid>` suffix, so dedup on the dialogue prefix.
-  const seenIds = [...seenSet];
-  const available = dialogues.filter((d) => !seenIds.some((s) => s.startsWith(d.id)));
+  const available = dialogues.filter((d) => !seenSet.has(d.id));
   const pool = available.length > 0 ? available : dialogues;
 
   const dialogue = pickRandom(pool, rng);
@@ -1440,6 +1677,7 @@ function generateDialogueComprehension(
   return {
     // Include a question marker so repeats of the same dialogue stay distinct.
     id: dialogue.id + '_dc_' + nanoid(6),
+    sourceId: dialogue.id,
     type: 'dialogue-comprehension',
     language,
     difficulty,

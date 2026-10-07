@@ -210,6 +210,10 @@ html,
 body {
   height: 100%;
 }
+html {
+  /* Anchors and focused fields scroll clear of the sticky top bar. */
+  scroll-padding-top: 96px;
+}
 body {
   font-family: var(--ui);
   color: var(--ink);

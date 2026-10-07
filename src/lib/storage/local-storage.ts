@@ -1,4 +1,5 @@
-import type { StorageAdapter } from '@/types';
+import type { ImportMode, StorageAdapter } from '@/types';
+import { importedValueWins, parseBackup } from './backup';
 import { STORAGE_PREFIX } from './interface';
 
 export class LocalStorageAdapter implements StorageAdapter {
@@ -15,6 +16,13 @@ export class LocalStorageAdapter implements StorageAdapter {
   async set<T>(key: string, value: T): Promise<void> {
     if (typeof window === 'undefined') return;
     localStorage.setItem(key, JSON.stringify(value));
+  }
+
+  async setMany(entries: Record<string, unknown>): Promise<void> {
+    if (typeof window === 'undefined') return;
+    for (const [key, value] of Object.entries(entries)) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
   }
 
   async delete(key: string): Promise<void> {
@@ -60,13 +68,23 @@ export class LocalStorageAdapter implements StorageAdapter {
     return JSON.stringify(data, null, 2);
   }
 
-  async importData(jsonString: string): Promise<void> {
+  async importData(jsonString: string, mode: ImportMode): Promise<void> {
     if (typeof window === 'undefined') return;
-    const data = JSON.parse(jsonString) as Record<string, unknown>;
-    for (const [key, value] of Object.entries(data)) {
-      if (key.startsWith(STORAGE_PREFIX)) {
-        localStorage.setItem(key, JSON.stringify(value));
+    const data = parseBackup(jsonString);
+    if (mode === 'replace') {
+      const stale: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key?.startsWith(STORAGE_PREFIX)) stale.push(key);
       }
+      stale.forEach((key) => localStorage.removeItem(key));
+    }
+    for (const [key, value] of Object.entries(data)) {
+      if (mode === 'merge' && localStorage.getItem(key) !== null) {
+        const existing = await this.get<unknown>(key);
+        if (!importedValueWins(existing, value)) continue;
+      }
+      localStorage.setItem(key, JSON.stringify(value));
     }
   }
 }

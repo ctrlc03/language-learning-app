@@ -14,7 +14,7 @@
 import type { Flashcard, FlashcardDeck, Language, DifficultyLevel, Exercise } from '@/types';
 import type { StorageAdapter } from '@/types';
 import { StoragePrefixes } from '@/lib/storage/interface';
-import { buildReviewQueue } from '@/lib/srs/scheduler';
+import { buildReviewQueue, newCardsLeftToday } from '@/lib/srs/scheduler';
 import { chineseGrammarRules, type GrammarRule } from '@/data/chinese/grammar';
 import { buildChecksForRule } from '@/lib/learn/checks';
 import { getOfflineExercise } from '@/lib/exercises/offline';
@@ -43,34 +43,52 @@ export interface SessionOptions {
   /** Overridable for tests; defaults to Date.now(). */
   seed?: number;
   maxCards?: number;
+  /** Daily new-card limit (settings.maxNewCardsPerDay), shared with Study. */
+  maxNewCardsPerDay: number;
+  /** Chinese lesson the learner is on: practice and grammar are limited to lessons up to it. */
+  currentLesson: number;
 }
 
 const DEFAULT_MAX_CARDS = 12;
 const GRAMMAR_CHECKS = 2;
 const TONE_ITEMS = 3;
 
-/** Due + learning + a few new cards, across every deck in the active language. */
+/**
+ * Due + learning + a few new cards, across every deck in the active language.
+ * New cards take at most a quarter of the slots — a daily session should be
+ * mostly retrieval of things already seen — and never exceed what is left of
+ * today's new-card allowance.
+ */
 export async function loadDueCards(
   storage: StorageAdapter,
   language: Language,
   max: number,
+  maxNewCardsPerDay: number,
 ): Promise<Flashcard[]> {
   const decks = await storage.getAll<FlashcardDeck>(StoragePrefixes.decks);
   const deckIds = new Set(decks.filter((d) => d.language === language).map((d) => d.id));
   if (deckIds.size === 0) return [];
 
   const cards = await storage.query<Flashcard>(StoragePrefixes.cards, (c) => deckIds.has(c.deckId));
-  // A quarter of the slots go to new cards at most — a daily session should be
-  // mostly retrieval of things already seen.
-  const queue = buildReviewQueue(cards, Math.max(1, Math.floor(max / 4)));
+  const newLeft = await newCardsLeftToday(storage, maxNewCardsPerDay);
+  const queue = buildReviewQueue(cards, Math.min(newLeft, Math.max(1, Math.floor(max / 4))));
   return [...queue.learning, ...queue.due, ...queue.newCards].slice(0, max);
 }
 
-/** Pick the grammar pattern to drill: weakest / least-seen first. */
-export function pickRule(mastery: MasteryMap, rng: () => number): GrammarRule | null {
+/**
+ * Pick the grammar pattern to drill: weakest / least-seen first, among the
+ * patterns taught up to the learner's current lesson (all of them if none is).
+ */
+export function pickRule(
+  mastery: MasteryMap,
+  rng: () => number,
+  currentLesson: number,
+): GrammarRule | null {
   const withChecks = chineseGrammarRules.filter((r) => buildChecksForRule(r).length > 0);
-  if (withChecks.length === 0) return null;
-  return weightedSample(withChecks, (r) => pickWeight(mastery[r.id]), 1, rng)[0] ?? null;
+  const reached = withChecks.filter((r) => r.lessons.some((n) => n <= currentLesson));
+  const candidates = reached.length > 0 ? reached : withChecks;
+  if (candidates.length === 0) return null;
+  return weightedSample(candidates, (r) => pickWeight(mastery[r.id]), 1, rng)[0] ?? null;
 }
 
 /**
@@ -102,10 +120,12 @@ export async function buildSession(
     toneMastery,
     seed = Date.now(),
     maxCards = DEFAULT_MAX_CARDS,
+    maxNewCardsPerDay,
+    currentLesson,
   } = opts;
   const rng = makeRng(seed);
 
-  const cards = await loadDueCards(storage, language, maxCards);
+  const cards = await loadDueCards(storage, language, maxCards, maxNewCardsPerDay);
   const cardItems: SessionItem[] = cards.map((card) => ({
     kind: 'card',
     id: `card:${card.id}`,
@@ -113,7 +133,7 @@ export async function buildSession(
   }));
 
   // Grammar: one pattern, a couple of checks derived from its own examples.
-  const rule = language === 'chinese' ? pickRule(grammarMastery, rng) : null;
+  const rule = language === 'chinese' ? pickRule(grammarMastery, rng, currentLesson) : null;
   const grammarItems: SessionItem[] = rule
     ? buildChecksForRule(rule)
         .slice(0, GRAMMAR_CHECKS)
@@ -127,16 +147,25 @@ export async function buildSession(
     : [];
 
   // Exercises: one reading-comprehension pass over a dialogue, plus recall drills.
+  // Of the two vocabulary drills, the recall drill favours the lessons just
+  // taught and the other draws on the whole course so far.
   const exerciseItems: SessionItem[] = [];
   const seen: string[] = [];
-  for (const [type, label] of [
-    ['dialogue-comprehension', 'Dialogue'],
-    ['fill-in-blank', 'Recall'],
-    ['multiple-choice', 'Vocabulary'],
+  for (const [type, label, focusRecent] of [
+    ['dialogue-comprehension', 'Dialogue', false],
+    ['fill-in-blank', 'Recall', true],
+    ['multiple-choice', 'Vocabulary', false],
   ] as const) {
-    const exercise = getOfflineExercise(language, difficulty, type, seen);
+    const exercise = getOfflineExercise({
+      language,
+      difficulty,
+      type,
+      seen,
+      currentLesson,
+      focusRecent,
+    });
     if (!exercise) continue;
-    seen.push(exercise.id);
+    seen.push(exercise.sourceId ?? exercise.id);
     exerciseItems.push({ kind: 'exercise', id: `ex:${exercise.id}`, label, exercise });
   }
 

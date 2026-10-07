@@ -5,20 +5,27 @@ import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useStorage } from '@/contexts/StorageContext';
 import { useProgress } from '@/hooks/use-progress';
+import { useCurrentLesson } from '@/hooks/use-current-lesson';
 import { useMastery } from '@/hooks/use-mastery';
-import { useSpeechInit } from '@/hooks/use-speech';
+import { useSpeechInit, useSpeechNotice } from '@/hooks/use-speech';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ExerciseShell } from '@/components/exercises/exercise-shell';
 import { ToneIdentify } from '@/components/tones/tone-identify';
-import { SpeakButton } from '@/components/shared/speak-button';
+import { SpeakButton, SpeechNotice } from '@/components/shared/speak-button';
 import { buildSession, type SessionItem, type SessionPlan } from '@/lib/session/build';
 import { calculateNextReview } from '@/lib/srs/sm2';
 import { StorageKeys } from '@/lib/storage/interface';
-import { cardFace, directionOf, isAudioPrompt, DIRECTION_LABEL } from '@/lib/flashcards/direction';
+import {
+  cardFace,
+  canSpeakBeforeReveal,
+  directionOf,
+  isAudioPrompt,
+  DIRECTION_LABEL,
+} from '@/lib/flashcards/direction';
 import { speak } from '@/lib/tts/speech';
-import { cn } from '@/lib/utils';
+import { cn, plural } from '@/lib/utils';
 import type { ExerciseResult, Flashcard, SRSGrade } from '@/types';
 
 type Phase = 'loading' | 'empty' | 'running' | 'done';
@@ -37,7 +44,9 @@ interface Tally {
  */
 export default function SessionPage() {
   const router = useRouter();
-  const { language, difficulty, speechRate } = useLanguage();
+  const { language, difficulty, speechRate, settings } = useLanguage();
+  const { maxNewCardsPerDay } = settings;
+  const [currentLesson] = useCurrentLesson();
   const storage = useStorage();
   const { recordActivity } = useProgress();
   const {
@@ -69,11 +78,23 @@ export default function SessionPage() {
         difficulty,
         grammarMastery,
         toneMastery,
+        maxNewCardsPerDay,
+        currentLesson,
       });
       setPlan(next);
       setPhase(next.items.length === 0 ? 'empty' : 'running');
     })();
-  }, [storage, language, difficulty, grammarMastery, toneMastery, grammarLoading, toneLoading]);
+  }, [
+    storage,
+    language,
+    difficulty,
+    grammarMastery,
+    toneMastery,
+    grammarLoading,
+    toneLoading,
+    maxNewCardsPerDay,
+    currentLesson,
+  ]);
 
   const current: SessionItem | null = plan?.items[index] ?? null;
   const total = plan?.items.length ?? 0;
@@ -91,11 +112,13 @@ export default function SessionPage() {
   }, [total]);
 
   // Audio-first cards should play as soon as they appear, same as in /flashcards.
+  // The sound is the whole prompt there, so a failure must say why.
+  const { notice: speechNotice, reportSpeechError } = useSpeechNotice();
   useEffect(() => {
     if (current?.kind === 'card' && isAudioPrompt(current.card)) {
-      speak(current.card.front, language, speechRate).catch(() => {});
+      speak(current.card.front, language, speechRate).catch(reportSpeechError);
     }
-  }, [current, language, speechRate]);
+  }, [current, language, speechRate, reportSpeechError]);
 
   const gradeCard = async (card: Flashcard, grade: SRSGrade) => {
     const updated: Flashcard = {
@@ -190,7 +213,7 @@ export default function SessionPage() {
                 {tally.correct} / {tally.answered} correct · {pct}%
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                {tally.cards} cards reviewed
+                {plural(tally.cards, 'card')} reviewed
                 {plan?.rule ? ` · pattern: ${plan.rule.title}` : ''}
               </p>
             </div>
@@ -210,6 +233,7 @@ export default function SessionPage() {
 
   return (
     <div className="p-5 md:p-8 max-w-xl mx-auto space-y-4">
+      <SpeechNotice message={speechNotice} />
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
           <h1 className="text-lg font-bold tracking-tight truncate">Daily session</h1>
@@ -284,7 +308,7 @@ function CardStep({
           <Badge variant="outline" className="text-[11px]">
             {DIRECTION_LABEL[dir]}
           </Badge>
-          <SpeakButton text={card.front} />
+          {(revealed || canSpeakBeforeReveal(card)) && <SpeakButton text={card.front} />}
         </div>
 
         <div className="space-y-1.5">

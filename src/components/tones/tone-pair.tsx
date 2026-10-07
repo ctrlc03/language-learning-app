@@ -19,7 +19,8 @@ function PairLabel({ pair }: { pair: [ToneNumber, ToneNumber] }) {
   );
 }
 
-const key = (p: [ToneNumber, ToneNumber]) => `${p[0]}-${p[1]}`;
+type Pair = [ToneNumber, ToneNumber];
+const key = (p: Pair) => `${p[0]}-${p[1]}`;
 
 export function TonePair({
   item,
@@ -34,10 +35,13 @@ export function TonePair({
     autoSpeak(item.hanzi);
   }, [item.hanzi]);
 
-  const pick = (p: [ToneNumber, ToneNumber]) => {
+  // A word whose spoken tones differ from its written ones (你好 is said ní hǎo) accepts either.
+  const accepted = [item.pair, ...(item.spoken ? [item.spoken] : [])].map(key);
+
+  const pick = (p: Pair) => {
     if (picked !== null) return;
     setPicked(key(p));
-    onComplete(key(p) === key(item.pair));
+    onComplete(accepted.includes(key(p)));
   };
 
   return (
@@ -51,7 +55,7 @@ export function TonePair({
       <div className="grid grid-cols-2 gap-2">
         {item.options.map((p) => {
           const revealed = picked !== null;
-          const isAnswer = key(p) === key(item.pair);
+          const isAnswer = accepted.includes(key(p));
           const isPicked = key(p) === picked;
           return (
             <button
@@ -77,6 +81,11 @@ export function TonePair({
           <div className="text-4xl cjk">{item.hanzi}</div>
           <ColoredPinyin word={item.hanzi} className="text-lg" />
           <div className="text-sm text-muted-foreground">{item.meaning}</div>
+          {item.spoken && (
+            <div className="text-sm text-muted-foreground">
+              Written {key(item.pair)}, said {key(item.spoken)}
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -3,9 +3,12 @@
  * items from the static vocabulary pool (example sentences + words), so the
  * listening drill is no longer limited to a handful of hand-written prompts.
  * No API calls; deterministic for a given seed.
+ *
+ * Chinese draws on everything the course has taught up to the learner's current lesson;
+ * Japanese keeps its difficulty levels.
  */
 
-import { chineseVocabulary } from '@/data/chinese/vocabulary';
+import { getCourseVocabulary } from '@/data/chinese/vocabulary';
 import { japaneseVocabulary } from '@/data/japanese/vocabulary';
 import type { Language, DifficultyLevel, VocabularyItem } from '@/types';
 
@@ -40,42 +43,18 @@ function shuffle<T>(arr: T[], rng: () => number): T[] {
   return result;
 }
 
-function vocabFor(language: Language): VocabularyItem[] {
-  return language === 'chinese' ? chineseVocabulary : japaneseVocabulary;
-}
-
-// Mirrors the difficulty filtering used by the written-exercise generator.
-function byDifficulty(
-  items: VocabularyItem[],
+function poolFor(
   language: Language,
   difficulty: DifficultyLevel,
+  currentLesson: number,
 ): VocabularyItem[] {
+  if (language === 'chinese') return getCourseVocabulary(currentLesson);
+  // Mirrors the difficulty filtering used by the written-exercise generator.
   if (difficulty === 'beginner') {
-    if (language === 'chinese') {
-      return items.filter(
-        (v) =>
-          v.level === 'HSK 1' ||
-          v.level === 'Pinyin & Adjectives' ||
-          v.level === 'Time & Daily Schedule' ||
-          v.level === 'Family & Occupations',
-      );
-    }
-    return items.filter((v) => v.level === 'JLPT N5' || v.level === 'Irodori Starter');
+    return japaneseVocabulary.filter((v) => v.level === 'JLPT N5' || v.level === 'Irodori Starter');
   }
   if (difficulty === 'intermediate') {
-    if (language === 'chinese') {
-      return items.filter(
-        (v) =>
-          v.level === 'HSK 1' ||
-          v.level === 'HSK 2' ||
-          (v.level &&
-            !v.level.startsWith('HSK 3') &&
-            !v.level.startsWith('HSK 4') &&
-            !v.level.startsWith('HSK 5') &&
-            !v.level.startsWith('HSK 6')),
-      );
-    }
-    return items.filter(
+    return japaneseVocabulary.filter(
       (v) =>
         v.level === 'JLPT N5' ||
         v.level === 'JLPT N4' ||
@@ -83,7 +62,20 @@ function byDifficulty(
         v.level === 'Irodori Elementary 1',
     );
   }
-  return items;
+  return japaneseVocabulary;
+}
+
+/**
+ * Whether a typed dictation answer matches the prompt. Width, case, spaces and punctuation
+ * (full- or half-width) are ignored: 你好。 equals 你好, and "Hello, World" equals "hello world".
+ */
+export function dictationMatches(answer: string, expected: string): boolean {
+  const normalise = (s: string) =>
+    s
+      .normalize('NFKC')
+      .replace(/[\p{P}\p{Z}\s]/gu, '')
+      .toLowerCase();
+  return normalise(answer) === normalise(expected);
 }
 
 const MAX_ITEMS = 40;
@@ -93,8 +85,9 @@ export function getDictationItems(
   language: Language,
   difficulty: DifficultyLevel,
   seed: number,
+  currentLesson: number,
 ): DictationItem[] {
-  const vocab = byDifficulty(vocabFor(language), language, difficulty);
+  const vocab = poolFor(language, difficulty, currentLesson);
   const rng = seededRandom(seed);
 
   const sentenceItems: DictationItem[] = vocab
@@ -124,8 +117,9 @@ export function getListenChooseItems(
   language: Language,
   difficulty: DifficultyLevel,
   seed: number,
+  currentLesson: number,
 ): ListenChooseItem[] {
-  const vocab = byDifficulty(vocabFor(language), language, difficulty);
+  const vocab = poolFor(language, difficulty, currentLesson);
   const rng = seededRandom(seed);
 
   const sentencePool = vocab.filter((v) => v.exampleSentence && v.exampleTranslation);

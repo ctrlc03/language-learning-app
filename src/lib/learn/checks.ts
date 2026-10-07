@@ -9,70 +9,16 @@
 // example into word tiles using its pinyin AND reconstruct the original string
 // exactly. If alignment is even slightly off, we drop it rather than ship a
 // broken tile puzzle.
+//
+// The first two checks of a rule (all a daily session takes) are built from
+// different examples, so one sentence never shows up as both quiz and puzzle.
 
 import { nanoid } from 'nanoid';
 import { chineseGrammarRules, type GrammarRule } from '@/data/chinese/grammar';
+import { alternativeOrders, segmentByPinyin } from '@/lib/exercises/tiles';
 import type { Exercise } from '@/types';
 
 type Example = GrammarRule['examples'][number];
-
-// Strip sentence-final / internal punctuation so a reconstructed tile string can
-// be compared against the source char-for-char.
-const PUNCT = /[，。！？、：；“”‘’…—·（）,.!?:;"'()]/g;
-function stripPunct(s: string): string {
-  return s.replace(PUNCT, '');
-}
-
-// Count syllables in one pinyin word ≈ number of maximal vowel runs. Each Mandarin
-// syllable carries exactly one vowel nucleus, so counting vowel groups recovers
-// the hanzi count for that word. Erhua (final 儿) is handled by the caller.
-const VOWELS =
-  'aeiouüvàáâãäāăạảấầẩẫậắằẳẵặèéêëēĕẹẻếềểễệìíîïĩīĭịỉòóôõöōŏọỏốồổỗộớờởỡợùúûüũūŭụủǔǘǜǚǖñ`ǎěǐǒǔ';
-function syllableCount(pinyinWord: string): number {
-  const w = pinyinWord.toLowerCase();
-  let count = 0;
-  let inVowel = false;
-  for (const ch of w) {
-    const isVowel = VOWELS.includes(ch);
-    if (isVowel && !inVowel) count++;
-    inVowel = isVowel;
-  }
-  return count;
-}
-
-// Attempt to split `chinese` into words guided by the space-delimited `pinyin`.
-// Returns aligned {words, readings} or null when it cannot reproduce the source
-// exactly (e.g. erhua / counts drift / stray characters).
-export function segmentByPinyin(
-  chinese: string,
-  pinyin: string,
-): { words: string[]; readings: string[] } | null {
-  const chars = Array.from(stripPunct(chinese));
-  const pinyinWords = stripPunct(pinyin).trim().split(/\s+/).filter(Boolean);
-  if (chars.length === 0 || pinyinWords.length === 0) return null;
-
-  const words: string[] = [];
-  const readings: string[] = [];
-  let idx = 0;
-  for (const pw of pinyinWords) {
-    let n = syllableCount(pw);
-    // Erhua: a pinyin word ending in 'r' pulls an extra 儿 the vowel-count
-    // missed. We only bump when a 儿 actually sits at that position, and the
-    // full-reconstruction check below rejects any wrong guess — so this is safe
-    // even for standalone 二/儿 syllables.
-    if (pw.toLowerCase().endsWith('r') && chars[idx + n] === '儿') n += 1;
-    if (n < 1) return null;
-    const slice = chars.slice(idx, idx + n);
-    if (slice.length !== n) return null;
-    words.push(slice.join(''));
-    readings.push(pw);
-    idx += n;
-  }
-  // Every source character must be consumed for the tiles to be trustworthy.
-  if (idx !== chars.length) return null;
-  if (words.join('') !== chars.join('')) return null;
-  return { words, readings };
-}
 
 // Pull `count` distinct wrong options from a pool, excluding `correct`.
 function pickDistractors(pool: string[], correct: string, count: number): string[] {
@@ -96,9 +42,16 @@ function withCorrectIndex(
   return { options, correctIndex: options.indexOf(correct) };
 }
 
-function baseExercise(question: string, instruction: string): Omit<Exercise, 'type' | 'data'> {
+// `exampleKey` names the rule example a check is built from (sourceId), so a
+// caller can tell which sentences it has already shown.
+function baseExercise(
+  exampleKey: string,
+  question: string,
+  instruction: string,
+): Omit<Exercise, 'type' | 'data'> {
   return {
     id: nanoid(),
+    sourceId: exampleKey,
     language: 'chinese',
     difficulty: 'beginner',
     question,
@@ -119,22 +72,35 @@ export function buildChecksForRule(rule: GrammarRule, count = 4): Exercise[] {
   const checks: Exercise[] = [];
   const examples = rule.examples;
 
+  // Examples that cut cleanly into at least three word tiles — fewer isn't much of a puzzle.
+  const tileable = examples.flatMap((example, index) => {
+    const seg = segmentByPinyin(example.chinese, example.pinyin);
+    return seg && seg.words.length >= 3 ? [{ example, index, seg }] : [];
+  });
+
+  // The quiz takes the first example, unless the puzzle can only be built from
+  // that one: the quiz and the puzzle (the first two checks, which is all a daily
+  // session takes) must never show the same sentence.
+  const puzzleOnlyFromFirst = tileable.length > 0 && tileable.every((t) => t.index === 0);
+  const quizIndex = puzzleOnlyFromFirst && examples.length > 1 ? 1 : 0;
+  const used = new Set([quizIndex]);
+
   // 1) toSentence — the core "do you recognise the correct construction?" check.
-  if (examples[0]) {
-    const ex = examples[0];
+  const quiz = examples[quizIndex];
+  if (quiz) {
     const { options, correctIndex } = withCorrectIndex(
-      ex.chinese,
-      pickDistractors(sentencePool, ex.chinese, 3),
+      quiz.chinese,
+      pickDistractors(sentencePool, quiz.chinese, 3),
     );
     checks.push({
-      ...baseExercise('Which sentence means:', `"${ex.english}"`),
+      ...baseExercise(`${rule.id}:${quizIndex}`, 'Which sentence means:', `"${quiz.english}"`),
       type: 'sentence-mc',
       data: {
         type: 'sentence-mc',
         direction: 'toSentence',
-        sentence: ex.chinese,
-        sentencePinyin: ex.pinyin,
-        translation: ex.english,
+        sentence: quiz.chinese,
+        sentencePinyin: quiz.pinyin,
+        translation: quiz.english,
         options,
         correctIndex,
         explanation: rule.explanation,
@@ -142,34 +108,46 @@ export function buildChecksForRule(rule: GrammarRule, count = 4): Exercise[] {
     });
   }
 
-  // 2) sentence-construction for any example we can segment safely.
-  for (const ex of examples) {
+  // 2) sentence-construction for any other example we can segment safely.
+  for (const { example, index, seg } of tileable) {
     if (checks.length >= count) break;
-    const seg = segmentByPinyin(ex.chinese, ex.pinyin);
-    if (!seg || seg.words.length < 3) continue; // <3 tiles isn't much of a puzzle
+    if (index === quizIndex) continue;
+    used.add(index);
+    const alternatives = alternativeOrders(seg.words);
     checks.push({
-      ...baseExercise('Build the sentence', `Arrange the tiles to say: "${ex.english}"`),
+      ...baseExercise(
+        `${rule.id}:${index}`,
+        'Build the sentence',
+        `Arrange the tiles to say: "${example.english}"`,
+      ),
       type: 'sentence-construction',
       data: {
         type: 'sentence-construction',
         words: seg.words,
         wordReadings: seg.readings,
         correctOrder: seg.words.join(''),
-        correctPinyin: ex.pinyin,
-        translation: ex.english,
+        acceptableOrders: alternatives.length > 0 ? alternatives : undefined,
+        correctPinyin: example.pinyin,
+        translation: example.english,
       },
     });
   }
 
-  // 3) toMeaning — comprehension check on a later example, to round things out.
-  const meaningEx: Example | undefined = examples[1] ?? examples[0];
+  // 3) toMeaning — comprehension check on an example not used yet, to round things out.
+  const freeIndex = examples.findIndex((_, i) => !used.has(i));
+  const meaningIndex = freeIndex === -1 ? Math.min(1, examples.length - 1) : freeIndex;
+  const meaningEx: Example | undefined = examples[meaningIndex];
   if (meaningEx && checks.length < count) {
     const { options, correctIndex } = withCorrectIndex(
       meaningEx.english,
       pickDistractors(meaningPool, meaningEx.english, 3),
     );
     checks.push({
-      ...baseExercise(meaningEx.chinese, 'What does this sentence mean?'),
+      ...baseExercise(
+        `${rule.id}:${meaningIndex}`,
+        meaningEx.chinese,
+        'What does this sentence mean?',
+      ),
       type: 'sentence-mc',
       data: {
         type: 'sentence-mc',

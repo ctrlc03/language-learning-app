@@ -1,7 +1,15 @@
 // 墨 INKPATH — derive screen content from the real repository vocabulary data.
 import type { Language, VocabularyItem } from '@/types';
-import { chineseLessons } from '@/data/chinese/vocabulary';
+import {
+  chineseLessons,
+  chineseVocabulary,
+  getCourseVocabulary,
+  getLessonVocabulary,
+} from '@/data/chinese/vocabulary';
 import { irodoriVocabulary, irodoriLevels } from '@/data/japanese/irodori-vocab';
+
+/** Lessons listed on Today: the current one and the few just before it. */
+const LESSONS_SHOWN = 4;
 
 export interface InkLesson {
   id: string;
@@ -10,6 +18,10 @@ export interface InkLesson {
   sub: string;
   band: string;
   topic: string;
+  /** Id of the shipped deck that holds this lesson's words (`FlashcardDeck.prebuiltId`). */
+  prebuiltId: string;
+  /** Distinct words the lesson teaches, as they appear on card fronts. */
+  words: string[];
 }
 
 export interface InkWord {
@@ -39,50 +51,69 @@ function firstCJK(s: string): string {
   return Array.from(s).find((c) => /[㐀-鿿]/.test(c)) ?? firstChar(s);
 }
 
-/** Day-of-year index for deterministic "word of the day" selection. */
+/** Whole days since the epoch for the local calendar date, so "of the day" picks turn over at local midnight. */
 function dayIndex(): number {
   const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 0);
-  return Math.floor((now.getTime() - start.getTime()) / 86400000);
+  return Math.floor(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 86400000);
 }
 
+/** Every word the app ships for the language: distinct items, as the Archive counts them. */
 export function getVocabulary(language: Language): VocabularyItem[] {
-  if (language === 'chinese') {
-    return chineseLessons.flatMap((l) => l.vocabulary as VocabularyItem[]);
-  }
-  return irodoriVocabulary;
+  return language === 'chinese' ? chineseVocabulary : irodoriVocabulary;
 }
 
-export function getLessons(language: Language): InkLesson[] {
+/**
+ * The lessons Today lists. Chinese: the current lesson first, then the ones before it (lesson
+ * numbers have gaps, so this walks the shipped lessons rather than counting down). Japanese: the
+ * Irodori levels.
+ */
+export function getLessons(language: Language, currentLesson: number): InkLesson[] {
   if (language === 'chinese') {
-    return chineseLessons.slice(0, 4).map((l) => ({
-      id: `zh-l${l.lesson}`,
-      glyph: firstChar(l.titleChinese || l.title),
-      title: l.titleChinese || l.title,
-      sub: l.title,
-      band: `Lesson ${l.lesson}`,
-      topic: `${l.vocabulary.length} words`,
-    }));
+    return chineseLessons
+      .filter((l) => l.lesson <= currentLesson)
+      .sort((a, b) => b.lesson - a.lesson)
+      .slice(0, LESSONS_SHOWN)
+      .map((l) => {
+        const words = [...new Set(l.vocabulary.map((v) => v.word))];
+        return {
+          id: `zh-l${l.lesson}`,
+          glyph: firstChar(l.titleChinese || l.title),
+          title: l.titleChinese || l.title,
+          sub: l.title,
+          band: `Lesson ${l.lesson}`,
+          topic: `${words.length} words`,
+          prebuiltId: `prebuilt-zh-lesson-${l.lesson}`,
+          words,
+        };
+      });
   }
   return irodoriLevels.map((level, i) => {
-    const words = irodoriVocabulary.filter((v) => v.level === level);
-    const topic = words[0]?.topic?.replace(/^[①-⑨0-9]+/, '') || 'Vocabulary';
+    const levelWords = irodoriVocabulary.filter((v) => v.level === level);
+    const words = [...new Set(levelWords.map((w) => w.word))];
+    const topic = levelWords[0]?.topic?.replace(/^[①-⑨0-9]+/, '') || 'Vocabulary';
     return {
       id: `ja-${i}`,
       glyph: firstChar(
-        words.find((w) => /[一-龯]/.test(firstChar(w.word)))?.word || words[0]?.word || '日',
+        levelWords.find((w) => /[一-龯]/.test(firstChar(w.word)))?.word ||
+          levelWords[0]?.word ||
+          '日',
       ),
       title: level,
       sub: topic,
       band: `Irodori`,
       topic: `${words.length} words`,
+      prebuiltId: `prebuilt-ja-${level.toLowerCase().replace(/\s+/g, '-')}`,
+      words,
     };
   });
 }
 
-export function getWordOfDay(language: Language): InkWord {
-  const vocab = getVocabulary(language).filter((v) => v.exampleSentence);
-  const pool = vocab.length ? vocab : getVocabulary(language);
+/** Chinese draws from the course so far (lessons up to the current one); Japanese from all Irodori words. */
+export function getWordOfDay(language: Language, currentLesson: number): InkWord {
+  const words =
+    language === 'chinese' ? getCourseVocabulary(currentLesson) : getVocabulary(language);
+  const withExample = words.filter((v) => v.exampleSentence);
+  const pool = withExample.length ? withExample : words;
   const v = pool[dayIndex() % pool.length];
   return {
     char: v.word,
@@ -93,11 +124,10 @@ export function getWordOfDay(language: Language): InkWord {
   };
 }
 
-export function getHero(language: Language): InkHero {
-  const lessons = getLessons(language);
-  const top = lessons[0];
-  const wod = getWordOfDay(language);
+export function getHero(language: Language, currentLesson: number): InkHero {
+  const top = getLessons(language, currentLesson)[0];
   if (language === 'japanese') {
+    const wod = getWordOfDay(language, currentLesson);
     return {
       char: firstCJK(wod.char) || '今',
       ruby: `${wod.reading} · ${wod.meaning}`,
@@ -107,9 +137,12 @@ export function getHero(language: Language): InkHero {
       topic: top?.topic ?? '',
     };
   }
+  // The hero belongs to the current lesson, so its character comes from that lesson's words.
+  const lessonWords = getLessonVocabulary(currentLesson);
+  const word = lessonWords[dayIndex() % lessonWords.length];
   return {
-    char: firstChar(wod.char) || '今',
-    ruby: `${wod.reading} · ${wod.meaning}`,
+    char: firstChar(word?.word ?? '') || '今',
+    ruby: word ? `${word.reading} · ${word.meaning}` : '',
     title: `今日一课 —\n${top?.sub ?? 'Today'}`,
     desc: `New words from ${top?.title ?? 'your studies'}. Pick up the thread and carry today's practice forward.`,
     band: top?.band ?? 'HSK',

@@ -44,13 +44,39 @@ export function isAudioPrompt(card: Flashcard): boolean {
   return directionOf(card) === 'listen';
 }
 
+// A cloze card shows the example with the target term replaced by this blank.
+const CLOZE_BLANK = '＿＿';
+
+// Native-script text a learner can read context from (Chinese hanzi, Japanese kana/kanji).
+const NATIVE_SCRIPT = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}]/u;
+
+/**
+ * The sentence with every occurrence of `word` blanked out, or null when it
+ * isn't there. All of them: a word that repeats ("你渴不渴") would otherwise
+ * leave the answer in the prompt.
+ */
+function blankOut(sentence: string, word: string): string | null {
+  return word !== '' && sentence.includes(word) ? sentence.replaceAll(word, CLOZE_BLANK) : null;
+}
+
+/**
+ * Whether a word makes a usable cloze card: its example sentence contains it,
+ * and blanking it leaves other native-script text to infer it from. An example
+ * that is only the word ("可以吗？" for 可以吗) would leave a bare blank.
+ */
+export function canCloze(word: string, exampleSentence: string | undefined): boolean {
+  const blanked = exampleSentence ? blankOut(exampleSentence, word) : null;
+  return blanked !== null && NATIVE_SCRIPT.test(blanked);
+}
+
 /** The example sentence with the target term replaced by a blank. */
 export function clozeSentence(card: Flashcard): string {
   const sentence = card.exampleSentence ?? '';
   if (!sentence) return '____';
-  return sentence.includes(card.front)
-    ? sentence.replace(card.front, '＿＿')
-    : `${sentence} （${'＿'.repeat(Math.max(1, [...card.front].length))}）`;
+  return (
+    blankOut(sentence, card.front) ??
+    `${sentence} （${'＿'.repeat(Math.max(1, [...card.front].length))}）`
+  );
 }
 
 export function cardFace(card: Flashcard): CardFace {
@@ -97,4 +123,14 @@ export function cardFace(card: Flashcard): CardFace {
         revealMeaning: true,
       };
   }
+}
+
+/**
+ * Whether the term may be spoken before the answer is revealed: only when the
+ * prompt is the term itself ('read') or audio ('listen'). For 'produce' and
+ * 'cloze' the term IS the answer, so hearing it first gives it away. After the
+ * reveal any card may be spoken.
+ */
+export function canSpeakBeforeReveal(card: Flashcard): boolean {
+  return !cardFace(card).hideTermUntilRevealed || isAudioPrompt(card);
 }

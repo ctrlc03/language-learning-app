@@ -1,55 +1,104 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useStorage } from '@/contexts/StorageContext';
+import { useCurrentLesson } from '@/hooks/use-current-lesson';
 import { useProgress } from '@/hooks/use-progress';
-import { useSRS } from '@/hooks/use-srs';
 import { InkCard, Ring, todayParts } from '@/components/ink/primitives';
 import { getLanguageNativeName, getLanguageName } from '@/lib/language/utils';
 import { getLessons, getWordOfDay, getHero, getVocabulary } from '@/lib/inkpath/content';
+import {
+  countWords,
+  forLanguage,
+  lessonProgress,
+  loadDeckData,
+  type DeckData,
+} from '@/lib/inkpath/stats';
+import { buildReviewQueue, newCardsLeftToday } from '@/lib/srs/scheduler';
+import { getToday } from '@/lib/utils';
+import type { Language } from '@/types';
 
-const CAL = ['月', '火', '水', '木', '金', '土', '日'];
+// Monday-first, in the script of the language being studied.
+const WEEK: Record<Language, string[]> = {
+  japanese: ['月', '火', '水', '木', '金', '土', '日'],
+  chinese: ['一', '二', '三', '四', '五', '六', '日'],
+};
+
+interface DeckStats {
+  /** This language's decks and their cards. */
+  data: DeckData;
+  words: number;
+  /** Cards in learning or due for review. */
+  due: number;
+  /** New cards still allowed today. */
+  fresh: number;
+}
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { language } = useLanguage();
+  const { language, settings } = useLanguage();
+  const storage = useStorage();
+  const [currentLesson] = useCurrentLesson();
   const { progress, todayActivity } = useProgress();
-  const { decks } = useSRS();
+  const [stats, setStats] = useState<DeckStats | null>(null);
+  const { maxNewCardsPerDay } = settings;
 
-  const lessons = useMemo(() => getLessons(language), [language]);
-  const hero = useMemo(() => getHero(language), [language]);
-  const wod = useMemo(() => getWordOfDay(language), [language]);
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      const data = forLanguage(await loadDeckData(storage), language);
+      const queue = buildReviewQueue(
+        data.cards,
+        await newCardsLeftToday(storage, maxNewCardsPerDay),
+      );
+      if (!alive) return;
+      setStats({
+        data,
+        words: countWords(data.cards),
+        due: queue.learning.length + queue.due.length,
+        fresh: queue.newCards.length,
+      });
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [storage, language, maxNewCardsPerDay]);
 
+  const lessons = useMemo(() => getLessons(language, currentLesson), [language, currentLesson]);
+  const hero = useMemo(() => getHero(language, currentLesson), [language, currentLesson]);
+  const wod = useMemo(() => getWordOfDay(language, currentLesson), [language, currentLesson]);
+  const corpus = useMemo(() => getVocabulary(language).length, [language]);
+  const rings = useMemo(
+    () => lessons.map((les) => (stats ? lessonProgress(les, stats.data) : 0)),
+    [lessons, stats],
+  );
+
+  const isJp = language === 'japanese';
   const native = getLanguageNativeName(language);
   const latin = getLanguageName(language).toUpperCase();
   const t = todayParts();
 
-  const wordsInDecks = useMemo(
-    () => decks.filter((d) => d.language === language).reduce((sum, d) => sum + d.cardCount, 0),
-    [decks, language],
-  );
-  const corpus = useMemo(() => getVocabulary(language).length, [language]);
-
   const reviews = todayActivity?.reviews ?? 0;
-  const exercises = todayActivity?.exercises ?? 0;
-  const minutesToday = Math.min((reviews + exercises) * 2, 120);
   const newToday = todayActivity?.newCards ?? 0;
   const accuracy =
     todayActivity && todayActivity.totalAnswers > 0
       ? Math.round((todayActivity.correctAnswers / todayActivity.totalAnswers) * 100)
-      : 0;
+      : null;
 
-  // current week, Monday-first, lit up to (and including) today within the streak
+  // Current week, Monday-first. The streak runs up to today if there was activity today,
+  // otherwise up to yesterday.
   const todayIdx = (new Date().getDay() + 6) % 7;
+  const lastLit = progress.lastActiveDate === getToday() ? todayIdx : todayIdx - 1;
 
   return (
     <>
       <div className="page-top">
         <div>
-          <div className="greet">{language === 'japanese' ? 'おはよう。' : '早安。'}</div>
+          <div className="greet">{isJp ? 'おはよう。' : '早安。'}</div>
           <h1>
-            Today<span className="cjk"> · 今日</span>
+            Today<span className="cjk"> · {isJp ? '今日' : '今天'}</span>
           </h1>
         </div>
         <div className="date">
@@ -84,12 +133,12 @@ export default function DashboardPage() {
                 <div className="v">{reviews}</div>
               </div>
               <div className="mi">
-                <div className="k">New words</div>
+                <div className="k">New cards</div>
                 <div className="v">+{newToday}</div>
               </div>
               <div className="mi">
                 <div className="k">Accuracy</div>
-                <div className="v">{accuracy}%</div>
+                <div className="v">{accuracy === null ? '—' : `${accuracy}%`}</div>
               </div>
             </div>
           </div>
@@ -105,58 +154,82 @@ export default function DashboardPage() {
             <div className="k">Streak</div>
             <div className="v">
               {progress.streak}
-              <small>days</small>
+              <small>{progress.streak === 1 ? 'day' : 'days'}</small>
             </div>
             <div className="seal-cal">
-              {CAL.map((c, i) => (
-                <div
-                  key={i}
-                  className={`d ${i < todayIdx && i >= todayIdx - progress.streak ? 'on' : ''} ${i === todayIdx ? 'today' : ''}`}
-                >
-                  {c}
-                </div>
-              ))}
+              {WEEK[language].map((c, i) => {
+                const lit = progress.streak > 0 && i <= lastLit && i > lastLit - progress.streak;
+                return (
+                  <div key={i} className={`d ${lit ? 'on' : ''} ${i === todayIdx ? 'today' : ''}`}>
+                    {c}
+                  </div>
+                );
+              })}
             </div>
           </InkCard>
           <InkCard className="stat">
-            <div className="cjk-watermark">語</div>
+            <div className="cjk-watermark">{isJp ? '語' : '词'}</div>
             <div className="k">{native} words in decks</div>
-            <div className="v">{wordsInDecks}</div>
+            <div className="v">{stats ? stats.words : '—'}</div>
             <div className="s">{corpus} words in library</div>
           </InkCard>
           <InkCard className="stat">
-            <div className="cjk-watermark">時</div>
-            <div className="k">Time today</div>
+            <div className="cjk-watermark">待</div>
+            <div className="k">Cards to review</div>
             <div className="v">
-              {minutesToday}
-              <small>min</small>
+              {stats ? (
+                <>
+                  {stats.due + stats.fresh}
+                  <small>{stats.due + stats.fresh === 1 ? 'card' : 'cards'}</small>
+                </>
+              ) : (
+                '—'
+              )}
             </div>
             <div className="s">
-              Goal 30 min · {Math.min(Math.round((minutesToday / 30) * 100), 100)}% complete
+              {stats &&
+                (stats.data.decks.length === 0
+                  ? 'Add a deck in Study to begin'
+                  : `${stats.due} due · ${stats.fresh} new today`)}
             </div>
           </InkCard>
         </div>
 
-        <InkCard title="Your lessons" cjk="課" meta={`${native} · ${lessons.length} threads`}>
+        <InkCard
+          title="Your lessons"
+          cjk={isJp ? '課' : '课'}
+          meta={`${native} · ${lessons.length} threads`}
+        >
           <div className="lesson-list">
-            {lessons.map((les) => (
-              <div key={les.id} className="lesson-item" onClick={() => router.push('/flashcards')}>
-                <div className="glyph">{les.glyph}</div>
-                <div className="main">
-                  <div className="title">{les.title}</div>
-                  <div className="sub">{les.sub}</div>
-                  <div className="tags">
-                    <span className="tag">{les.band}</span>
-                    <span className="tag">{les.topic}</span>
+            {lessons.map((les, i) => {
+              const pct = Math.round(rings[i] * 100);
+              return (
+                <div
+                  key={les.id}
+                  className="lesson-item"
+                  onClick={() => router.push('/flashcards')}
+                >
+                  <div className="glyph">{les.glyph}</div>
+                  <div className="main">
+                    <div className="title">{les.title}</div>
+                    <div className="sub">{les.sub}</div>
+                    <div className="tags">
+                      <span className="tag">{les.band}</span>
+                      <span className="tag">{les.topic}</span>
+                    </div>
                   </div>
+                  <Ring
+                    value={rings[i]}
+                    label={stats ? `${pct}%` : undefined}
+                    title={stats ? `${pct}% of words reviewed` : undefined}
+                  />
                 </div>
-                <Ring value={0.15} label="→" />
-              </div>
-            ))}
+              );
+            })}
           </div>
         </InkCard>
 
-        <InkCard title="Word of the day" cjk="今日の語" meta={native}>
+        <InkCard title="Word of the day" cjk={isJp ? '今日の語' : '每日一词'} meta={native}>
           <div className="wotd">
             <div className="big">{wod.char}</div>
             <div className="reading">{wod.reading}</div>

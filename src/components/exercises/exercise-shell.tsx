@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import type { Exercise, ExerciseResult } from '@/types';
+import type { Exercise, ExerciseResult, Language } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -56,25 +56,48 @@ function getAnswerSpeech(exercise: Exercise): string | null {
   }
 }
 
+// The target-language text worth speaking from the header, or null. Only the
+// translation prompt qualifies: its sourceText is target-language when
+// translating out of Chinese/Japanese. The other types either keep their
+// prompt in English (spoken with a Chinese voice it would be gibberish), or
+// already carry their own speaker beside the target text, or would have the
+// speech give the answer away.
+function getPromptSpeech(exercise: Exercise): { text: string; language: Language } | null {
+  const data = exercise.data;
+  if (data.type === 'translation' && data.sourceLanguage !== 'english') {
+    return { text: data.sourceText, language: data.sourceLanguage };
+  }
+  return null;
+}
+
 export function ExerciseShell({ exercise, onComplete, onNext }: ExerciseShellProps) {
   const { speechRate } = useLanguage();
   const [result, setResult] = useState<ExerciseResult | null>(null);
   const [evaluating, setEvaluating] = useState(false);
+  const [evalFailure, setEvalFailure] = useState<{ message: string; answer: string } | null>(null);
 
   useEffect(() => {
     setResult(null);
     setEvaluating(false);
+    setEvalFailure(null);
     // Cut off any still-playing pronunciation from the previous exercise
     stopSpeaking();
   }, [exercise.id]);
 
   const handleSubmit = async (answer: string, isCorrect?: boolean) => {
     setEvaluating(true);
+    setEvalFailure(null);
 
     let correct = isCorrect;
     let feedback = '';
 
     if (correct === undefined) {
+      // A failed evaluation says nothing about the answer: surface the error
+      // and let the learner retry instead of recording a wrong answer.
+      const fail = (message: string) => {
+        setEvalFailure({ message, answer });
+        setEvaluating(false);
+      };
       try {
         const res = await fetch('/api/exercises/evaluate', {
           method: 'POST',
@@ -90,12 +113,24 @@ export function ExerciseShell({ exercise, onComplete, onNext }: ExerciseShellPro
             userAnswer: answer,
           }),
         });
-        const evaluation = await res.json();
+        const evaluation = await res.json().catch(() => null);
+        if (!res.ok) {
+          fail(
+            typeof evaluation?.error === 'string' && evaluation.error
+              ? evaluation.error
+              : 'Could not evaluate your answer. Please try again.',
+          );
+          return;
+        }
+        if (typeof evaluation?.correct !== 'boolean') {
+          fail('The evaluation came back unreadable. Please try again.');
+          return;
+        }
         correct = evaluation.correct;
-        feedback = evaluation.feedback;
+        feedback = typeof evaluation.feedback === 'string' ? evaluation.feedback : '';
       } catch {
-        correct = false;
-        feedback = 'Could not evaluate. Please try again.';
+        fail('Could not reach the server. Check your connection and try again.');
+        return;
       }
     }
 
@@ -157,6 +192,8 @@ export function ExerciseShell({ exercise, onComplete, onNext }: ExerciseShellPro
     }
   };
 
+  const promptSpeech = getPromptSpeech(exercise);
+
   return (
     <Card>
       <CardContent className="p-5 space-y-5">
@@ -165,7 +202,9 @@ export function ExerciseShell({ exercise, onComplete, onNext }: ExerciseShellPro
           <Badge variant="outline" className="text-[11px]">
             {TYPE_LABELS[exercise.type] ?? exercise.type}
           </Badge>
-          <SpeakButton text={exercise.question} />
+          {promptSpeech && (
+            <SpeakButton text={promptSpeech.text} language={promptSpeech.language} />
+          )}
         </div>
 
         {/* Question */}
@@ -184,6 +223,20 @@ export function ExerciseShell({ exercise, onComplete, onNext }: ExerciseShellPro
           <div className="flex items-center gap-2 py-2">
             <div className="animate-spin w-4 h-4 border-2 border-primary border-t-transparent rounded-full" />
             <p className="text-xs text-muted-foreground">Evaluating...</p>
+          </div>
+        )}
+
+        {/* Evaluation failure: not a wrong answer, so offer a retry */}
+        {evalFailure && !evaluating && (
+          <div className="px-4 py-3 rounded-lg text-sm bg-destructive/10 text-destructive space-y-2">
+            <p className="text-[13px]">{evalFailure.message}</p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => void handleSubmit(evalFailure.answer)}
+            >
+              Retry
+            </Button>
           </div>
         )}
 

@@ -218,7 +218,7 @@ const baseVocabulary: VocabularyItem[] = [
     id: 'zh-019',
     language: 'chinese',
     word: '学生',
-    reading: 'xué shēng',
+    reading: 'xué sheng',
     meaning: 'student',
     partOfSpeech: 'noun',
     level: 'HSK 1',
@@ -362,16 +362,42 @@ const baseVocabulary: VocabularyItem[] = [
   },
 ];
 
-// Build vocabulary from lesson slides
+/**
+ * Same characters and same pronunciation → one vocabulary item. Keying on the
+ * reading as well keeps genuinely different words apart: 只 zhī (classifier)
+ * and 只 zhǐ (only), 得 de (particle) and 得 děi (must).
+ */
+function vocabKey(word: string, reading: string): string {
+  return `${word}|${reading
+    .normalize('NFC')
+    .toLowerCase()
+    .replace(/[\s'’]/g, '')}`;
+}
+
+// Every lesson that teaches each word, so a lesson's practice includes words it
+// revisits from earlier lessons (L31's 跑步 and 正在 were first taught earlier).
+const lessonsByKey = new Map<string, number[]>();
+for (const lesson of lessonsData.lessons) {
+  for (const entry of lesson.vocabulary) {
+    const key = vocabKey(entry.word, entry.reading);
+    const taughtIn = lessonsByKey.get(key);
+    if (!taughtIn) lessonsByKey.set(key, [lesson.lesson]);
+    else if (!taughtIn.includes(lesson.lesson)) taughtIn.push(lesson.lesson);
+  }
+}
+
+// Build vocabulary from lesson slides: one item per word, from the lesson that
+// first teaches it.
 function buildLessonVocabulary(): VocabularyItem[] {
-  const existingWords = new Set(baseVocabulary.map((v) => v.word));
+  const existing = new Set(baseVocabulary.map((v) => vocabKey(v.word, v.reading)));
   const items: VocabularyItem[] = [];
   let counter = 100;
 
   for (const lesson of lessonsData.lessons) {
     for (const entry of lesson.vocabulary) {
-      if (existingWords.has(entry.word)) continue;
-      existingWords.add(entry.word);
+      const key = vocabKey(entry.word, entry.reading);
+      if (existing.has(key)) continue;
+      existing.add(key);
 
       items.push({
         id: `zh-l${lesson.lesson}-${String(counter++).padStart(3, '0')}`,
@@ -381,6 +407,7 @@ function buildLessonVocabulary(): VocabularyItem[] {
         meaning: entry.meaning,
         partOfSpeech: entry.partOfSpeech,
         level: lesson.title,
+        lessons: lessonsByKey.get(key),
         topic: entry.topic,
         exampleSentence: entry.exampleSentence,
         examplePinyin: (entry as Record<string, string>).examplePinyin,
@@ -394,8 +421,15 @@ function buildLessonVocabulary(): VocabularyItem[] {
 
 const lessonVocabulary = buildLessonVocabulary();
 
-// Combined vocabulary: base HSK items + lesson-extracted items
-export const chineseVocabulary: VocabularyItem[] = [...baseVocabulary, ...lessonVocabulary];
+// Combined vocabulary: base HSK items (tagged with any lessons that also teach
+// them) + lesson-extracted items
+export const chineseVocabulary: VocabularyItem[] = [
+  ...baseVocabulary.map((v) => {
+    const lessons = lessonsByKey.get(vocabKey(v.word, v.reading));
+    return lessons ? { ...v, lessons } : v;
+  }),
+  ...lessonVocabulary,
+];
 
 // ── Lesson data ───────────────────────────────────────────────
 // lessons.json is a plain JSON import, so TypeScript infers a union of the
@@ -448,6 +482,28 @@ export function getLessonsWithNotes(): LessonEntry[] {
 
 export function getLesson(lessonNumber: number): LessonEntry | undefined {
   return chineseLessons.find((l) => l.lesson === lessonNumber);
+}
+
+/** Highest lesson number shipped — the default current lesson. */
+export const LATEST_LESSON = Math.max(...chineseLessons.map((l) => l.lesson));
+
+/** The learner's current lesson: the saved choice if that lesson exists, else the latest. */
+export function resolveCurrentLesson(saved?: number): number {
+  return saved !== undefined && chineseLessons.some((l) => l.lesson === saved)
+    ? saved
+    : LATEST_LESSON;
+}
+
+/** Words a lesson teaches, including ones first introduced in an earlier lesson. */
+export function getLessonVocabulary(lesson: number): VocabularyItem[] {
+  return chineseVocabulary.filter((v) => v.lessons?.includes(lesson));
+}
+
+/** Words taught up to and including `currentLesson`, plus the HSK 1 core list. */
+export function getCourseVocabulary(currentLesson: number): VocabularyItem[] {
+  return chineseVocabulary.filter(
+    (v) => v.level === 'HSK 1' || v.lessons?.some((n) => n <= currentLesson),
+  );
 }
 
 // Get all unique levels

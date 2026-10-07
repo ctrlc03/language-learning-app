@@ -1,9 +1,10 @@
 'use client';
 
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import type { StorageAdapter } from '@/types';
 import { LocalStorageAdapter } from '@/lib/storage/local-storage';
 import { IndexedDBAdapter, isIndexedDBAvailable } from '@/lib/storage/indexeddb';
+import { requestPersistentStorage } from '@/lib/storage/persist';
 
 const StorageContext = createContext<StorageAdapter | null>(null);
 
@@ -17,6 +18,10 @@ function createAdapter(): StorageAdapter {
 export function StorageProvider({ children }: { children: React.ReactNode }) {
   // Lazy initialiser: one adapter per provider, created on first render only.
   const [storage] = useState<StorageAdapter>(createAdapter);
+
+  useEffect(() => {
+    void requestPersistentStorage();
+  }, []);
 
   return <StorageContext.Provider value={storage}>{children}</StorageContext.Provider>;
 }

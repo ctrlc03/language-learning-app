@@ -1,4 +1,9 @@
-import { getAnthropicClient } from '@/lib/claude/client';
+import {
+  aiError,
+  aiErrorResponse,
+  getAnthropicClient,
+  missingKeyResponse,
+} from '@/lib/claude/client';
 import type { Language, DifficultyLevel } from '@/types';
 
 const FLASHCARD_TOOL = {
@@ -30,6 +35,9 @@ const FLASHCARD_TOOL = {
 };
 
 export async function POST(request: Request) {
+  const missingKey = missingKeyResponse();
+  if (missingKey) return missingKey;
+
   try {
     const body = await request.json();
     const {
@@ -66,13 +74,13 @@ export async function POST(request: Request) {
 
     const toolUse = response.content.find((block) => block.type === 'tool_use');
     if (!toolUse || toolUse.type !== 'tool_use') {
-      throw new Error('No tool use in response');
+      return aiError('The AI reply could not be understood. Please try again.', 502);
     }
 
     const input = toolUse.input as { cards: Array<Record<string, string>> };
     return Response.json({ cards: input.cards });
   } catch (error) {
     console.error('Flashcard generation error:', error);
-    return Response.json({ error: 'Failed to generate flashcards' }, { status: 500 });
+    return aiErrorResponse(error, 'Failed to generate flashcards');
   }
 }

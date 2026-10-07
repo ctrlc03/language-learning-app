@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useSpeechInit } from '@/hooks/use-speech';
+import { useSpeechInit, useSpeechNotice } from '@/hooks/use-speech';
 import { useProgress } from '@/hooks/use-progress';
 import { useMastery } from '@/hooks/use-mastery';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ColoredPinyin, PlayButton } from '@/components/tones/tone-pieces';
+import { SpeechNotice } from '@/components/shared/speak-button';
 import { speak } from '@/lib/tts/speech';
 import { makeRng, shuffle } from '@/lib/tones/utils';
 import { numberToChinese, moneyToChinese } from '@/lib/chinese-num';
@@ -90,14 +91,18 @@ export default function NumbersPage() {
   const [picked, setPicked] = useState<number | null>(null);
   const [result, setResult] = useState<null | boolean>(null);
   const [correct, setCorrect] = useState(0);
+  // Listen hides the characters and pinyin (they spell out the answer) until
+  // the question is answered; Read shows them.
+  const [listen, setListen] = useState(true);
 
   useSpeechInit();
+  const { notice, reportSpeechError } = useSpeechNotice();
 
   const q = session[index];
 
   // Numbers are great listening practice — play on each question.
   useEffect(() => {
-    if (mode !== 'select' && q) speak(q.hanzi, 'chinese', speechRate).catch(() => {});
+    if (mode !== 'select' && q) speak(q.hanzi, 'chinese', speechRate).catch(reportSpeechError);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, mode]);
 
@@ -166,6 +171,19 @@ export default function NumbersPage() {
             </h1>
           </div>
         </div>
+        <div className="flex justify-center gap-2" role="group" aria-label="Practice mode">
+          {([true, false] as const).map((on) => (
+            <Button
+              key={String(on)}
+              size="sm"
+              variant={listen === on ? 'primary' : 'outline'}
+              aria-pressed={listen === on}
+              onClick={() => setListen(on)}
+            >
+              {on ? 'Listen' : 'Read'}
+            </Button>
+          ))}
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {cards.map((c) => (
             <button key={c.m} onClick={() => start(c.m)} className="text-left">
@@ -182,6 +200,7 @@ export default function NumbersPage() {
 
   return (
     <div className="p-5 md:p-8 max-w-2xl mx-auto space-y-6">
+      <SpeechNotice message={notice} />
       <div className="flex items-center justify-between">
         <Button variant="ghost" size="sm" onClick={() => setMode('select')}>
           &larr; Back
@@ -197,11 +216,20 @@ export default function NumbersPage() {
       </div>
 
       <div className="text-center space-y-2">
-        <div className="text-4xl cjk font-bold">{q.hanzi}</div>
-        <ColoredPinyin word={q.hanzi} className="text-base" />
-        <div className="pt-1">
-          <PlayButton text={q.hanzi} label="Replay" size="sm" />
-        </div>
+        {listen && result === null ? (
+          <>
+            <div className="text-sm text-muted-foreground">Listen, then type what you heard</div>
+            <PlayButton text={q.hanzi} label="Play again" />
+          </>
+        ) : (
+          <>
+            <div className="text-4xl cjk font-bold">{q.hanzi}</div>
+            <ColoredPinyin word={q.hanzi} className="text-base" />
+            <div className="pt-1">
+              <PlayButton text={q.hanzi} label="Replay" size="sm" />
+            </div>
+          </>
+        )}
       </div>
 
       {q.kind === 'date' ? (

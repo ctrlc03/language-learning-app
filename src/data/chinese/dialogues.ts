@@ -2232,7 +2232,7 @@ export const chineseDialogues: Dialogue[] = [
       {
         speaker: 'A',
         text: '我很喜欢小狗。',
-        pinyin: 'Wǒ hěn xǐhuān xiǎo gǒu.',
+        pinyin: 'Wǒ hěn xǐhuan xiǎo gǒu.',
         translation: 'I really like dogs.',
       },
       {
@@ -2378,7 +2378,7 @@ export const chineseDialogues: Dialogue[] = [
       {
         speaker: 'B',
         text: '我是中国人。你是学生吗？',
-        pinyin: 'Wǒ shì Zhōngguó rén. Nǐ shì xuéshēng ma?',
+        pinyin: 'Wǒ shì Zhōngguó rén. Nǐ shì xuésheng ma?',
         translation: "I'm Chinese. Are you a student?",
       },
       {
@@ -2441,13 +2441,13 @@ export const chineseDialogues: Dialogue[] = [
       {
         speaker: 'B',
         text: '你最喜欢吃什么肉？',
-        pinyin: 'Nǐ zuì xǐhuān chī shénme ròu?',
+        pinyin: 'Nǐ zuì xǐhuan chī shénme ròu?',
         translation: 'What meat do you like most?',
       },
       {
         speaker: 'A',
         text: '我喜欢吃牛肉。牛肉面很好吃！',
-        pinyin: 'Wǒ xǐhuān chī niúròu. Niúròu miàn hěn hǎochī!',
+        pinyin: 'Wǒ xǐhuan chī niúròu. Niúròu miàn hěn hǎochī!',
         translation: 'I like beef. Beef noodles are delicious!',
       },
       {
@@ -2558,7 +2558,7 @@ export const chineseDialogues: Dialogue[] = [
       {
         speaker: 'B',
         text: '吃！我最喜欢吃米饭。',
-        pinyin: 'Chī! Wǒ zuì xǐhuān chī mǐfàn.',
+        pinyin: 'Chī! Wǒ zuì xǐhuan chī mǐfàn.',
         translation: 'Yes! I like rice the most.',
       },
     ],

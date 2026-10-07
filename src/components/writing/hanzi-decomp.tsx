@@ -64,7 +64,7 @@ export function HanziDecomp({ char, onPickSibling, inStudySet }: HanziDecompProp
                       {isPhonetic ? 'sound' : 'meaning'}
                     </span>
                   </div>
-                  <div className="text-sm text-muted-foreground truncate">{comp.m}</div>
+                  {comp.m && <div className="text-sm text-muted-foreground truncate">{comp.m}</div>}
                 </div>
               </div>
 

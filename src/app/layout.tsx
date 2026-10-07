@@ -25,7 +25,8 @@ const zenKaku = Zen_Kaku_Gothic_New({
 });
 
 export const metadata: Metadata = {
-  title: 'INKPATH · 言葉の道',
+  // Shared by Chinese and Japanese mode; the header subtitle carries the language.
+  title: 'INKPATH · 墨',
   description: 'Paper-and-ink language study for Chinese and Japanese',
   manifest: '/manifest.webmanifest',
   icons: { icon: '/inkpath/seal-jp.png' },

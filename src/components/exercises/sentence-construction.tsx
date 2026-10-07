@@ -4,6 +4,7 @@ import { useState } from 'react';
 import type { SentenceConstructionData } from '@/types';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { isAcceptedOrder } from '@/lib/exercises/tiles';
 
 interface SentenceConstructionProps {
   data: SentenceConstructionData;
@@ -47,7 +48,7 @@ export function SentenceConstruction({ data, onSubmit, disabled }: SentenceConst
 
   const handleSubmit = () => {
     const answer = selected.map((t) => t.word).join('');
-    const isCorrect = answer === data.correctOrder;
+    const isCorrect = isAcceptedOrder(answer, data);
     onSubmit(answer, isCorrect);
   };
 
@@ -125,6 +126,14 @@ export function SentenceConstruction({ data, onSubmit, disabled }: SentenceConst
           <p>
             Correct: <span className="font-medium text-foreground">{data.correctOrder}</span>
           </p>
+          {data.acceptableOrders && data.acceptableOrders.length > 0 && (
+            <p>
+              Also correct:{' '}
+              <span className="font-medium text-foreground">
+                {data.acceptableOrders.join(' / ')}
+              </span>
+            </p>
+          )}
           {data.correctPinyin && <p className="tracking-wide">{data.correctPinyin}</p>}
         </div>
       )}

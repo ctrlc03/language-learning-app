@@ -25,6 +25,9 @@ export function ChatInput({ onSend, disabled, placeholder = 'Type a message...' 
   }, [value, disabled, onSend]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    // Enter confirms an IME candidate (pinyin/kana) while composing; it must not send.
+    // keyCode 229 covers browsers that fire keydown after compositionend.
+    if (e.nativeEvent.isComposing || e.nativeEvent.keyCode === 229) return;
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSubmit();

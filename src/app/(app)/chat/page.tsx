@@ -10,13 +10,20 @@ import { ScenarioPicker, SCENARIOS } from '@/components/chat/scenario-picker';
 import { Button } from '@/components/ui/button';
 import { StoragePrefixes } from '@/lib/storage/interface';
 import type { Conversation, ChatScenario } from '@/types';
-import { cn, truncate, formatDate } from '@/lib/utils';
+import { cn, truncate, formatDate, plural } from '@/lib/utils';
 
 export default function ChatPage() {
   const { language, difficulty } = useLanguage();
   const storage = useStorage();
-  const { conversation, isStreaming, createConversation, loadConversation, sendMessage } =
-    useChat();
+  const {
+    conversation,
+    isStreaming,
+    error,
+    createConversation,
+    loadConversation,
+    sendMessage,
+    retry,
+  } = useChat();
   const [showScenarios, setShowScenarios] = useState(true);
   const [pastConversations, setPastConversations] = useState<Conversation[]>([]);
   const [showHistory, setShowHistory] = useState(false);
@@ -57,7 +64,9 @@ export default function ChatPage() {
         )}
       >
         <div className="p-3 border-b border-border flex items-center justify-between">
-          <h2 className="font-medium text-[11px] tracking-[0.15em]">対話 · Conversations</h2>
+          <h2 className="font-medium text-[11px] tracking-[0.15em]">
+            {language === 'japanese' ? '対話' : '对话'} · Conversations
+          </h2>
           <Button variant="ghost" size="sm" onClick={handleNewChat}>
             + New
           </Button>
@@ -79,7 +88,7 @@ export default function ChatPage() {
             >
               <p className="font-medium truncate">{truncate(conv.title, 30)}</p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                {formatDate(conv.updatedAt)} · {conv.messages.length} messages
+                {formatDate(conv.updatedAt)} · {plural(conv.messages.length, 'message')}
               </p>
             </button>
           ))}
@@ -106,7 +115,9 @@ export default function ChatPage() {
           <ChatContainer
             conversation={conversation}
             isStreaming={isStreaming}
+            error={error}
             onSend={sendMessage}
+            onRetry={retry}
           />
         )}
       </div>

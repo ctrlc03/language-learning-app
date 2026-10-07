@@ -9,6 +9,8 @@ import { ExerciseShell } from '@/components/exercises/exercise-shell';
 import { chineseGrammarRules, type GrammarRule } from '@/data/chinese/grammar';
 import { getLessonsWithNotes, chineseLessons, type LessonEntry } from '@/data/chinese/vocabulary';
 import { LessonNotes } from '@/components/learn/lesson-notes';
+import { useMastery } from '@/hooks/use-mastery';
+import { useProgress } from '@/hooks/use-progress';
 import { buildChecksForRule } from '@/lib/learn/checks';
 import { cn } from '@/lib/utils';
 import type { Exercise, ExerciseResult } from '@/types';
@@ -211,9 +213,25 @@ function StudySession({ rule, onExit }: { rule: GrammarRule; onExit: () => void 
   const [index, setIndex] = useState(0);
   const [correct, setCorrect] = useState(0);
 
-  const handleComplete = useCallback((result: ExerciseResult) => {
-    if (result.correct) setCorrect((c) => c + 1);
-  }, []);
+  const { recordActivity } = useProgress();
+  const { record: recordGrammar } = useMastery('grammar');
+
+  const handleComplete = useCallback(
+    (result: ExerciseResult) => {
+      if (result.correct) setCorrect((c) => c + 1);
+      void recordActivity({
+        exercises: 1,
+        totalAnswers: 1,
+        correctAnswers: result.correct ? 1 : 0,
+      });
+      recordGrammar(rule.id, result.correct, {
+        label: rule.title,
+        sublabel: rule.pattern,
+        group: 'grammar',
+      });
+    },
+    [recordActivity, recordGrammar, rule],
+  );
 
   const handleNext = useCallback(() => {
     setIndex((i) => {

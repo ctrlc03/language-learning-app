@@ -1,49 +1,61 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSRS } from '@/hooks/use-srs';
 import { useProgress } from '@/hooks/use-progress';
+import { useSpeechNotice } from '@/hooks/use-speech';
+import { SpeechNotice } from '@/components/shared/speak-button';
+import { plural } from '@/lib/utils';
 import { InkCard } from '@/components/ink/primitives';
 import { getLanguageName, getLanguageNativeName } from '@/lib/language/utils';
 import {
   getPrebuiltDecks,
   instantiatePrebuiltDeck,
+  shippedDeckId,
   type PrebuiltDeckDef,
 } from '@/lib/flashcards/prebuilt-decks';
-import { cardFace, directionOf, isAudioPrompt, DIRECTION_LABEL } from '@/lib/flashcards/direction';
+import {
+  cardFace,
+  canSpeakBeforeReveal,
+  directionOf,
+  isAudioPrompt,
+  CARD_DIRECTIONS,
+  DIRECTION_LABEL,
+} from '@/lib/flashcards/direction';
 import { speak } from '@/lib/tts/speech';
 import type { SRSGrade } from '@/types';
 
 type View = 'decks' | 'review';
 
 export default function FlashcardsPage() {
-  const { language, speechRate } = useLanguage();
+  const { language, speechRate, settings } = useLanguage();
   const [selectedDeckId, setSelectedDeckId] = useState<string | undefined>();
-  const {
-    decks,
-    cards,
-    queue,
-    currentCard,
-    startReview,
-    gradeCard,
-    createDeck,
-    addCard,
-    loadDecks,
-  } = useSRS(selectedDeckId);
+  const { decks, queue, currentCard, startReview, gradeCard, createDeck, syncDecks } =
+    useSRS(selectedDeckId);
   const { recordActivity } = useProgress();
   const [view, setView] = useState<View>('decks');
   const [creating, setCreating] = useState(false);
   const [revealed, setRevealed] = useState(false);
   const [reviewed, setReviewed] = useState(0);
+  const { notice: speechNotice, reportSpeechError } = useSpeechNotice();
 
   const native = getLanguageNativeName(language);
   const latin = getLanguageName(language).toUpperCase();
   const languageDecks = decks.filter((d) => d.language === language);
-  const existingNames = new Set(languageDecks.map((d) => d.name));
-  const availablePrebuilt = getPrebuiltDecks(language).filter((p) => !existingNames.has(p.name));
+  const addedIds = new Set(languageDecks.map(shippedDeckId));
+  const availablePrebuilt = getPrebuiltDecks(language).filter((p) => !addedIds.has(p.id));
+
+  // Stored copies of shipped decks are brought in step with the current data
+  // when the deck list opens. A review waits for it (see beginReview) so the
+  // repair can't overwrite a card that was just graded.
+  const syncing = useRef<Promise<void>>(Promise.resolve());
+  useEffect(() => {
+    syncing.current = syncDecks().catch((err) => console.error('Deck sync failed:', err));
+  }, [syncDecks]);
 
   const beginReview = async (deckId: string) => {
+    await syncing.current;
     setSelectedDeckId(deckId);
     await startReview(deckId);
     setReviewed(0);
@@ -57,9 +69,7 @@ export default function FlashcardsPage() {
     try {
       const result = instantiatePrebuiltDeck(prebuilt.id);
       if (!result) return;
-      await createDeck(result.deck);
-      for (const card of result.cards) await addCard(card);
-      await loadDecks();
+      await createDeck(result.deck, result.cards);
       await beginReview(result.deck.id);
     } finally {
       setCreating(false);
@@ -99,17 +109,20 @@ export default function FlashcardsPage() {
     return () => window.removeEventListener('keydown', h);
   });
 
-  // Listen-direction cards are audio-first: play the term when the card appears.
+  // Listen-direction cards are audio-first: play the term when the card
+  // appears. It is the prompt there; produce and cloze cards stay silent until
+  // revealed, since their term is the answer. A failure must say why, since the
+  // sound is the whole prompt.
   useEffect(() => {
     if (view !== 'review' || !currentCard) return;
     if (isAudioPrompt(currentCard)) {
-      speak(currentCard.front, language, speechRate).catch(() => {});
+      speak(currentCard.front, language, speechRate).catch(reportSpeechError);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentCard?.id, view]);
 
   const playCurrent = () => {
-    if (currentCard) speak(currentCard.front, language, speechRate).catch(() => {});
+    if (currentCard) speak(currentCard.front, language, speechRate).catch(reportSpeechError);
   };
 
   // ---------------- DECK PICKER ----------------
@@ -118,7 +131,9 @@ export default function FlashcardsPage() {
       <>
         <div className="page-top">
           <div>
-            <div className="greet">束を選ぶ · choose a deck</div>
+            <div className="greet">
+              {language === 'japanese' ? '束を選ぶ' : '选卡组'} · choose a deck
+            </div>
             <h1>
               Study<span className="cjk"> · 学</span>
             </h1>
@@ -155,7 +170,11 @@ export default function FlashcardsPage() {
           </InkCard>
         )}
 
-        <InkCard title="From the library" cjk="蔵" meta={`${availablePrebuilt.length} available`}>
+        <InkCard
+          title="From the library"
+          cjk={language === 'japanese' ? '蔵' : '藏'}
+          meta={`${availablePrebuilt.length} available`}
+        >
           <div className="lesson-list">
             {availablePrebuilt.map((p) => (
               <div key={p.id} className="lesson-item" onClick={() => handleSelectPrebuilt(p)}>
@@ -182,26 +201,38 @@ export default function FlashcardsPage() {
   }
 
   // ---------------- REVIEW / FLASHCARD ----------------
-  const deck = cards;
   const done = currentCard == null;
   // Progress denominator reflects the session queue (remaining + reviewed), not
   // the full multi-direction deck, which is ~3x larger than any one session.
   const totalSegs = Math.max((queue?.total ?? 0) + reviewed, reviewed + (done ? 0 : 1));
 
+  // The side panel counts what is left instead of listing it: a card's face is
+  // its answer, and the cards still to come must not show theirs.
+  const left = queue ? [...queue.learning, ...queue.due, ...queue.newCards] : [];
+  const leftByDirection = CARD_DIRECTIONS.map((direction) => ({
+    direction,
+    n: left.filter((c) => directionOf(c) === direction).length,
+  })).filter(({ n }) => n > 0);
+
   return (
     <>
+      <SpeechNotice message={speechNotice} />
       <div className="page-top">
         <div>
           <div className="greet" style={{ cursor: 'pointer' }} onClick={() => setView('decks')}>
             ← back to decks
           </div>
           <h1>
-            <span className="cjk">学習</span>
+            <span className="cjk">{language === 'japanese' ? '学習' : '学习'}</span>
           </h1>
         </div>
         <div className="date">
-          {done ? 'Complete' : `Card ${reviewed + 1} of ${totalSegs}`}
-          <b>{Math.round((reviewed / totalSegs) * 100)}%</b>
+          {done
+            ? reviewed > 0
+              ? 'Complete'
+              : 'All caught up'
+            : `Card ${reviewed + 1} of ${totalSegs}`}
+          <b>{done ? 100 : Math.round((reviewed / totalSegs) * 100)}%</b>
           {latin} DECK
         </div>
       </div>
@@ -222,8 +253,22 @@ export default function FlashcardsPage() {
               <div className="flash-char" style={{ fontSize: 96, color: 'var(--primary)' }}>
                 了
               </div>
-              <div className="flash-meaning">Review complete</div>
-              <div className="flash-hint">You revisited {reviewed} cards. Well walked.</div>
+              {reviewed > 0 ? (
+                <>
+                  <div className="flash-meaning">Review complete</div>
+                  <div className="flash-hint">
+                    You revisited {plural(reviewed, 'card')}. Well walked.
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flash-meaning">All caught up</div>
+                  <div className="flash-hint">
+                    Nothing is due in this deck right now. New cards arrive{' '}
+                    {settings.maxNewCardsPerDay} a day.
+                  </div>
+                </>
+              )}
               <button className="btn solid" onClick={() => setView('decks')}>
                 Back to decks →
               </button>
@@ -234,6 +279,10 @@ export default function FlashcardsPage() {
                 {(() => {
                   const face = cardFace(currentCard!);
                   const dir = directionOf(currentCard!);
+                  // Audio of the term is offered before reveal only where the
+                  // prompt is the term or audio; after reveal, always.
+                  const canSpeak =
+                    face.promptKind !== 'audio' && (revealed || canSpeakBeforeReveal(currentCard!));
                   return (
                     <>
                       <div className="flash-dir">
@@ -258,6 +307,21 @@ export default function FlashcardsPage() {
                         <div className="flash-cloze cjk">{face.promptMain}</div>
                       ) : (
                         <div className="flash-char">{face.promptMain}</div>
+                      )}
+
+                      {canSpeak && (
+                        <button
+                          onClick={playCurrent}
+                          aria-label="Play audio"
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            fontSize: 24,
+                          }}
+                        >
+                          🔊
+                        </button>
                       )}
 
                       {/* Reveal */}
@@ -318,10 +382,11 @@ export default function FlashcardsPage() {
         </InkCard>
 
         <div className="side-stack">
-          <InkCard className="trace" title="Glyph" cjk="筆">
+          <InkCard className="trace" title="Glyph" cjk={language === 'japanese' ? '筆' : '笔'}>
             {(() => {
-              // Don't reveal the term in the side panel for audio/production
-              // prompts until the card is flipped.
+              // The term waits for the flip where it would give the answer away
+              // (listen, produce, cloze), and the reading is part of every
+              // answer, so it waits too.
               const showTerm =
                 !currentCard || !cardFace(currentCard).hideTermUntilRevealed || revealed;
               return (
@@ -333,7 +398,7 @@ export default function FlashcardsPage() {
                   </div>
                   <div className="meta">
                     <span>
-                      Reading <b>{(showTerm && currentCard?.reading) || '—'}</b>
+                      Reading <b>{(revealed && currentCard?.reading) || '—'}</b>
                     </span>
                     <span>
                       Chars{' '}
@@ -345,24 +410,33 @@ export default function FlashcardsPage() {
             })()}
           </InkCard>
 
-          <InkCard title="This deck" cjk="束" meta={`${reviewed}/${totalSegs}`}>
+          <InkCard title="This session" cjk="束" meta={`${reviewed}/${totalSegs}`}>
             <div className="queue-list">
-              {deck.slice(0, 12).map((c, i) => (
-                <div
-                  key={c.id}
-                  className={`queue-row ${currentCard && c.id === currentCard.id ? 'active' : i < reviewed ? 'done' : ''}`}
-                >
-                  <span className="g">{Array.from(c.front)[0]}</span>
-                  <span className="m">{c.back}</span>
-                  <span className="st">
-                    {currentCard && c.id === currentCard.id ? '●' : i < reviewed ? '✓' : i + 1}
-                  </span>
-                </div>
-              ))}
+              <CountRow label="New" n={queue?.newCards.length ?? 0} />
+              <CountRow label="Learning" n={queue?.learning.length ?? 0} />
+              <CountRow label="Due" n={queue?.due.length ?? 0} />
             </div>
+            {leftByDirection.length > 0 && (
+              <div className="queue-list" style={{ borderTop: '1px solid var(--line)' }}>
+                {leftByDirection.map(({ direction, n }) => (
+                  <CountRow key={direction} label={DIRECTION_LABEL[direction]} n={n} />
+                ))}
+              </div>
+            )}
           </InkCard>
         </div>
       </div>
     </>
+  );
+}
+
+function CountRow({ label, n }: { label: string; n: number }) {
+  return (
+    <div className="queue-row">
+      <span className="g" style={{ fontSize: 18 }}>
+        {n}
+      </span>
+      <span className="m">{label}</span>
+    </div>
   );
 }

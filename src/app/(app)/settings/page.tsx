@@ -4,17 +4,24 @@ import { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useStorage } from '@/contexts/StorageContext';
+import { useCurrentLesson } from '@/hooks/use-current-lesson';
+import { useSpeechNotice } from '@/hooks/use-speech';
+import { SpeechNotice } from '@/components/shared/speak-button';
+import { chineseLessons } from '@/data/chinese/vocabulary';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { getLanguageName, getAnnotationType } from '@/lib/language/utils';
+import { plural } from '@/lib/utils';
 import {
   getAvailableVoices,
   speak,
   setPreferredVoice,
   getPreferredVoiceName,
 } from '@/lib/tts/speech';
-import type { Language, DifficultyLevel } from '@/types';
+import { parseBackup, summarizeBackup, type BackupSummary } from '@/lib/storage/backup';
+import { requestPersistentStorage } from '@/lib/storage/persist';
+import type { Language, DifficultyLevel, ImportMode } from '@/types';
 
 export default function SettingsPage() {
   const {
@@ -31,11 +38,20 @@ export default function SettingsPage() {
   } = useLanguage();
   const { theme, setTheme } = useTheme();
   const storage = useStorage();
-  const [exportData, setExportData] = useState<string>('');
-  const [importData, setImportData] = useState<string>('');
-  const [importStatus, setImportStatus] = useState<string>('');
+  const [currentLesson, setCurrentLesson] = useCurrentLesson();
+  const [pendingImport, setPendingImport] = useState<{
+    name: string;
+    text: string;
+    summary: BackupSummary;
+  } | null>(null);
+  const [importMode, setImportMode] = useState<ImportMode>('merge');
+  const [importStatus, setImportStatus] = useState<{ ok: boolean; text: string } | null>(null);
+  const [importing, setImporting] = useState(false);
+  // undefined = still checking, null = unsupported by this browser
+  const [persisted, setPersisted] = useState<boolean | null | undefined>(undefined);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [selectedVoiceName, setSelectedVoiceName] = useState<string>('');
+  const { notice: speechNotice, reportSpeechError } = useSpeechNotice();
 
   useEffect(() => {
     const loadVoices = () => {
@@ -64,12 +80,11 @@ export default function SettingsPage() {
   const handleTestVoice = () => {
     const sample =
       language === 'chinese' ? '你好，我是你的中文老师。' : 'こんにちは、日本語の先生です。';
-    speak(sample, language, speechRate);
+    speak(sample, language, speechRate).catch(reportSpeechError);
   };
 
   const handleExport = async () => {
     const data = await storage.exportData();
-    setExportData(data);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -79,14 +94,54 @@ export default function SettingsPage() {
     URL.revokeObjectURL(url);
   };
 
-  const handleImport = async () => {
-    if (!importData.trim()) return;
+  const refreshPersistence = useCallback(() => {
+    requestPersistentStorage().then(setPersisted);
+  }, []);
+
+  useEffect(() => {
+    refreshPersistence();
+  }, [refreshPersistence]);
+
+  const handleImportFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ''; // allow re-selecting the same file after a fix
+    if (!file) return;
+    setPendingImport(null);
     try {
-      await storage.importData(importData);
-      setImportStatus('Data imported successfully! Refresh the page to see changes.');
-      setImportData('');
-    } catch {
-      setImportStatus('Failed to import data. Please check the format.');
+      const text = await file.text();
+      setPendingImport({ name: file.name, text, summary: summarizeBackup(parseBackup(text)) });
+      setImportStatus(null);
+    } catch (err) {
+      setImportStatus({
+        ok: false,
+        text: err instanceof Error ? err.message : 'Could not read this file.',
+      });
+    }
+  };
+
+  const handleImport = async () => {
+    if (!pendingImport || importing) return;
+    if (
+      importMode === 'replace' &&
+      !window.confirm(
+        'Replace ALL data on this device with the contents of this file? Anything not in the file will be deleted.',
+      )
+    ) {
+      return;
+    }
+    setImporting(true);
+    try {
+      await storage.importData(pendingImport.text, importMode);
+      setImportStatus({ ok: true, text: 'Import complete. Reloading…' });
+      // Hooks keep stale copies of progress/settings in memory and would overwrite the
+      // imported data on their next write, so start from a clean page.
+      window.location.reload();
+    } catch (err) {
+      setImportStatus({
+        ok: false,
+        text: err instanceof Error ? err.message : 'Import failed. Your data was not changed.',
+      });
+      setImporting(false);
     }
   };
 
@@ -94,9 +149,11 @@ export default function SettingsPage() {
     <div className="p-5 md:p-8 max-w-2xl mx-auto space-y-6">
       <div className="page-top">
         <div>
-          <div className="greet">設定 · preferences</div>
+          <div className="greet">
+            {language === 'japanese' ? '設定 · preferences' : '设置 · preferences'}
+          </div>
           <h1>
-            Settings<span className="cjk"> · 設定</span>
+            Settings<span className="cjk"> · {language === 'japanese' ? '設定' : '设置'}</span>
           </h1>
         </div>
       </div>
@@ -126,6 +183,29 @@ export default function SettingsPage() {
             </div>
           </div>
 
+          {language === 'chinese' && (
+            <div>
+              <label className="text-sm font-medium" htmlFor="current-lesson">
+                Current lesson
+              </label>
+              <select
+                id="current-lesson"
+                value={currentLesson}
+                onChange={(e) => setCurrentLesson(parseInt(e.target.value, 10))}
+                className="block w-full mt-1 h-10 rounded-lg border border-border bg-background px-3 text-sm"
+              >
+                {chineseLessons.map((l) => (
+                  <option key={l.lesson} value={l.lesson}>
+                    Lesson {l.lesson} · {l.title}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-muted-foreground mt-1.5">
+                Today, Session, Practice and Listening draw on lessons up to this one.
+              </p>
+            </div>
+          )}
+
           <div>
             <label className="text-sm font-medium">Difficulty</label>
             <div className="flex flex-wrap gap-2 p-2">
@@ -149,9 +229,9 @@ export default function SettingsPage() {
                   {
                     chinese: {
                       beginner:
-                        'HSK 1 + Pinyin & Adjectives, Time & Daily Schedule, Family & Occupations',
-                      intermediate: 'HSK 1-2 + all custom lessons',
-                      advanced: 'All vocabulary (HSK 1-6 + all lessons)',
+                        'AI chat and exercises: simple words, short sentences, translations',
+                      intermediate: 'AI chat and exercises: longer sentences, more new words',
+                      advanced: 'AI chat and exercises: natural, native-like language',
                     },
                     japanese: {
                       beginner: 'JLPT N5 + Irodori Starter',
@@ -222,6 +302,7 @@ export default function SettingsPage() {
               <Button variant="outline" size="sm" onClick={handleTestVoice} className="shrink-0">
                 Test
               </Button>
+              <SpeechNotice message={speechNotice} />
             </div>
             {voices.length === 0 && (
               <p className="text-xs text-muted-foreground mt-1">
@@ -291,6 +372,30 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
+            <p className="text-sm font-medium">Browser storage</p>
+            {persisted === undefined ? null : persisted === null ? (
+              <p className="text-xs text-muted-foreground mt-1">
+                This browser cannot protect stored data from being cleared. Export a backup
+                regularly.
+              </p>
+            ) : persisted ? (
+              <p className="text-xs text-muted-foreground mt-1">
+                Protected: the browser will not clear your study data to free up space.
+              </p>
+            ) : (
+              <div className="mt-1 flex flex-wrap items-center gap-2">
+                <p className="text-xs text-muted-foreground">
+                  Not protected: the browser may clear your study data when the device runs low on
+                  space. Export a backup regularly.
+                </p>
+                <Button onClick={refreshPersistence} variant="outline" size="sm">
+                  Request protection
+                </Button>
+              </div>
+            )}
+          </div>
+
+          <div>
             <Button onClick={handleExport} variant="outline">
               Export All Data
             </Button>
@@ -300,24 +405,85 @@ export default function SettingsPage() {
           </div>
 
           <div>
-            <label className="text-sm font-medium">Import Data</label>
-            <textarea
-              value={importData}
-              onChange={(e) => setImportData(e.target.value)}
-              placeholder="Paste exported JSON data here..."
-              className="w-full h-24 mt-1 rounded-lg border border-border bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/50"
+            <label htmlFor="import-file" className="text-sm font-medium">
+              Import Data
+            </label>
+            <input
+              id="import-file"
+              type="file"
+              accept="application/json,.json"
+              onChange={handleImportFile}
+              className="block w-full mt-1 text-sm file:mr-3 file:rounded-lg file:border file:border-border file:bg-background file:px-3 file:py-1.5 file:text-sm file:font-medium hover:file:bg-muted"
             />
-            <div className="flex items-center gap-2 mt-1">
-              <Button
-                onClick={handleImport}
-                variant="outline"
-                size="sm"
-                disabled={!importData.trim()}
+            {pendingImport && (
+              <div className="mt-3 space-y-3 rounded-lg border border-border p-3">
+                <div>
+                  <p className="text-sm font-medium break-all">{pendingImport.name}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {plural(pendingImport.summary.cards, 'card')} ·{' '}
+                    {plural(pendingImport.summary.decks, 'deck')} ·{' '}
+                    {plural(pendingImport.summary.activityDays, 'day')} of activity ·{' '}
+                    {plural(pendingImport.summary.conversations, 'conversation')}
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  {(
+                    [
+                      [
+                        'merge',
+                        'Merge',
+                        'Add what is missing; keep what you have unless the file has a newer copy.',
+                      ],
+                      [
+                        'replace',
+                        'Replace',
+                        'Delete everything on this device first, then import the file.',
+                      ],
+                    ] as const
+                  ).map(([mode, label, hint]) => (
+                    <label key={mode} className="flex items-start gap-2 text-sm cursor-pointer">
+                      <input
+                        type="radio"
+                        name="import-mode"
+                        checked={importMode === mode}
+                        onChange={() => setImportMode(mode)}
+                        className="mt-1"
+                      />
+                      <span>
+                        <span className="font-medium">{label}</span>
+                        <span className="block text-xs text-muted-foreground">{hint}</span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={handleImport}
+                    variant={importMode === 'replace' ? 'destructive' : 'outline'}
+                    size="sm"
+                    disabled={importing}
+                  >
+                    {importMode === 'replace' ? 'Replace all data' : 'Merge into my data'}
+                  </Button>
+                  <Button
+                    onClick={() => setPendingImport(null)}
+                    variant="ghost"
+                    size="sm"
+                    disabled={importing}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            )}
+            {importStatus && (
+              <p
+                role={importStatus.ok ? 'status' : 'alert'}
+                className={`text-xs mt-2 ${importStatus.ok ? 'text-muted-foreground' : 'text-destructive'}`}
               >
-                Import
-              </Button>
-              {importStatus && <p className="text-xs text-muted-foreground">{importStatus}</p>}
-            </div>
+                {importStatus.text}
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>

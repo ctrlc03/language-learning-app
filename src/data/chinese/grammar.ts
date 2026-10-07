@@ -3,8 +3,9 @@ export interface GrammarRule {
   /**
    * Lesson numbers (matching lessons.json) where this pattern is taught or
    * revisited. A rule can belong to several — 了 is introduced in L25 and
-   * extended in L26 — which is what lets the Learn page and the daily session
-   * scope practice to a lesson.
+   * extended in L26. The Learn page filters by these lessons, and the daily
+   * session only drills a rule with at least one lesson up to the learner's
+   * current lesson.
    */
   lessons: number[];
   title: string;
@@ -43,7 +44,7 @@ export const chineseGrammarRules: GrammarRule[] = [
       { chinese: '他不高。', pinyin: 'Tā bù gāo.', english: 'He is not tall.' },
       {
         chinese: '我不是学生。',
-        pinyin: 'Wǒ bú shì xuéshēng.',
+        pinyin: 'Wǒ bú shì xuésheng.',
         english: "I'm not a student.",
         note: '不 → bú before 4th tone 是',
       },
@@ -74,7 +75,7 @@ export const chineseGrammarRules: GrammarRule[] = [
     explanation:
       'Add 吗 to the end of any statement to turn it into a yes/no question. No word order change needed.',
     examples: [
-      { chinese: '你是学生吗？', pinyin: 'Nǐ shì xuéshēng ma?', english: 'Are you a student?' },
+      { chinese: '你是学生吗？', pinyin: 'Nǐ shì xuésheng ma?', english: 'Are you a student?' },
       { chinese: '他忙吗？', pinyin: 'Tā máng ma?', english: 'Is he busy?' },
       { chinese: '你吃米饭吗？', pinyin: 'Nǐ chī mǐfàn ma?', english: 'Do you eat rice?' },
     ],
@@ -190,7 +191,7 @@ export const chineseGrammarRules: GrammarRule[] = [
     examples: [
       {
         chinese: '你最喜欢吃什么肉？',
-        pinyin: 'Nǐ zuì xǐhuān chī shénme ròu?',
+        pinyin: 'Nǐ zuì xǐhuan chī shénme ròu?',
         english: 'What meat do you like most?',
       },
       {

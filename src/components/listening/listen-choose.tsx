@@ -2,7 +2,9 @@
 
 import { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
+import { SpeechNotice } from '@/components/shared/speak-button';
 import { speak } from '@/lib/tts/speech';
+import { useSpeechNotice } from '@/hooks/use-speech';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 
@@ -24,17 +26,18 @@ export function ListenAndChoose({
   const { language, speechRate } = useLanguage();
   const [selected, setSelected] = useState<number | null>(null);
   const [playing, setPlaying] = useState(false);
+  const { notice, reportSpeechError } = useSpeechNotice();
 
   const handlePlay = useCallback(async () => {
     setPlaying(true);
     try {
       await speak(text, language, speechRate);
-    } catch {
-      // TTS not available
+    } catch (err) {
+      reportSpeechError(err);
     } finally {
       setPlaying(false);
     }
-  }, [text, language, speechRate]);
+  }, [text, language, speechRate, reportSpeechError]);
 
   const handleSelect = (index: number) => {
     if (selected !== null) return;
@@ -86,6 +89,8 @@ export function ListenAndChoose({
           </button>
         ))}
       </div>
+
+      <SpeechNotice message={notice} />
     </div>
   );
 }

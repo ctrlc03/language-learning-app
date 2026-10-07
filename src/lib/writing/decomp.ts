@@ -5,7 +5,7 @@
 
 export interface DecompComponent {
   c: string; // component character
-  m: string; // short meaning
+  m?: string; // short meaning, absent when the component has no usable gloss
 }
 
 export interface DecompData {

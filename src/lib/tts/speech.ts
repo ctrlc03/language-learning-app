@@ -2,11 +2,36 @@
 
 import type { Language } from '@/types';
 
-// Exact lang codes to match, in priority order
+// Exact lang codes to rank voices by, best first. Chinese is Mandarin only (see MANDARIN_LANG).
 const LANG_CODES: Record<Language, string[]> = {
-  chinese: ['zh-CN', 'zh-TW', 'zh-HK', 'zh'],
+  chinese: ['zh-CN', 'zh-TW'],
   japanese: ['ja-JP', 'ja'],
 };
+
+/**
+ * Mandarin voices: zh-CN and zh-TW (also with script or region subtags: zh-Hans-CN,
+ * zh-CN-liaoning) and cmn-* (Android, eSpeak). Every other Chinese tag — zh-HK, yue-*, a bare
+ * "zh" — may be Cantonese, which reads hanzi with the wrong sounds, so for Chinese such voices
+ * are never listed and never picked.
+ */
+const MANDARIN_LANG = /^(?:cmn|zh-(?:hans-|hant-)?(?:cn|tw))(?:-|$)/;
+
+const NO_SPEECH_MESSAGE = "Speech isn't supported in this browser.";
+const NO_MANDARIN_VOICE_MESSAGE =
+  "No Mandarin voice is installed. Add one in your device's speech settings to hear Chinese.";
+
+/** speak() can't work on this device: no speech engine, or no Mandarin voice installed. */
+export class SpeechUnavailableError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'SpeechUnavailableError';
+  }
+}
+
+/** Short text for a failed `speak()`, for showing to the learner. */
+export function speechErrorMessage(err: unknown): string {
+  return err instanceof SpeechUnavailableError ? err.message : "Couldn't play audio. Try again.";
+}
 
 // Preferred voices per language, ranked best-first.
 // These are known high-quality voices on macOS, iOS, Windows, Chrome, etc.
@@ -16,7 +41,6 @@ const PREFERRED_VOICES: Record<Language, string[]> = {
     'Tingting', // macOS enhanced Mandarin
     'Lili', // macOS Mandarin
     'Meijia', // macOS Mandarin (Taiwan)
-    'Sinji', // macOS Cantonese (fallback)
     // Google Chrome voices
     'Google 普通话',
     'Google Mandarin',
@@ -44,10 +68,11 @@ const PREFERRED_VOICES: Record<Language, string[]> = {
   ],
 };
 
-// Voices to avoid — these produce bad Chinese pronunciation
+// Voices to avoid — these produce bad pronunciation (compared case-insensitively)
 const VOICE_BLOCKLIST = [
   'Ting-Ting', // old macOS voice, very robotic
-  'Sin-ji', // Cantonese, not Mandarin
+  'Sinji', // macOS Cantonese: would read hanzi with Cantonese sounds
+  'Sin-ji', // the same voice where it is spelled with a hyphen
 ];
 
 // English voice config for speaking translations
@@ -75,25 +100,36 @@ let cachedEnglishVoice: SpeechSynthesisVoice | null | undefined = undefined; // 
 let userPreferredVoices: Map<Language, SpeechSynthesisVoice> = new Map();
 let allVoicesLoaded = false;
 
-function matchesLangCode(voiceLang: string, targetCodes: string[]): boolean {
-  const normalized = voiceLang.toLowerCase().replace('_', '-');
-  return targetCodes.some(
-    (code) => normalized === code.toLowerCase() || normalized.startsWith(code.toLowerCase() + '-'),
-  );
+function normalizeLang(lang: string): string {
+  return lang.toLowerCase().replace(/_/g, '-');
+}
+
+function matchesLanguage(voice: SpeechSynthesisVoice, language: Language): boolean {
+  const lang = normalizeLang(voice.lang);
+  if (language === 'chinese') return MANDARIN_LANG.test(lang);
+  return LANG_CODES[language].some((code) => {
+    const target = code.toLowerCase();
+    return lang === target || lang.startsWith(target + '-');
+  });
+}
+
+function isBlocked(voice: SpeechSynthesisVoice): boolean {
+  const name = voice.name.toLowerCase();
+  return VOICE_BLOCKLIST.some((blocked) => name.includes(blocked.toLowerCase()));
 }
 
 function scoreVoice(voice: SpeechSynthesisVoice, language: Language): number {
   const name = voice.name;
 
   // Block known bad voices
-  if (VOICE_BLOCKLIST.some((blocked) => name.includes(blocked))) return -1;
+  if (isBlocked(voice)) return -1;
 
   const preferred = PREFERRED_VOICES[language];
   const targetCodes = LANG_CODES[language];
 
   let score = 0;
 
-  // Exact lang code match (zh-CN > zh-TW > zh)
+  // Exact lang code match (zh-CN > zh-TW)
   for (let i = 0; i < targetCodes.length; i++) {
     if (voice.lang.toLowerCase().replace('_', '-') === targetCodes[i].toLowerCase()) {
       score += (targetCodes.length - i) * 100;
@@ -118,34 +154,29 @@ function scoreVoice(voice: SpeechSynthesisVoice, language: Language): number {
   return score;
 }
 
+/** The voice picked in Settings, if it is still installed and still allowed for this language. */
+function getSavedVoice(language: Language): SpeechSynthesisVoice | null {
+  const name = localStorage.getItem(`langbot:voice:${language}`);
+  if (!name) return null;
+  return getAvailableVoices(language).find((v) => v.name === name) ?? null;
+}
+
 function getBestVoice(language: Language): SpeechSynthesisVoice | null {
   // User-selected voice takes absolute priority
   const userPref = userPreferredVoices.get(language);
   if (userPref) return userPref;
 
   // Check saved preference in localStorage
-  const savedName =
-    typeof window !== 'undefined' ? localStorage.getItem(`langbot:voice:${language}`) : null;
-  if (savedName) {
-    const voices = speechSynthesis.getVoices();
-    const saved = voices.find((v) => v.name === savedName);
-    if (saved) {
-      userPreferredVoices.set(language, saved);
-      return saved;
-    }
+  const saved = getSavedVoice(language);
+  if (saved) {
+    userPreferredVoices.set(language, saved);
+    return saved;
   }
 
   const cached = cachedVoices.get(language);
   if (cached) return cached;
 
-  const voices = speechSynthesis.getVoices();
-  if (voices.length === 0) return null;
-
-  const targetCodes = LANG_CODES[language];
-
-  // Filter to voices that match our target language codes
-  const matching = voices.filter((v) => matchesLangCode(v.lang, targetCodes));
-
+  const matching = speechSynthesis.getVoices().filter((v) => matchesLanguage(v, language));
   if (matching.length === 0) return null;
 
   // Score and sort
@@ -155,7 +186,7 @@ function getBestVoice(language: Language): SpeechSynthesisVoice | null {
     .sort((a, b) => b.score - a.score);
 
   if (scored.length === 0) {
-    // All were blocklisted, just use first matching
+    // Every voice for this language is blocklisted: a poor voice beats none
     cachedVoices.set(language, matching[0]);
     return matching[0];
   }
@@ -250,7 +281,7 @@ function stopResumeWatchdog() {
 export function speak(text: string, language: Language, rate: number = 1.0): Promise<void> {
   return new Promise((resolve, reject) => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-      reject(new Error('Speech synthesis not available'));
+      reject(new SpeechUnavailableError(NO_SPEECH_MESSAGE));
       return;
     }
 
@@ -261,13 +292,20 @@ export function speak(text: string, language: Language, rate: number = 1.0): Pro
     // Small delay after cancel() to let the engine reset —
     // without this, Chrome/Safari silently drop the next utterance.
     setTimeout(() => {
+      const voice = getBestVoice(language);
+      // With no Mandarin voice the browser would read hanzi in its default voice: wrong sounds or
+      // silence. Say so once voices have loaded (an empty list just means they haven't yet).
+      if (!voice && language === 'chinese' && speechSynthesis.getVoices().length > 0) {
+        reject(new SpeechUnavailableError(NO_MANDARIN_VOICE_MESSAGE));
+        return;
+      }
+
       const utterance = new SpeechSynthesisUtterance(text);
       // Set lang to the primary code for this language
       utterance.lang = LANG_CODES[language][0];
       utterance.rate = rate;
       utterance.pitch = 1.0;
 
-      const voice = getBestVoice(language);
       if (voice) {
         utterance.voice = voice;
         // Override lang to match the selected voice exactly
@@ -345,17 +383,19 @@ export function isSpeechSupported(): boolean {
   return typeof window !== 'undefined' && 'speechSynthesis' in window;
 }
 
+/**
+ * Voices to list in Settings for a language. Chinese is Mandarin only, and blocklisted voices are
+ * left out.
+ */
 export function getAvailableVoices(language: Language): SpeechSynthesisVoice[] {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) return [];
-  const voices = speechSynthesis.getVoices();
-  const targetCodes = LANG_CODES[language];
-  return voices
-    .filter((v) => matchesLangCode(v.lang, targetCodes))
-    .filter((v) => !VOICE_BLOCKLIST.some((blocked) => v.name.includes(blocked)));
+  return speechSynthesis.getVoices().filter((v) => matchesLanguage(v, language) && !isBlocked(v));
 }
 
 export function setPreferredVoice(language: Language, voice: SpeechSynthesisVoice | null): void {
   if (voice) {
+    // Only voices Settings lists may be chosen: never a Cantonese voice for Chinese.
+    if (!matchesLanguage(voice, language) || isBlocked(voice)) return;
     userPreferredVoices.set(language, voice);
     localStorage.setItem(`langbot:voice:${language}`, voice.name);
   } else {
@@ -368,7 +408,9 @@ export function setPreferredVoice(language: Language, voice: SpeechSynthesisVoic
 
 export function getPreferredVoiceName(language: Language): string | null {
   if (typeof window === 'undefined') return null;
-  return localStorage.getItem(`langbot:voice:${language}`);
+  // A choice that is no longer allowed (a Cantonese voice picked before Chinese was limited to
+  // Mandarin) reads as unset, so Settings shows "Auto-select" instead of a blank select.
+  return getSavedVoice(language)?.name ?? null;
 }
 
 // Pre-load voices (some browsers load them asynchronously)

@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react';
 import { nanoid } from 'nanoid';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useProgress } from '@/hooks/use-progress';
+import { useCurrentLesson } from '@/hooks/use-current-lesson';
 import { ExerciseShell } from '@/components/exercises/exercise-shell';
 import { Card, CardContent } from '@/components/ui/card';
 import { Panel } from '@/components/ui/panel';
@@ -100,6 +101,7 @@ const MIXED_POOL: ExerciseType[] = [
 
 export default function ExercisesPage() {
   const { language, difficulty } = useLanguage();
+  const [currentLesson] = useCurrentLesson();
   const { recordActivity } = useProgress();
   const [currentExercise, setCurrentExercise] = useState<Exercise | null>(null);
   const [mixedMode, setMixedMode] = useState(false);
@@ -135,10 +137,17 @@ export default function ExercisesPage() {
 
     const types = [...MIXED_POOL].sort(() => Math.random() - 0.5);
     for (const type of types) {
-      const exercise = getOfflineExercise(language, difficulty, type, seenIds, lessonFilter);
+      const exercise = getOfflineExercise({
+        language,
+        difficulty,
+        type,
+        seen: seenIds,
+        lessonFilter,
+        currentLesson,
+      });
       if (exercise) {
         setCurrentExercise(exercise);
-        setSeenIds((prev) => [...prev, exercise.id].slice(-50));
+        setSeenIds((prev) => [...prev, exercise.sourceId ?? exercise.id]);
         setPreviousQuestions((prev) => [...prev, exercise.question].slice(-10));
         setLoading(false);
         return;
@@ -147,7 +156,7 @@ export default function ExercisesPage() {
 
     setLoading(false);
     setError('No exercises are available for the selected chapter. Try a different chapter.');
-  }, [language, difficulty, seenIds, lessonFilter]);
+  }, [language, difficulty, seenIds, lessonFilter, currentLesson]);
 
   const generateExercise = useCallback(
     async (type: ExerciseType, lesson?: string) => {
@@ -158,7 +167,14 @@ export default function ExercisesPage() {
       try {
         if (isOfflineExerciseType(type)) {
           const effectiveLesson = lesson ?? lessonFilter;
-          const exercise = getOfflineExercise(language, difficulty, type, seenIds, effectiveLesson);
+          const exercise = getOfflineExercise({
+            language,
+            difficulty,
+            type,
+            seen: seenIds,
+            lessonFilter: effectiveLesson,
+            currentLesson,
+          });
           if (!exercise) {
             throw new Error(
               effectiveLesson
@@ -167,7 +183,7 @@ export default function ExercisesPage() {
             );
           }
           setCurrentExercise(exercise);
-          setSeenIds((prev) => [...prev, exercise.id].slice(-50));
+          setSeenIds((prev) => [...prev, exercise.sourceId ?? exercise.id]);
           setPreviousQuestions((prev) => [...prev, exercise.question].slice(-10));
         } else {
           const res = await fetch('/api/exercises/generate', {
@@ -208,7 +224,7 @@ export default function ExercisesPage() {
         setLoading(false);
       }
     },
-    [language, difficulty, previousQuestions, seenIds, lessonFilter],
+    [language, difficulty, previousQuestions, seenIds, lessonFilter, currentLesson],
   );
 
   const handleComplete = (result: ExerciseResult) => {
@@ -265,10 +281,10 @@ export default function ExercisesPage() {
           </Button>
           <div>
             <div className="greet" style={{ marginBottom: 4 }}>
-              課を選ぶ · choose a lesson
+              {language === 'japanese' ? '課を選ぶ' : '选课'} · choose a lesson
             </div>
             <h1 style={{ fontSize: 30 }}>
-              Lessons<span className="cjk"> · 課</span>
+              Lessons<span className="cjk"> · {language === 'japanese' ? '課' : '课'}</span>
             </h1>
           </div>
         </div>
@@ -394,9 +410,11 @@ export default function ExercisesPage() {
       {/* Page header */}
       <div className="page-top">
         <div>
-          <div className="greet">手を動かす · practice</div>
+          <div className="greet">
+            {language === 'japanese' ? '手を動かす' : '动手练'} · practice
+          </div>
           <h1>
-            Practice<span className="cjk"> · 練習</span>
+            Practice<span className="cjk"> · {language === 'japanese' ? '練習' : '练习'}</span>
           </h1>
         </div>
         <div className="date">
