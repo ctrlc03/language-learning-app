@@ -97,6 +97,8 @@ export default function FlashcardsPage() {
     if (view !== 'review') return;
     const h = (e: KeyboardEvent) => {
       if (e.key === ' ') {
+        // Space on a focused button is that button's own activation.
+        if (e.target instanceof HTMLElement && e.target.closest('button')) return;
         e.preventDefault();
         setRevealed((r) => !r);
       } else if (revealed && currentCard) {
@@ -154,17 +156,22 @@ export default function FlashcardsPage() {
           >
             <div className="lesson-list">
               {languageDecks.map((d) => (
-                <div key={d.id} className="lesson-item" onClick={() => beginReview(d.id)}>
-                  <div className="glyph">{Array.from(d.name)[0]}</div>
-                  <div className="main">
-                    <div className="title">{d.name}</div>
-                    <div className="sub">{d.description}</div>
-                    <div className="tags">
+                <button
+                  key={d.id}
+                  type="button"
+                  className="lesson-item"
+                  onClick={() => beginReview(d.id)}
+                >
+                  <span className="glyph">{Array.from(d.name)[0]}</span>
+                  <span className="main">
+                    <span className="title">{d.name}</span>
+                    <span className="sub">{d.description}</span>
+                    <span className="tags">
                       <span className="tag">{d.cardCount} cards</span>
-                    </div>
-                  </div>
+                    </span>
+                  </span>
                   <span className="btn outline">Study →</span>
-                </div>
+                </button>
               ))}
             </div>
           </InkCard>
@@ -177,17 +184,25 @@ export default function FlashcardsPage() {
         >
           <div className="lesson-list">
             {availablePrebuilt.map((p) => (
-              <div key={p.id} className="lesson-item" onClick={() => handleSelectPrebuilt(p)}>
-                <div className="glyph">{Array.from(p.name.replace(/^[^：:]*[：:]\s*/, ''))[0]}</div>
-                <div className="main">
-                  <div className="title">{p.name}</div>
-                  <div className="sub">{p.description}</div>
-                  <div className="tags">
+              <button
+                key={p.id}
+                type="button"
+                className="lesson-item"
+                disabled={creating}
+                onClick={() => handleSelectPrebuilt(p)}
+              >
+                <span className="glyph">
+                  {Array.from(p.name.replace(/^[^：:]*[：:]\s*/, ''))[0]}
+                </span>
+                <span className="main">
+                  <span className="title">{p.name}</span>
+                  <span className="sub">{p.description}</span>
+                  <span className="tags">
                     <span className="tag">{p.cardCount} cards</span>
-                  </div>
-                </div>
+                  </span>
+                </span>
                 <span className="btn solid">{creating ? '…' : 'Begin →'}</span>
-              </div>
+              </button>
             ))}
             {availablePrebuilt.length === 0 && languageDecks.length === 0 && (
               <div style={{ padding: 28, textAlign: 'center', color: 'var(--ink-faint)' }}>
@@ -219,9 +234,9 @@ export default function FlashcardsPage() {
       <SpeechNotice message={speechNotice} />
       <div className="page-top">
         <div>
-          <div className="greet" style={{ cursor: 'pointer' }} onClick={() => setView('decks')}>
+          <button type="button" className="greet back-link" onClick={() => setView('decks')}>
             ← back to decks
-          </div>
+          </button>
           <h1>
             <span className="cjk">{language === 'japanese' ? '学習' : '学习'}</span>
           </h1>

@@ -1,18 +1,20 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useStorage } from '@/contexts/StorageContext';
 import { useProgress } from '@/hooks/use-progress';
 import { useCurrentLesson } from '@/hooks/use-current-lesson';
 import { useMastery } from '@/hooks/use-mastery';
+import { useMistakeLog } from '@/hooks/use-mistakes';
 import { useSpeechInit, useSpeechNotice } from '@/hooks/use-speech';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ExerciseShell } from '@/components/exercises/exercise-shell';
-import { ToneIdentify } from '@/components/tones/tone-identify';
+import { ToneStep } from '@/components/session/tone-step';
 import { SpeakButton, SpeechNotice } from '@/components/shared/speak-button';
 import { buildSession, type SessionItem, type SessionPlan } from '@/lib/session/build';
 import { calculateNextReview } from '@/lib/srs/sm2';
@@ -34,6 +36,8 @@ interface Tally {
   answered: number;
   correct: number;
   cards: number;
+  /** Exercise misses, filed in the mistake notebook. */
+  missed: number;
 }
 
 /**
@@ -49,6 +53,7 @@ export default function SessionPage() {
   const [currentLesson] = useCurrentLesson();
   const storage = useStorage();
   const { recordActivity } = useProgress();
+  const { recordExercise } = useMistakeLog();
   const {
     map: grammarMastery,
     loading: grammarLoading,
@@ -59,7 +64,7 @@ export default function SessionPage() {
   const [phase, setPhase] = useState<Phase>('loading');
   const [plan, setPlan] = useState<SessionPlan | null>(null);
   const [index, setIndex] = useState(0);
-  const [tally, setTally] = useState<Tally>({ answered: 0, correct: 0, cards: 0 });
+  const [tally, setTally] = useState<Tally>({ answered: 0, correct: 0, cards: 0, missed: 0 });
   const [revealed, setRevealed] = useState(false);
 
   useSpeechInit();
@@ -134,6 +139,7 @@ export default function SessionPage() {
       newCards: card.srs.repetitions === 0 ? 1 : 0,
     });
     setTally((t) => ({
+      ...t,
       answered: t.answered + 1,
       correct: t.correct + (grade >= 3 ? 1 : 0),
       cards: t.cards + 1,
@@ -155,10 +161,12 @@ export default function SessionPage() {
           group: 'grammar',
         });
       }
+      recordExercise(item.exercise, result.correct, 'session', result.userAnswer);
       setTally((t) => ({
         ...t,
         answered: t.answered + 1,
         correct: t.correct + (result.correct ? 1 : 0),
+        missed: t.missed + (result.correct ? 0 : 1),
       }));
     };
   };
@@ -216,6 +224,15 @@ export default function SessionPage() {
                 {plural(tally.cards, 'card')} reviewed
                 {plan?.rule ? ` · pattern: ${plan.rule.title}` : ''}
               </p>
+              {tally.missed > 0 && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {plural(tally.missed, 'miss', 'misses')} saved to{' '}
+                  <Link href="/mistakes" className="underline underline-offset-2">
+                    Mistakes
+                  </Link>{' '}
+                  to retry later.
+                </p>
+              )}
             </div>
             <div className="flex gap-2 pt-1">
               <Button variant="outline" className="flex-1" onClick={() => router.push('/progress')}>
@@ -279,7 +296,7 @@ export default function SessionPage() {
       {current?.kind === 'tone' && (
         <ToneStep
           key={current.id}
-          item={current}
+          item={current.item}
           onComplete={handleTone(current)}
           onNext={advance}
         />
@@ -353,41 +370,6 @@ function CardStep({
             Show answer
           </Button>
         )}
-      </CardContent>
-    </Card>
-  );
-}
-
-function ToneStep({
-  item,
-  onComplete,
-  onNext,
-}: {
-  item: Extract<SessionItem, { kind: 'tone' }>;
-  onComplete: (correct: boolean) => void;
-  onNext: () => void;
-}) {
-  const [answered, setAnswered] = useState(false);
-  return (
-    <Card>
-      <CardContent className="p-5 space-y-5">
-        <Badge variant="outline" className="text-[11px]">
-          Tones
-        </Badge>
-        <ToneIdentify
-          item={item.item}
-          onComplete={(correct) => {
-            setAnswered(true);
-            onComplete(correct);
-          }}
-        />
-        <Button
-          className={cn('w-full', !answered && 'opacity-50')}
-          disabled={!answered}
-          onClick={onNext}
-        >
-          Next →
-        </Button>
       </CardContent>
     </Card>
   );

@@ -147,13 +147,15 @@ export async function buildSession(
     : [];
 
   // Exercises: one reading-comprehension pass over a dialogue, plus recall drills.
-  // Of the two vocabulary drills, the recall drill favours the lessons just
-  // taught and the other draws on the whole course so far.
+  // The recall drills favour the lessons just taught; the vocabulary drill draws
+  // on the whole course so far. Typing a word from its meaning is the one item
+  // that asks for the Chinese rather than recognising it (Chinese only).
   const exerciseItems: SessionItem[] = [];
   const seen: string[] = [];
   for (const [type, label, focusRecent] of [
     ['dialogue-comprehension', 'Dialogue', false],
     ['fill-in-blank', 'Recall', true],
+    ['typed-recall', 'Type it', true],
     ['multiple-choice', 'Vocabulary', false],
   ] as const) {
     const exercise = getOfflineExercise({

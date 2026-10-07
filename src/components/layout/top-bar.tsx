@@ -18,8 +18,10 @@ export const NAV_TABS = [
   { href: '/flashcards', group: 'study', cjk: '学', label: 'Study' },
   { href: '/review', group: 'study', cjk: '復', cjkZh: '复', label: 'Review' },
   { href: '/learn', group: 'study', cjk: '教', label: 'Learn' },
+  { href: '/reader', group: 'study', cjk: '読', cjkZh: '读', label: 'Reader' },
   { href: '/exercises', group: 'practice', cjk: '練', cjkZh: '练', label: 'Practice' },
   { href: '/listening', group: 'practice', cjk: '聴', cjkZh: '听', label: 'Listen' },
+  { href: '/speaking', group: 'practice', cjk: '説', cjkZh: '说', label: 'Speaking' },
   { href: '/tones', group: 'practice', cjk: '声', label: 'Tones' },
   { href: '/writing', group: 'practice', cjk: '書', cjkZh: '写', label: 'Write' },
   { href: '/measure-words', group: 'practice', cjk: '量', label: 'Classifiers' },
@@ -27,6 +29,7 @@ export const NAV_TABS = [
   { href: '/numbers', group: 'practice', cjk: '数', label: 'Numbers' },
   { href: '/chat', group: 'chat', cjk: '話', cjkZh: '话', label: 'Chat' },
   { href: '/progress', group: 'progress', cjk: '弱', label: 'Weak Spots' },
+  { href: '/mistakes', group: 'progress', cjk: '錯', cjkZh: '错', label: 'Mistakes' },
   { href: '/vocabulary', group: 'progress', cjk: '庫', cjkZh: '库', label: 'Archive' },
   { href: '/journal', group: 'progress', cjk: '記', cjkZh: '记', label: 'Journal' },
 ];

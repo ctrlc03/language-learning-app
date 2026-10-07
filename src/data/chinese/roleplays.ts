@@ -1,0 +1,325 @@
+/**
+ * Lesson role-plays: a scene the AI plays out with the learner. Target words and
+ * patterns are computed from the lesson's vocabulary and grammar (see
+ * `@/lib/chat/scenarios`), not copied here. `dialogueId` is the lesson dialogue
+ * practised offline in Script mode.
+ */
+export interface RolePlayContent {
+  /** `lesson-<n>`: the scenario id the chat API accepts. */
+  id: string;
+  lesson: number;
+  title: string;
+  titleChinese: string;
+  /** One sentence: where we are and what is going on. */
+  setting: string;
+  /** Who the AI plays. */
+  aiRole: string;
+  /** Who the learner plays. */
+  learnerRole: string;
+  /** 2–4 concrete things the learner should manage to do. */
+  goals: string[];
+  dialogueId?: string;
+}
+
+export const chineseRolePlays: RolePlayContent[] = [
+  {
+    id: 'lesson-3',
+    lesson: 3,
+    title: 'New Classmate',
+    titleChinese: '新同学',
+    setting: 'You and a classmate chat about the new student who joined your class this week.',
+    aiRole: 'a classmate who has met the new student',
+    learnerRole: 'a classmate curious about the new student',
+    goals: [
+      'Ask which country the new student is from',
+      'Describe how the new student looks',
+      'Say whether their Chinese is good',
+    ],
+    dialogueId: 'dlg-l03-04',
+  },
+  {
+    id: 'lesson-5',
+    lesson: 5,
+    title: 'Making Plans',
+    titleChinese: '做计划',
+    setting: 'Two friends try to find a time this afternoon to do something together.',
+    aiRole: 'a friend who has class until four o’clock',
+    learnerRole: 'a friend who wants to play sport this afternoon',
+    goals: [
+      'Ask whether your friend is free this afternoon',
+      'Suggest an activity and a time',
+      'Agree on where to meet',
+    ],
+    dialogueId: 'dlg-l05-02',
+  },
+  {
+    id: 'lesson-6',
+    lesson: 6,
+    title: 'Introducing Family',
+    titleChinese: '介绍家人',
+    setting: 'You are getting to know a new friend and talking about your families.',
+    aiRole: 'a new friend who is asking about your family',
+    learnerRole: 'yourself, talking about your family',
+    goals: [
+      'Say how many people are in your family',
+      'Say what your parents do for work',
+      'Ask about a family member of your friend',
+    ],
+    dialogueId: 'dlg-l06-01',
+  },
+  {
+    id: 'lesson-7',
+    lesson: 7,
+    title: 'Buying Clothes',
+    titleChinese: '买衣服',
+    setting: 'You are in a clothes shop and want to buy a shirt at a good price.',
+    aiRole: 'a shop assistant',
+    learnerRole: 'a customer',
+    goals: [
+      'Ask how much a piece of clothing costs',
+      'Bargain for a lower price',
+      'Say which colour you want',
+    ],
+    dialogueId: 'dlg-l07-01',
+  },
+  {
+    id: 'lesson-8',
+    lesson: 8,
+    title: 'Paying by Phone',
+    titleChinese: '扫码支付',
+    setting: 'You are paying for your shopping at a convenience store.',
+    aiRole: 'a cashier',
+    learnerRole: 'a customer',
+    goals: [
+      'Ask whether you can pay with WeChat Pay',
+      'Choose who scans whose code',
+      'Confirm that the payment went through',
+    ],
+    dialogueId: 'dlg-l08-02',
+  },
+  {
+    id: 'lesson-10',
+    lesson: 10,
+    title: 'Finding a Bank',
+    titleChinese: '问路',
+    setting: 'You are lost in the street and need to find the nearest bank.',
+    aiRole: 'a helpful passer-by',
+    learnerRole: 'a visitor looking for the bank',
+    goals: [
+      'Ask whether there is a bank nearby',
+      'Ask how to get there',
+      'Ask whether you can walk, and how far it is',
+    ],
+    dialogueId: 'dlg-l10-01',
+  },
+  {
+    id: 'lesson-11',
+    lesson: 11,
+    title: 'At the Egg Cake Stand',
+    titleChinese: '蛋烘糕',
+    setting: 'You are at a street food stand in Sichuan and have never tried egg cake.',
+    aiRole: 'the stall owner',
+    learnerRole: 'a hungry customer',
+    goals: [
+      'Ask what egg cake is',
+      'Ask what fillings there are',
+      'Order two cakes and ask how much they cost',
+      'Choose how to pay',
+    ],
+    dialogueId: 'dlg-notes-09',
+  },
+  {
+    id: 'lesson-12',
+    lesson: 12,
+    title: 'At a Cafe',
+    titleChinese: '在咖啡馆',
+    setting: 'You walk into a cafe and want something to drink.',
+    aiRole: 'a waiter',
+    learnerRole: 'a customer',
+    goals: ['Ask what teas they have', 'Ask how much a drink costs', 'Order a drink'],
+    dialogueId: 'dlg-l11-05',
+  },
+  {
+    id: 'lesson-13',
+    lesson: 13,
+    title: 'Meeting Someone New',
+    titleChinese: '认识新朋友',
+    setting: 'You meet someone for the first time at a language exchange event.',
+    aiRole: 'a friendly stranger',
+    learnerRole: 'yourself, meeting someone new',
+    goals: [
+      'Ask for and give names',
+      'Ask where the other person is from and where they work',
+      'Say why you are learning a language',
+    ],
+    dialogueId: 'dlg-l13-01',
+  },
+  {
+    id: 'lesson-18',
+    lesson: 18,
+    title: 'Where Are You From?',
+    titleChinese: '你是哪里人？',
+    setting: 'You have just met a new neighbour and chat about where you each come from.',
+    aiRole: 'a new neighbour',
+    learnerRole: 'yourself, chatting with a neighbour',
+    goals: [
+      'Say where you are from',
+      'Ask how long your neighbour has lived here',
+      'Say when you moved in',
+    ],
+    dialogueId: 'dlg-l18-09',
+  },
+  {
+    id: 'lesson-19',
+    lesson: 19,
+    title: 'What’s for Dinner?',
+    titleChinese: '晚饭吃什么？',
+    setting: 'You and a friend are deciding what to eat for dinner tonight.',
+    aiRole: 'a friend who shares your kitchen',
+    learnerRole: 'yourself, deciding on dinner',
+    goals: [
+      'Say what you want to eat',
+      'Ask what your friend likes best',
+      'Agree on a dinner plan',
+    ],
+    dialogueId: 'dlg-l19-02',
+  },
+  {
+    id: 'lesson-20',
+    lesson: 20,
+    title: 'Checking into a Hotel',
+    titleChinese: '入住酒店',
+    setting: 'You arrive at a hotel in China and want a room.',
+    aiRole: 'the hotel receptionist',
+    learnerRole: 'a tourist',
+    goals: [
+      'Ask whether a room is free and how much it costs per night',
+      'Ask what time you can check in and check out',
+      'Ask whether you can leave your luggage',
+    ],
+    dialogueId: 'dlg-l20-03',
+  },
+  {
+    id: 'lesson-21',
+    lesson: 21,
+    title: 'Talking About Hobbies',
+    titleChinese: '谈爱好',
+    setting: 'Two classmates find out what each other likes to do in their free time.',
+    aiRole: 'a classmate',
+    learnerRole: 'a classmate',
+    goals: [
+      'Say what you like to do',
+      'Say what you can do and how well',
+      'Suggest doing something together',
+    ],
+    dialogueId: 'dlg-l21-01',
+  },
+  {
+    id: 'lesson-24',
+    lesson: 24,
+    title: 'Have You Been to Shanghai?',
+    titleChinese: '你去过上海吗？',
+    setting: 'Two friends talk about places they have visited and want to visit.',
+    aiRole: 'a friend who has been to Shanghai',
+    learnerRole: 'a friend who has not been yet',
+    goals: [
+      'Ask whether your friend has been somewhere',
+      'Ask what the place is like',
+      'Suggest going together',
+    ],
+    dialogueId: 'dlg-l24-01',
+  },
+  {
+    id: 'lesson-25',
+    lesson: 25,
+    title: 'Where Did You Go on the Weekend?',
+    titleChinese: '周末你去哪儿了？',
+    setting: 'It is Monday morning and two classmates chat about their weekend.',
+    aiRole: 'a classmate who went skiing at the weekend',
+    learnerRole: 'a classmate asking about the weekend',
+    goals: [
+      'Ask where your classmate went',
+      'Ask who they went with',
+      'Ask whether it was hard or scary',
+      'Ask to come along next time',
+    ],
+    dialogueId: 'dlg-l25-01',
+  },
+  {
+    id: 'lesson-26',
+    lesson: 26,
+    title: 'At the Doctor’s',
+    titleChinese: '你哪儿不舒服？',
+    setting: 'You feel ill and visit the campus clinic.',
+    aiRole: 'the doctor',
+    learnerRole: 'a patient, a student who feels unwell',
+    goals: [
+      'Tell the doctor where it hurts',
+      'Say how you feel, for example cold or feverish',
+      'Ask whether you have a cold',
+    ],
+    dialogueId: 'dlg-l26-01',
+  },
+  {
+    id: 'lesson-29',
+    lesson: 29,
+    title: 'Allergies',
+    titleChinese: '我觉得我过敏了',
+    setting: 'You arrive at the hospital with an itchy face and trouble breathing.',
+    aiRole: 'the doctor',
+    learnerRole: 'a patient who thinks they have an allergy',
+    goals: [
+      'Tell the doctor you think you have an allergy',
+      'Say what you are allergic to',
+      'Describe your symptoms',
+      'Answer the doctor’s questions and follow the advice',
+    ],
+    dialogueId: 'dlg-l29-01',
+  },
+  {
+    id: 'lesson-31',
+    lesson: 31,
+    title: 'Are You Still Asleep?',
+    titleChinese: '你还在睡觉吗？',
+    setting: 'A friend phones late in the morning and finds out you are still in bed.',
+    aiRole: 'a friend who is calling you',
+    learnerRole: 'a friend who slept in after watching a game',
+    goals: [
+      'Explain why you went to bed late',
+      'Say what you were doing when the phone rang',
+      'Turn down an invitation politely and give a reason',
+    ],
+    dialogueId: 'dlg-l31-02',
+  },
+  {
+    id: 'lesson-32',
+    lesson: 32,
+    title: 'Rain Again!',
+    titleChinese: '又下雨了',
+    setting: 'Two friends talk about the rainy weather and tomorrow’s football match.',
+    aiRole: 'a friend who is worried about the match',
+    learnerRole: 'a friend who has seen the forecast',
+    goals: [
+      'Comment on the weather',
+      'Compare this year’s rain with last year’s',
+      'Tell your friend what the forecast says for tomorrow',
+      'Decide what to do about the match',
+    ],
+    dialogueId: 'dlg-l32-02',
+  },
+  {
+    id: 'lesson-33',
+    lesson: 33,
+    title: 'Mid-Autumn Festival',
+    titleChinese: '中秋节',
+    setting: 'It is Mid-Autumn night and two friends admire the moon together.',
+    aiRole: 'a Chinese friend celebrating with their family',
+    learnerRole: 'a friend from abroad who misses home',
+    goals: [
+      'Wish your friend a happy Mid-Autumn Festival',
+      'Ask what their family does that evening',
+      'Talk about the legend of Chang’e',
+    ],
+    dialogueId: 'dlg-l33-02',
+  },
+];

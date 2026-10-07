@@ -218,18 +218,23 @@ export default function ReviewPage() {
                 <span>Due</span>
               </div>
               {rows.slice(0, 40).map((row) => (
-                <div key={row.id} className="rt-row" onClick={() => router.push('/flashcards')}>
+                <button
+                  key={row.id}
+                  type="button"
+                  className="rt-row"
+                  onClick={() => router.push('/flashcards')}
+                >
                   <span className="g">{row.char}</span>
                   <span className="r">{row.reading}</span>
                   <span className="m">{row.meaning}</span>
-                  <div className="mem-wrap">
-                    <div className="lab">{Math.round(row.mem * 100)}% retained</div>
-                    <div className="mem-bar">
-                      <div className="fill" style={{ width: `${row.mem * 100}%` }} />
-                    </div>
-                  </div>
+                  <span className="mem-wrap">
+                    <span className="lab">{Math.round(row.mem * 100)}% retained</span>
+                    <span className="mem-bar">
+                      <span className="fill" style={{ width: `${row.mem * 100}%` }} />
+                    </span>
+                  </span>
                   <span className="due">{row.due}</span>
-                </div>
+                </button>
               ))}
             </div>
           </InkCard>

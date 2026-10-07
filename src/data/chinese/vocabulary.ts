@@ -238,6 +238,18 @@ const baseVocabulary: VocabularyItem[] = [
     exampleSentence: '王老师很好。',
     exampleTranslation: 'Teacher Wang is very nice.',
   },
+  {
+    id: 'zh-031',
+    language: 'chinese',
+    word: '不',
+    reading: 'bù',
+    meaning: 'not, no',
+    partOfSpeech: 'adverb',
+    level: 'HSK 1',
+    topic: 'grammar',
+    exampleSentence: '我不是老师。',
+    exampleTranslation: "I'm not a teacher.",
+  },
   // HSK 2
   {
     id: 'zh-021',

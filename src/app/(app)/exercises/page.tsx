@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react';
 import { nanoid } from 'nanoid';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useProgress } from '@/hooks/use-progress';
+import { useMistakeLog } from '@/hooks/use-mistakes';
 import { useCurrentLesson } from '@/hooks/use-current-lesson';
 import { ExerciseShell } from '@/components/exercises/exercise-shell';
 import { Card, CardContent } from '@/components/ui/card';
@@ -56,6 +57,13 @@ const EXERCISE_TYPES: {
     offline: true,
   },
   {
+    type: 'typed-recall',
+    label: 'Typed Recall',
+    description: 'Type the word for a meaning',
+    offline: true,
+    langs: ['chinese'],
+  },
+  {
     type: 'translation',
     label: 'Translation',
     description: 'Translate between languages',
@@ -97,12 +105,14 @@ const MIXED_POOL: ExerciseType[] = [
   'character-recognition',
   'grammar-drill',
   'dialogue-comprehension',
+  'typed-recall',
 ];
 
 export default function ExercisesPage() {
   const { language, difficulty } = useLanguage();
   const [currentLesson] = useCurrentLesson();
   const { recordActivity } = useProgress();
+  const { recordExercise } = useMistakeLog();
   const [currentExercise, setCurrentExercise] = useState<Exercise | null>(null);
   const [mixedMode, setMixedMode] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -235,6 +245,9 @@ export default function ExercisesPage() {
       correctAnswers: result.correct ? 1 : 0,
       totalAnswers: 1,
     });
+    if (currentExercise) {
+      recordExercise(currentExercise, result.correct, 'practice', result.userAnswer);
+    }
   };
 
   const handleNext = () => {

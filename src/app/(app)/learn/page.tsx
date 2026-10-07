@@ -11,6 +11,7 @@ import { getLessonsWithNotes, chineseLessons, type LessonEntry } from '@/data/ch
 import { LessonNotes } from '@/components/learn/lesson-notes';
 import { useMastery } from '@/hooks/use-mastery';
 import { useProgress } from '@/hooks/use-progress';
+import { useMistakeLog } from '@/hooks/use-mistakes';
 import { buildChecksForRule } from '@/lib/learn/checks';
 import { cn } from '@/lib/utils';
 import type { Exercise, ExerciseResult } from '@/types';
@@ -215,6 +216,7 @@ function StudySession({ rule, onExit }: { rule: GrammarRule; onExit: () => void 
 
   const { recordActivity } = useProgress();
   const { record: recordGrammar } = useMastery('grammar');
+  const { recordExercise } = useMistakeLog();
 
   const handleComplete = useCallback(
     (result: ExerciseResult) => {
@@ -229,8 +231,10 @@ function StudySession({ rule, onExit }: { rule: GrammarRule; onExit: () => void 
         sublabel: rule.pattern,
         group: 'grammar',
       });
+      const exercise = checks[index];
+      if (exercise) recordExercise(exercise, result.correct, 'learn', result.userAnswer);
     },
-    [recordActivity, recordGrammar, rule],
+    [recordActivity, recordGrammar, recordExercise, rule, checks, index],
   );
 
   const handleNext = useCallback(() => {

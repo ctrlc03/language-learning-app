@@ -178,6 +178,19 @@ function buildToolForType(exerciseType: ExerciseType) {
       },
       required: ['question', 'instruction', 'options', 'correctIndex'],
     },
+    // Offline-only (generated from course vocabulary); not produced via the API.
+    'typed-recall': {
+      properties: {
+        ...baseProperties,
+        prompt: { type: 'string' as const, description: 'The English meaning to recall' },
+        answers: {
+          type: 'array' as const,
+          items: { type: 'string' as const },
+          description: 'Accepted answers in characters, model answer first',
+        },
+      },
+      required: ['question', 'instruction', 'prompt', 'answers'],
+    },
   };
 
   const schema = typeSchemas[exerciseType];

@@ -1,8 +1,8 @@
 import { forwardRef } from 'react';
 import { cn } from '@/lib/utils';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'destructive' | 'outline' | 'neon';
-type ButtonSize = 'sm' | 'md' | 'lg' | 'icon';
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'destructive' | 'outline' | 'neon';
+export type ButtonSize = 'sm' | 'md' | 'lg' | 'icon';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -25,17 +25,26 @@ const sizeStyles: Record<ButtonSize, string> = {
   icon: 'h-10 w-10',
 };
 
+/** The button look, for an element that has to be something else (a next/link). */
+export function buttonClassName({
+  variant = 'primary',
+  size = 'md',
+  className,
+}: { variant?: ButtonVariant; size?: ButtonSize; className?: string } = {}): string {
+  return cn(
+    'inline-flex items-center justify-center font-medium transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:pointer-events-none disabled:opacity-50',
+    variantStyles[variant],
+    sizeStyles[size],
+    className,
+  );
+}
+
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = 'primary', size = 'md', disabled, ...props }, ref) => {
+  ({ className, variant, size, disabled, ...props }, ref) => {
     return (
       <button
         ref={ref}
-        className={cn(
-          'inline-flex items-center justify-center font-medium transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:pointer-events-none disabled:opacity-50',
-          variantStyles[variant],
-          sizeStyles[size],
-          className,
-        )}
+        className={buttonClassName({ variant, size, className })}
         disabled={disabled}
         {...props}
       />

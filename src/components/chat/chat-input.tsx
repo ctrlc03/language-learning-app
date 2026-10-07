@@ -4,6 +4,9 @@ import { useState, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
+/** Longest message the box accepts; the server rejects far longer ones. */
+const MAX_INPUT_CHARS = 2000;
+
 interface ChatInputProps {
   onSend: (message: string) => void;
   disabled?: boolean;
@@ -53,6 +56,7 @@ export function ChatInput({ onSend, disabled, placeholder = 'Type a message...' 
           placeholder={placeholder}
           disabled={disabled}
           rows={1}
+          maxLength={MAX_INPUT_CHARS}
           className={cn(
             'flex-1 min-w-0 resize-none rounded-xl border border-border bg-background px-4 py-2.5 text-sm',
             'placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50',

@@ -55,7 +55,7 @@ export function Ring({
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   return (
-    <div
+    <span
       role={title ? 'img' : undefined}
       aria-label={title}
       className="prog"
@@ -95,7 +95,7 @@ export function Ring({
           {label}
         </span>
       )}
-    </div>
+    </span>
   );
 }
 

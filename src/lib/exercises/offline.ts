@@ -31,6 +31,7 @@ import type {
   DialogueComprehensionExerciseData,
   DialogueLine,
   SentenceMcData,
+  TypedRecallData,
   FuriSegment,
 } from '@/types';
 import type { GrammarPattern } from '@/data/japanese/irodori-grammar';
@@ -47,6 +48,7 @@ import {
   normalizeOrder,
   segmentByPinyin,
 } from '@/lib/exercises/tiles';
+import { segmentChinese } from '@/lib/language/segment';
 
 // Seeded random for reproducibility within a session
 function seededRandom(seed: number): () => number {
@@ -139,6 +141,7 @@ export const OFFLINE_EXERCISE_TYPES: ExerciseType[] = [
   'grammar-drill',
   'dialogue-reading',
   'dialogue-comprehension',
+  'typed-recall',
 ];
 
 export function isOfflineExerciseType(type: ExerciseType): boolean {
@@ -231,6 +234,8 @@ export function getOfflineExercise(req: OfflineExerciseRequest): Exercise | null
         lessonFilter,
         currentLesson,
       );
+    case 'typed-recall':
+      return generateTypedRecall(scope, language, difficulty, rng);
     default:
       return null;
   }
@@ -774,45 +779,10 @@ function generateSentenceConstruction(
     language,
     difficulty,
     question: `Arrange the words to form a sentence.`,
-    instruction: `Translation: ${target.exampleTranslation || target.meaning}`,
+    instruction: 'Tap the words in order; tap a placed word to take it back.',
     data,
     createdAt: Date.now(),
   };
-}
-
-// Dictionary of known Chinese words (from the vocabulary data) used to split
-// sentences along real word boundaries instead of arbitrary character chunks.
-const chineseWordSet: Set<string> = new Set(
-  chineseVocabulary.map((v) => v.word).filter((w) => w.length >= 2),
-);
-const maxChineseWordLength = Math.max(2, ...[...chineseWordSet].map((w) => w.length));
-
-// Greedy longest-match cut of punctuation-free text along dictionary words;
-// unknown characters become single-char segments.
-function segmentChinese(clean: string): string[] {
-  const segments: string[] = [];
-
-  let i = 0;
-  while (i < clean.length) {
-    let matched = '';
-    const maxLen = Math.min(maxChineseWordLength, clean.length - i);
-    for (let len = maxLen; len >= 2; len--) {
-      const candidate = clean.slice(i, i + len);
-      if (chineseWordSet.has(candidate)) {
-        matched = candidate;
-        break;
-      }
-    }
-    if (matched) {
-      segments.push(matched);
-      i += matched.length;
-    } else {
-      segments.push(clean[i]);
-      i++;
-    }
-  }
-
-  return segments;
 }
 
 function splitChineseSentence(sentence: string): string[] {
@@ -906,6 +876,83 @@ function generateCharacterRecognition(
     difficulty,
     question: `What does this character mean?`,
     instruction: 'Select the correct meaning for the character shown.',
+    data,
+    createdAt: Date.now(),
+  };
+}
+
+// Words worth typing from memory: all characters, short enough to recall exactly,
+// and glossed without giving the word away.
+function isRecallable(v: VocabularyItem): boolean {
+  return /^\p{Script=Han}{1,4}$/u.test(v.word) && !v.meaning.includes(v.word);
+}
+
+// The senses a gloss lists, qualifiers kept: "two (with measure words); a unit
+// of weight" → ["two (with measure words)", "a unit of weight"]. Separators
+// inside parentheses don't split.
+function glossSenses(meaning: string): string[] {
+  return meaning
+    .toLowerCase()
+    .split(/[;,/](?![^()]*\))/)
+    .map((s) => s.replace(/\s+/g, ' ').trim())
+    .filter(Boolean);
+}
+
+// English → Chinese recall: the meaning is shown and the learner types the word,
+// in characters or pinyin. Another course word is accepted too when its gloss
+// lists every sense shown, qualifiers included (早饭 or 早餐 for "breakfast"),
+// so a right answer isn't marked wrong for not being the one the generator
+// picked. A qualifier is the contrast the prompt draws ("aunt (father's
+// sister)", "year (of age)"), so it has to match too. Chinese only: the grader
+// reads characters and pinyin.
+function generateTypedRecall(
+  { pool, targets }: Scope,
+  language: Language,
+  difficulty: DifficultyLevel,
+  rng: () => number,
+): Exercise | null {
+  if (language !== 'chinese') return null;
+  const candidates = targets.filter(isRecallable);
+  const target = pickRandom(candidates.length > 0 ? candidates : pool.filter(isRecallable), rng);
+  if (!target) return null;
+
+  const senses = glossSenses(target.meaning);
+  const answers = [target.word];
+  for (const v of senses.length > 0 ? pool : []) {
+    if (answers.includes(v.word) || !isRecallable(v)) continue;
+    const other = glossSenses(v.meaning);
+    if (senses.every((s) => other.includes(s))) answers.push(v.word);
+  }
+
+  const chars = [...target.word].length;
+  const size = `${chars} character${chars === 1 ? '' : 's'}`;
+  const example = target.exampleSentence
+    ? [
+        `Example: ${target.exampleSentence}`,
+        target.examplePinyin ?? toPinyin(target.exampleSentence),
+        target.exampleTranslation,
+      ]
+        .filter(Boolean)
+        .join('\n')
+    : undefined;
+
+  const data: TypedRecallData = {
+    type: 'typed-recall',
+    prompt: target.meaning,
+    answers,
+    answerPinyin: target.reading,
+    hint: target.partOfSpeech ? `${target.partOfSpeech} · ${size}` : size,
+    note: example,
+  };
+
+  return {
+    id: target.id + '_tr_' + nanoid(6),
+    sourceId: target.id,
+    type: 'typed-recall',
+    language,
+    difficulty,
+    question: 'How do you say this in Chinese?',
+    instruction: 'Type the word in characters or pinyin.',
     data,
     createdAt: Date.now(),
   };

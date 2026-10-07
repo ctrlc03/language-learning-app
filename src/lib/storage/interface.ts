@@ -12,6 +12,7 @@ export const StorageKeys = {
   progress: () => `${STORAGE_PREFIX}progress`,
   settings: () => `${STORAGE_PREFIX}settings`,
   activity: (date: string) => `${STORAGE_PREFIX}activity:${date}`,
+  mistake: (id: string) => `${STORAGE_PREFIX}mistake:${id}`,
 } as const;
 
 export const StoragePrefixes = {
@@ -20,4 +21,5 @@ export const StoragePrefixes = {
   decks: `${STORAGE_PREFIX}deck:`,
   vocab: `${STORAGE_PREFIX}vocab:`,
   activity: `${STORAGE_PREFIX}activity:`,
+  mistakes: `${STORAGE_PREFIX}mistake:`,
 } as const;

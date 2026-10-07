@@ -6,10 +6,12 @@ import { useStorage } from '@/contexts/StorageContext';
 import { useChat } from '@/hooks/use-chat';
 import { useSpeechInit } from '@/hooks/use-speech';
 import { ChatContainer } from '@/components/chat/chat-container';
-import { ScenarioPicker, SCENARIOS } from '@/components/chat/scenario-picker';
+import { ScenarioPicker } from '@/components/chat/scenario-picker';
+import { ScriptMode } from '@/components/chat/script-mode';
 import { Button } from '@/components/ui/button';
 import { StoragePrefixes } from '@/lib/storage/interface';
-import type { Conversation, ChatScenario } from '@/types';
+import { getRolePlay, getRolePlayDialogue } from '@/lib/chat/scenarios';
+import type { Conversation } from '@/types';
 import { cn, truncate, formatDate, plural } from '@/lib/utils';
 
 export default function ChatPage() {
@@ -22,11 +24,16 @@ export default function ChatPage() {
     createConversation,
     loadConversation,
     sendMessage,
+    toggleGoal,
     retry,
   } = useChat();
   const [showScenarios, setShowScenarios] = useState(true);
   const [pastConversations, setPastConversations] = useState<Conversation[]>([]);
   const [showHistory, setShowHistory] = useState(false);
+  // Id of the role-play whose lesson dialogue is open in Script mode.
+  const [scriptRolePlayId, setScriptRolePlayId] = useState<string | null>(null);
+  const scriptRolePlay = getRolePlay(scriptRolePlayId ?? undefined);
+  const scriptDialogue = scriptRolePlay ? getRolePlayDialogue(scriptRolePlay) : undefined;
 
   useSpeechInit();
 
@@ -38,18 +45,21 @@ export default function ChatPage() {
       });
   }, [language, storage, conversation]);
 
-  const handleScenarioSelect = async (scenario: ChatScenario | null) => {
-    await createConversation(language, difficulty, scenario?.systemPromptAddition);
+  const handleScenarioSelect = async (scenarioId: string | null) => {
+    setScriptRolePlayId(null);
+    await createConversation(language, difficulty, scenarioId ?? undefined);
     setShowScenarios(false);
   };
 
   const handleLoadConversation = async (id: string) => {
     await loadConversation(id);
+    setScriptRolePlayId(null);
     setShowScenarios(false);
     setShowHistory(false);
   };
 
   const handleNewChat = () => {
+    setScriptRolePlayId(null);
     setShowScenarios(true);
     setShowHistory(false);
   };
@@ -77,6 +87,7 @@ export default function ChatPage() {
           )}
           {pastConversations.map((conv) => (
             <button
+              type="button"
               key={conv.id}
               onClick={() => handleLoadConversation(conv.id)}
               className={cn(
@@ -86,10 +97,10 @@ export default function ChatPage() {
                   : 'hover:bg-muted text-foreground',
               )}
             >
-              <p className="font-medium truncate">{truncate(conv.title, 30)}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <span className="block font-medium truncate">{truncate(conv.title, 30)}</span>
+              <span className="block text-xs text-muted-foreground mt-0.5">
                 {formatDate(conv.updatedAt)} · {plural(conv.messages.length, 'message')}
-              </p>
+              </span>
             </button>
           ))}
         </div>
@@ -107,7 +118,13 @@ export default function ChatPage() {
           </Button>
         </div>
 
-        {showScenarios && !conversation ? (
+        {scriptRolePlay && scriptDialogue ? (
+          <ScriptMode
+            rolePlay={scriptRolePlay}
+            dialogue={scriptDialogue}
+            onExit={() => setScriptRolePlayId(null)}
+          />
+        ) : showScenarios ? (
           <div className="flex-1 overflow-y-auto p-4 max-w-2xl mx-auto">
             <ScenarioPicker language={language} onSelect={handleScenarioSelect} />
           </div>
@@ -118,6 +135,8 @@ export default function ChatPage() {
             error={error}
             onSend={sendMessage}
             onRetry={retry}
+            onToggleGoal={toggleGoal}
+            onScript={() => setScriptRolePlayId(conversation?.scenarioId ?? null)}
           />
         )}
       </div>

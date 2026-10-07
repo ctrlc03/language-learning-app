@@ -7,8 +7,32 @@ import {
   missingKeyResponse,
 } from '@/lib/claude/client';
 import { CHAT_STREAM_ERROR_MARKER } from '@/lib/claude/chat-stream';
-import { buildConversationPrompt } from '@/lib/claude/prompts/conversation';
-import type { Language, DifficultyLevel } from '@/types';
+import { buildConversationPrompt, ROLE_PLAY_OPENER } from '@/lib/claude/prompts/conversation';
+import { findScenario, scenarioLanguage } from '@/lib/chat/scenarios';
+import { z } from 'zod';
+
+/**
+ * Everything the client sends is validated against fixed sets before it can shape the
+ * system prompt: language and difficulty are enums and the scenario is an id into the
+ * server-side registry, never text.
+ */
+/** Longest single message accepted (the chat input stops well short of it). */
+const MAX_MESSAGE_CHARS = 8000;
+
+/** Only this many recent messages go to the model; older ones stay in the stored conversation. */
+const MAX_CONTEXT_MESSAGES = 100;
+
+const chatRequestSchema = z.object({
+  messages: z.array(
+    z.object({
+      role: z.enum(['user', 'assistant']),
+      content: z.string().min(1).max(MAX_MESSAGE_CHARS),
+    }),
+  ),
+  language: z.enum(['chinese', 'japanese']),
+  difficulty: z.enum(['beginner', 'intermediate', 'advanced']),
+  scenarioId: z.string().max(64).optional(),
+});
 
 /** Next text chunk from the model, or null once the stream has ended. */
 async function nextTextChunk(events: AsyncIterator<MessageStreamEvent>): Promise<string | null> {
@@ -26,13 +50,40 @@ export async function POST(request: Request) {
   if (missingKey) return missingKey;
 
   try {
-    const body = await request.json();
-    const { messages, language, difficulty, scenario } = body as {
-      messages: { role: 'user' | 'assistant'; content: string }[];
-      language: Language;
-      difficulty: DifficultyLevel;
-      scenario?: string;
-    };
+    const parsed = chatRequestSchema.safeParse(await request.json());
+    if (!parsed.success) {
+      const tooLong = parsed.error.issues.some((i) => i.code === 'too_big');
+      return aiError(
+        tooLong
+          ? 'One of the messages is too long to send. Shorten it and try again.'
+          : 'The chat request was not valid.',
+        400,
+      );
+    }
+    const { messages, language, difficulty, scenarioId } = parsed.data;
+
+    const scenario = scenarioId === undefined ? undefined : findScenario(scenarioId);
+    if (scenarioId !== undefined && (!scenario || scenarioLanguage(scenario) !== language)) {
+      return aiError('Unknown chat scenario.', 400);
+    }
+
+    const isRolePlay = scenario?.kind === 'roleplay';
+    // A conversation must end with the learner's turn, except a role-play being opened.
+    if (messages.length === 0 ? !isRolePlay : messages[messages.length - 1].role !== 'user') {
+      return aiError('The chat request was not valid.', 400);
+    }
+
+    // The AI speaks first in a role-play: a hidden user turn asks for the opening line.
+    // It is added here on every request, never stored in the conversation or shown.
+    const recent = messages.slice(-MAX_CONTEXT_MESSAGES);
+    let turns = recent;
+    if (recent[0]?.role !== 'user') {
+      // The model needs a conversation that starts with the learner: open the role-play, or
+      // drop the assistant turn a long conversation was cut at.
+      turns = isRolePlay
+        ? [{ role: 'user' as const, content: ROLE_PLAY_OPENER }, ...recent]
+        : recent.slice(recent.findIndex((m) => m.role === 'user'));
+    }
 
     const client = getAnthropicClient();
     const systemPrompt = buildConversationPrompt(language, difficulty, scenario);
@@ -41,10 +92,7 @@ export async function POST(request: Request) {
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 1024,
       system: systemPrompt,
-      messages: messages.map((m) => ({
-        role: m.role,
-        content: m.content,
-      })),
+      messages: turns,
     });
     const events = stream[Symbol.asyncIterator]();
 

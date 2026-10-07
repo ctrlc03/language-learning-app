@@ -18,7 +18,7 @@ const TEMPLATE = join(root, 'public/sw.template.js');
 const OUTPUT = join(root, 'public/sw.js');
 
 // Routes that aren't nav tabs but must still work offline.
-const EXTRA_URLS = ['/', '/session', '/settings'];
+const EXTRA_URLS = ['/', '/session', '/session/weak', '/settings'];
 
 const nav = readFileSync(NAV_FILE, 'utf8');
 const block = nav.match(/export const NAV_TABS\s*=\s*\[([\s\S]*?)\n\];/);

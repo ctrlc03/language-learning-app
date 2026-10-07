@@ -12,6 +12,7 @@ import type {
 import { useStorage } from '@/contexts/StorageContext';
 import { CHAT_STREAM_ERROR_MARKER } from '@/lib/claude/chat-stream';
 import { StorageKeys } from '@/lib/storage/interface';
+import { findScenario } from '@/lib/chat/scenarios';
 
 function parseMetadata(content: string): { text: string; metadata?: MessageMetadata } {
   const metaSplit = content.split('<!--META-->');
@@ -33,26 +34,6 @@ export function useChat() {
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
-  const createConversation = useCallback(
-    async (language: Language, difficulty: DifficultyLevel, scenario?: string) => {
-      const conv: Conversation = {
-        id: nanoid(),
-        language,
-        difficulty,
-        scenario,
-        title: 'New Conversation',
-        messages: [],
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      };
-      await storage.set(StorageKeys.conversation(conv.id), conv);
-      setError(null);
-      setConversation(conv);
-      return conv;
-    },
-    [storage],
-  );
-
   const loadConversation = useCallback(
     async (id: string) => {
       const conv = await storage.get<Conversation>(StorageKeys.conversation(id));
@@ -66,9 +47,9 @@ export function useChat() {
   );
 
   /**
-   * Ask the model to answer `conv` (whose last message is the user's) and stream the
-   * reply into state. Failures are shown via `error` and never written to history, so
-   * the user's message stays and can be retried.
+   * Ask the model to answer `conv` and stream the reply into state. `conv` ends with
+   * the user's message, or is empty when the AI opens a role-play. Failures are shown via
+   * `error` and never written to history, so the user's message stays and can be retried.
    */
   const requestReply = useCallback(
     async (conv: Conversation) => {
@@ -94,7 +75,7 @@ export function useChat() {
             })),
             language: conv.language,
             difficulty: conv.difficulty,
-            scenario: conv.scenario,
+            scenarioId: conv.scenarioId,
           }),
           signal: abortRef.current.signal,
         });
@@ -168,6 +149,45 @@ export function useChat() {
     [storage],
   );
 
+  /**
+   * Start a conversation. A lesson role-play has the AI speak first, so its opening line
+   * is requested straight away (no learner message; the server adds a hidden prompt).
+   */
+  const createConversation = useCallback(
+    async (language: Language, difficulty: DifficultyLevel, scenarioId?: string) => {
+      const spec = scenarioId ? findScenario(scenarioId) : undefined;
+      const conv: Conversation = {
+        id: nanoid(),
+        language,
+        difficulty,
+        scenarioId: spec ? scenarioId : undefined,
+        title: spec?.kind === 'roleplay' ? spec.rolePlay.title : 'New Conversation',
+        messages: [],
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+      await storage.set(StorageKeys.conversation(conv.id), conv);
+      setError(null);
+      setConversation(conv);
+      if (spec?.kind === 'roleplay') void requestReply(conv);
+      return conv;
+    },
+    [storage, requestReply],
+  );
+
+  /** Tick or untick one of a role-play's goals. */
+  const toggleGoal = useCallback(
+    async (index: number) => {
+      if (!conversation) return;
+      const done = new Set(conversation.goalsDone ?? []);
+      if (!done.delete(index)) done.add(index);
+      const next: Conversation = { ...conversation, goalsDone: [...done].sort((a, b) => a - b) };
+      setConversation(next);
+      await storage.set(StorageKeys.conversation(next.id), next);
+    },
+    [conversation, storage],
+  );
+
   const sendMessage = useCallback(
     async (text: string) => {
       if (!conversation || isStreaming) return;
@@ -197,10 +217,12 @@ export function useChat() {
     [conversation, isStreaming, requestReply, storage],
   );
 
-  /** Re-ask for a reply to the last user message after a failed request. */
+  /** Re-ask after a failed request: for the last user message, or for a role-play's opening line. */
   const retry = useCallback(async () => {
     if (!conversation || isStreaming) return;
-    if (conversation.messages[conversation.messages.length - 1]?.role !== 'user') return;
+    const last = conversation.messages[conversation.messages.length - 1];
+    const opening = !last && findScenario(conversation.scenarioId ?? '')?.kind === 'roleplay';
+    if (last?.role !== 'user' && !opening) return;
     await requestReply(conversation);
   }, [conversation, isStreaming, requestReply]);
 
@@ -216,6 +238,7 @@ export function useChat() {
     createConversation,
     loadConversation,
     sendMessage,
+    toggleGoal,
     retry,
     stopStreaming,
     setConversation,

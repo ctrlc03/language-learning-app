@@ -118,7 +118,7 @@ export function buildChecksForRule(rule: GrammarRule, count = 4): Exercise[] {
       ...baseExercise(
         `${rule.id}:${index}`,
         'Build the sentence',
-        `Arrange the tiles to say: "${example.english}"`,
+        'Tap the words in order; tap a placed word to take it back.',
       ),
       type: 'sentence-construction',
       data: {

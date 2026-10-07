@@ -275,6 +275,13 @@ button {
   color: var(--accent);
   margin-bottom: 14px;
 }
+.page-top .back-link {
+  display: block;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
 .page-top h1 {
   font-family: var(--serif);
   font-weight: 800;
@@ -567,11 +574,25 @@ button {
   display: grid;
   grid-template-columns: 64px 1fr auto;
   gap: 18px;
+  width: 100%;
   padding: 16px 22px;
   align-items: center;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
   border-bottom: 1px solid var(--line);
   cursor: pointer;
   transition: background 0.15s;
+}
+.lesson-item:focus-visible,
+.rt-row:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+.lesson-item:disabled {
+  cursor: progress;
 }
 .lesson-item:last-child {
   border-bottom: none;
@@ -586,6 +607,10 @@ button {
   line-height: 1;
   color: var(--primary);
   text-align: center;
+}
+.lesson-item .main .title,
+.lesson-item .main .sub {
+  display: block;
 }
 .lesson-item .main .title {
   font-family: var(--serif);
@@ -1042,6 +1067,12 @@ button {
   border-bottom: 1px solid var(--line);
 }
 .rt-row {
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
   border-bottom: 1px solid var(--line);
   cursor: pointer;
   transition: background 0.15s;
@@ -1067,6 +1098,10 @@ button {
   font-family: var(--serif);
   font-size: 15px;
   color: var(--ink);
+}
+.mem-wrap .lab,
+.mem-bar {
+  display: block;
 }
 .mem-wrap .lab {
   font-size: 10px;

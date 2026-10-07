@@ -15,6 +15,7 @@ import { CharacterRecognition } from './character-recognition';
 import { GrammarDrill } from './grammar-drill';
 import { DialogueReading } from './dialogue-reading';
 import { DialogueComprehension } from './dialogue-comprehension';
+import { TypedRecall } from './typed-recall';
 import { speak, stopSpeaking } from '@/lib/tts/speech';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
@@ -35,6 +36,7 @@ const TYPE_LABELS: Record<string, string> = {
   'grammar-drill': 'Grammar Drill',
   'dialogue-reading': 'Dialogue Reading',
   'dialogue-comprehension': 'Dialogue Quiz',
+  'typed-recall': 'Typed Recall',
 };
 
 // The target-language text to pronounce once an exercise is answered, so the
@@ -51,6 +53,8 @@ function getAnswerSpeech(exercise: Exercise): string | null {
       return data.correctOrder;
     case 'character-recognition':
       return data.character;
+    case 'typed-recall':
+      return data.answers[0];
     default:
       return null;
   }
@@ -84,12 +88,13 @@ export function ExerciseShell({ exercise, onComplete, onNext }: ExerciseShellPro
     stopSpeaking();
   }, [exercise.id]);
 
-  const handleSubmit = async (answer: string, isCorrect?: boolean) => {
+  // `note` is the component's own one-line verdict when right/wrong alone undersells it.
+  const handleSubmit = async (answer: string, isCorrect?: boolean, note?: string) => {
     setEvaluating(true);
     setEvalFailure(null);
 
     let correct = isCorrect;
-    let feedback = '';
+    let feedback = note ?? '';
 
     if (correct === undefined) {
       // A failed evaluation says nothing about the answer: surface the error
@@ -187,6 +192,8 @@ export function ExerciseShell({ exercise, onComplete, onNext }: ExerciseShellPro
         return (
           <DialogueComprehension data={exercise.data} onSubmit={handleSubmit} disabled={!!result} />
         );
+      case 'typed-recall':
+        return <TypedRecall data={exercise.data} onSubmit={handleSubmit} disabled={!!result} />;
       default:
         return <p className="text-sm">Unknown exercise type</p>;
     }
@@ -226,17 +233,22 @@ export function ExerciseShell({ exercise, onComplete, onNext }: ExerciseShellPro
           </div>
         )}
 
-        {/* Evaluation failure: not a wrong answer, so offer a retry */}
+        {/* Evaluation failure: not a wrong answer, so offer a retry (or moving on, e.g. offline) */}
         {evalFailure && !evaluating && (
           <div className="px-4 py-3 rounded-lg text-sm bg-destructive/10 text-destructive space-y-2">
             <p className="text-[13px]">{evalFailure.message}</p>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => void handleSubmit(evalFailure.answer)}
-            >
-              Retry
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => void handleSubmit(evalFailure.answer)}
+              >
+                Retry
+              </Button>
+              <Button variant="ghost" size="sm" onClick={onNext}>
+                Skip
+              </Button>
+            </div>
           </div>
         )}
 

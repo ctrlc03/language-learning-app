@@ -20,7 +20,10 @@ export interface Conversation {
   id: string;
   language: Language;
   difficulty: DifficultyLevel;
-  scenario?: string;
+  /** Id of a scenario or lesson role-play in `@/lib/chat/scenarios`; the server builds its prompt. */
+  scenarioId?: string;
+  /** Role-play goals the learner has ticked off (indexes into the role-play's goals). */
+  goalsDone?: number[];
   title: string;
   messages: ChatMessage[];
   createdAt: number;
@@ -54,6 +57,7 @@ export interface ChatScenario {
   description: string;
   language: Language;
   difficulty: DifficultyLevel;
+  /** Scenario text for the system prompt. Lives in the server-side registry; never sent by a client. */
   systemPromptAddition: string;
 }
 
@@ -147,7 +151,8 @@ export type ExerciseType =
   | 'character-recognition'
   | 'grammar-drill'
   | 'dialogue-reading'
-  | 'dialogue-comprehension';
+  | 'dialogue-comprehension'
+  | 'typed-recall';
 
 export interface Exercise {
   id: string;
@@ -174,7 +179,8 @@ export type ExerciseData =
   | CharacterRecognitionData
   | GrammarDrillData
   | DialogueReadingData
-  | DialogueComprehensionExerciseData;
+  | DialogueComprehensionExerciseData
+  | TypedRecallData;
 
 export interface MultipleChoiceData {
   type: 'multiple-choice';
@@ -290,6 +296,22 @@ export interface DialogueComprehensionExerciseData {
   options: string[];
   correctIndex: number;
   explanation?: string;
+}
+
+// Production: the prompt gives the meaning, the learner types the Chinese in
+// characters or pinyin; graded by gradeAnswer (lib/language/answer.ts).
+export interface TypedRecallData {
+  type: 'typed-recall';
+  /** What to say, in English: a word's meaning or a sentence. */
+  prompt: string;
+  /** Accepted answers in characters, the model answer first. */
+  answers: string[];
+  /** The course's pinyin for answers[0]. */
+  answerPinyin?: string;
+  /** Shown with the prompt: part of speech, or the pattern to use. */
+  hint?: string;
+  /** Shown after answering: why, or what the answer means word by word. */
+  note?: string;
 }
 
 export interface ExerciseResult {

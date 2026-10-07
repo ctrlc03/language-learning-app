@@ -1,9 +1,13 @@
 'use client';
 
+import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useMastery } from '@/hooks/use-mastery';
+import { useMistakes } from '@/hooks/use-mistakes';
 import { Card, CardContent } from '@/components/ui/card';
+import { buttonClassName } from '@/components/ui/button';
 import { weakest, byGroup, type MasteryMap } from '@/lib/mastery';
+import { cn, plural } from '@/lib/utils';
 
 function pct(n: number): string {
   return `${Math.round(n * 100)}%`;
@@ -21,13 +25,19 @@ function DomainSection({
   cjk,
   map,
   emptyHint,
+  textLabels = false,
+  showGroups = true,
 }: {
   title: string;
   cjk: string;
   map: MasteryMap;
   emptyHint: string;
+  /** Labels are phrases (grammar pattern names) rather than characters: smaller, sublabel as tooltip. */
+  textLabels?: boolean;
+  /** Show per-group accuracy bars; off when every item shares one group, which would just repeat the title. */
+  showGroups?: boolean;
 }) {
-  const groups = byGroup(map);
+  const groups = showGroups ? byGroup(map) : [];
   const weak = weakest(map, 12);
   const totalSeen = Object.values(map).reduce((n, e) => n + e.seen, 0);
 
@@ -78,10 +88,14 @@ function DomainSection({
                       <div
                         key={w.id}
                         className="flex items-center gap-2 rounded-lg border px-2.5 py-1.5"
-                        title={`${w.correct}/${w.seen} correct`}
+                        title={[textLabels && w.sublabel, `${w.correct}/${w.seen} correct`]
+                          .filter(Boolean)
+                          .join(' · ')}
                       >
-                        <span className="cjk text-lg">{w.label}</span>
-                        {w.sublabel && (
+                        <span className={cn('cjk', textLabels ? 'text-sm' : 'text-lg')}>
+                          {w.label}
+                        </span>
+                        {w.sublabel && !textLabels && (
                           <span className="text-xs text-muted-foreground">{w.sublabel}</span>
                         )}
                         <span className="text-xs font-medium" style={{ color: accColor(w.acc) }}>
@@ -101,11 +115,15 @@ function DomainSection({
 
 export default function ProgressPage() {
   const { language } = useLanguage();
+  const chinese = language === 'chinese';
   const tones = useMastery('tones');
   const writing = useMastery('writing');
   const classifiers = useMastery('classifiers');
   const typing = useMastery('typing');
   const numbers = useMastery('numbers');
+  const grammar = useMastery('grammar');
+  const speaking = useMastery('speaking');
+  const mistakes = useMistakes();
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -117,6 +135,33 @@ export default function ProgressPage() {
           </h1>
         </div>
       </div>
+
+      <Card>
+        <CardContent className="p-5 flex flex-wrap items-center justify-between gap-3">
+          <div className="min-w-0 space-y-0.5">
+            <h2 className="font-semibold">Drill your weak spots</h2>
+            <p className="text-xs text-muted-foreground">
+              {[
+                mistakes.open.length > 0 &&
+                  `Retries your ${plural(mistakes.open.length, 'open mistake')}.`,
+                chinese
+                  ? 'Drills the grammar patterns and tones you miss most.'
+                  : mistakes.open.length === 0 && 'Answers you miss in Practice come back here.',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Link href="/mistakes" className={buttonClassName({ variant: 'outline' })}>
+              Mistakes
+            </Link>
+            <Link href="/session/weak" className={buttonClassName()}>
+              Drill these
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
 
       <DomainSection
         title="Tones"
@@ -148,6 +193,24 @@ export default function ProgressPage() {
         map={numbers.map}
         emptyHint="Do the numbers drill to track numbers, money, and dates."
       />
+      {chinese && (
+        <DomainSection
+          title="Grammar"
+          cjk="语"
+          map={grammar.map}
+          textLabels
+          showGroups={false}
+          emptyHint="Study patterns in Learn or do the daily session, and the patterns you miss will show up here."
+        />
+      )}
+      {chinese && (
+        <DomainSection
+          title="Speaking"
+          cjk="说"
+          map={speaking.map}
+          emptyHint="Practise speaking and the sentences you find hard to say will show up here."
+        />
+      )}
     </div>
   );
 }

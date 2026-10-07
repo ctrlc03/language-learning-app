@@ -204,26 +204,27 @@ export default function DashboardPage() {
             {lessons.map((les, i) => {
               const pct = Math.round(rings[i] * 100);
               return (
-                <div
+                <button
                   key={les.id}
+                  type="button"
                   className="lesson-item"
                   onClick={() => router.push('/flashcards')}
                 >
-                  <div className="glyph">{les.glyph}</div>
-                  <div className="main">
-                    <div className="title">{les.title}</div>
-                    <div className="sub">{les.sub}</div>
-                    <div className="tags">
+                  <span className="glyph">{les.glyph}</span>
+                  <span className="main">
+                    <span className="title">{les.title}</span>
+                    <span className="sub">{les.sub}</span>
+                    <span className="tags">
                       <span className="tag">{les.band}</span>
                       <span className="tag">{les.topic}</span>
-                    </div>
-                  </div>
+                    </span>
+                  </span>
                   <Ring
                     value={rings[i]}
                     label={stats ? `${pct}%` : undefined}
                     title={stats ? `${pct}% of words reviewed` : undefined}
                   />
-                </div>
+                </button>
               );
             })}
           </div>

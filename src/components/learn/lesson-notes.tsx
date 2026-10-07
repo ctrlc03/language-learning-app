@@ -1,17 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SpeakButton } from '@/components/shared/speak-button';
+import { SelfCheckPractice } from '@/components/selfcheck/self-check-practice';
+import { getSelfCheckItems } from '@/lib/selfcheck/parse';
+import type { SelfCheckItem, SelfCheckKind } from '@/lib/selfcheck/parse';
 import type { LessonEntry, LessonNote } from '@/data/chinese/vocabulary';
 
 /**
  * Reader for a lesson's written notes — the prose that used to live only in the
  * source markdown while lessons.json kept just the word list. Sections carry
  * optional worked examples (speakable) and comparison tables, and the lesson's
- * self-check questions are hidden until asked for.
+ * self-check questions can be practised right here: built, filled in, chosen
+ * or spoken, graded, and fed into the mistake notebook.
  */
 export function LessonNotes({ lesson, onExit }: { lesson: LessonEntry; onExit: () => void }) {
   return (
@@ -37,7 +41,7 @@ export function LessonNotes({ lesson, onExit }: { lesson: LessonEntry; onExit: (
         <NoteSection key={i} note={note} />
       ))}
 
-      {lesson.selfCheck && lesson.selfCheck.length > 0 && <SelfCheck items={lesson.selfCheck} />}
+      <SelfCheckSection lessonNumber={lesson.lesson} />
     </div>
   );
 }
@@ -101,15 +105,39 @@ function NoteSection({ note }: { note: LessonNote }) {
   );
 }
 
-function SelfCheck({ items }: { items: { q: string; a: string }[] }) {
-  const [shown, setShown] = useState<Set<number>>(new Set());
+/** Groups of question kinds for the summary line, in display order. */
+const KIND_GROUPS: { label: string; kinds: SelfCheckKind[] }[] = [
+  { label: 'to build', kinds: ['order'] },
+  { label: 'to fill in', kinds: ['blank', 'insert'] },
+  { label: 'to choose', kinds: ['choice', 'passage', 'choose-reply'] },
+  { label: 'to say', kinds: ['translate', 'reply', 'open'] },
+  { label: 'to rewrite', kinds: ['correct', 'opposite'] },
+  { label: 'to explain', kinds: ['explain'] },
+];
 
-  const reveal = (i: number) =>
-    setShown((prev) => {
-      const next = new Set(prev);
-      next.add(i);
-      return next;
-    });
+function kindsSummary(items: SelfCheckItem[]): string {
+  return KIND_GROUPS.map(({ label, kinds }) => {
+    const n = items.filter((item) => kinds.includes(item.kind)).length;
+    return n > 0 ? `${n} ${label}` : null;
+  })
+    .filter(Boolean)
+    .join(', ');
+}
+
+function SelfCheckSection({ lessonNumber }: { lessonNumber: number }) {
+  const items = useMemo(() => getSelfCheckItems({ lesson: lessonNumber }), [lessonNumber]);
+  const [started, setStarted] = useState(false);
+
+  if (items.length === 0) return null;
+
+  if (started) {
+    return (
+      <section className="space-y-3">
+        <h2 className="font-semibold text-sm">Self-check</h2>
+        <SelfCheckPractice items={items} source="lesson" />
+      </section>
+    );
+  }
 
   return (
     <Card>
@@ -120,23 +148,8 @@ function SelfCheck({ items }: { items: { q: string; a: string }[] }) {
             {items.length} questions
           </Badge>
         </div>
-        <div className="space-y-2">
-          {items.map((item, i) => (
-            <div key={i} className="bg-muted/50 rounded-lg px-3 py-2">
-              <p className="text-sm">{item.q}</p>
-              {shown.has(i) ? (
-                <p className="text-xs text-muted-foreground mt-1">{item.a}</p>
-              ) : (
-                <button
-                  onClick={() => reveal(i)}
-                  className="text-[11px] underline text-muted-foreground mt-1"
-                >
-                  Show answer
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
+        <p className="text-sm text-muted-foreground">{kindsSummary(items)}</p>
+        <Button onClick={() => setStarted(true)}>Start</Button>
       </CardContent>
     </Card>
   );
