@@ -7,23 +7,39 @@ const LANGUAGE_NAMES: Record<Language, string> = {
   japanese: 'Japanese',
 };
 
-const DIFFICULTY_INSTRUCTIONS: Record<DifficultyLevel, string> = {
-  beginner: `- Use simple vocabulary and short sentences
+const DIFFICULTY_INSTRUCTIONS: Record<DifficultyLevel, (language: Language) => string> = {
+  beginner: () => `- Use simple vocabulary and short sentences
 - Introduce no more than 2-3 new words per response
 - Always provide translations for new vocabulary
 - Use basic grammar patterns
 - Be encouraging and patient`,
-  intermediate: `- Use a mix of simple and moderately complex sentences
+  intermediate: () => `- Use a mix of simple and moderately complex sentences
 - Introduce 3-5 new words or phrases per response
 - Provide translations for less common vocabulary
 - Use varied grammar patterns including some complex structures
 - Encourage the learner to express more complex ideas`,
-  advanced: `- Use natural, native-like language
+  // Chinese replies always carry an English line (see CHINESE_REPLY_FORMAT).
+  advanced: (language) => `- Use natural, native-like language
 - Introduce idiomatic expressions and nuanced vocabulary
-- Only translate when asked or when using very specialized terms
+${language === 'chinese' ? '- Explain words only when asked or when they are very specialized' : '- Only translate when asked or when using very specialized terms'}
 - Use complex grammar structures freely
 - Challenge the learner with deeper topics and subtle language points`,
 };
+
+/** Chinese replies give every line its pinyin and English, which the chat shows under it. */
+const CHINESE_REPLY_FORMAT = `Write your reply in blocks of three lines: a line of Chinese, then "PY: " and its pinyin, then "EN: " and its English. For example:
+你好！你今天忙吗？
+PY: Nǐ hǎo! Nǐ jīntiān máng ma?
+EN: Hello! Are you busy today?
+我今天不太忙。
+PY: Wǒ jīntiān bú tài máng.
+EN: I'm not very busy today.
+
+- Chinese lines: simplified characters only, one or two short sentences each, with no pinyin or English in them.
+- PY lines: the pinyin of the Chinese line above, with tone marks, words written together as in a textbook, names capitalised.
+- EN lines: a natural English translation of the Chinese line above.
+- Every Chinese line gets its PY and EN lines, at every level and in every scenario, role-plays included.
+- Anything you say only in English, such as a note in brackets, goes on a line of its own.`;
 
 function getJapaneseScriptRule(language: Language, difficulty: DifficultyLevel): string {
   if (language === 'chinese') {
@@ -69,7 +85,7 @@ Role-play rules (these take priority over any general rule that differs):
 - Stay within the vocabulary taught up to lesson ${rolePlay.lesson}. The student knows these words: ${courseWordList(rolePlay.lesson)}. Avoid other words; if one is unavoidable, give its meaning in brackets.
 - Correct mistakes gently: carry on in character, and put corrections and new words in the META section, not in the spoken line.
 - When the student has met every goal, say so in one short line (in English, in brackets) and offer to keep chatting or start over.
-- Do not translate your lines unless the student asks or is clearly stuck.`;
+- Every line you say in character follows the Response Format: the Chinese, then its PY and EN lines.`;
 }
 
 function buildScenarioSection(scenario: ChatScenarioSpec): string {
@@ -84,7 +100,8 @@ export function buildConversationPrompt(
   scenario?: ChatScenarioSpec,
 ): string {
   const langName = LANGUAGE_NAMES[language];
-  const diffInstructions = DIFFICULTY_INSTRUCTIONS[difficulty];
+  const diffInstructions = DIFFICULTY_INSTRUCTIONS[difficulty](language);
+  const chinese = language === 'chinese';
 
   return `You are a friendly and patient ${langName} language tutor. Your role is to help the student practice ${langName} through natural conversation.
 
@@ -99,7 +116,7 @@ export function buildConversationPrompt(
 ${diffInstructions}
 
 ## Response Format
-Respond naturally in ${langName}. After your main response, include a metadata section separated by <!--META--> that contains:
+${chinese ? `${CHINESE_REPLY_FORMAT}\n\nAfter your reply, include` : `Respond naturally in ${langName}. After your main response, include`} a metadata section separated by <!--META--> that contains:
 - Any corrections to the student's language
 - New vocabulary introduced
 - Grammar notes if applicable
@@ -120,5 +137,5 @@ ${scenario ? `\n## Scenario\n${buildScenarioSection(scenario)}` : ''}
 - Keep responses concise (2-4 sentences for the main response)
 - ${getJapaneseScriptRule(language, difficulty)}
 - Always be ready to explain anything the student doesn't understand
-- If the student writes in English, respond in ${langName} but add a translation`;
+- ${chinese ? 'If the student writes in English, still reply in Chinese, in the same three-line blocks' : `If the student writes in English, respond in ${langName} but add a translation`}`;
 }

@@ -49,10 +49,12 @@ next-env.d.ts
 /scripts/*
 !/scripts/build-hanzi-data.mjs
 !/scripts/build-hanzi-decomp.mjs
+!/scripts/build-pinyin-ime.mjs
 !/scripts/build-sw.mjs
 !/scripts/check-data.mjs
 session.md
 
-# Generated stroke-order data (rebuilt by prebuild)
+# Generated stroke-order, decomposition and pinyin keyboard data (rebuilt by prebuild)
 /public/hanzi-data/
 /public/hanzi-decomp.json
+/public/pinyin-ime.json

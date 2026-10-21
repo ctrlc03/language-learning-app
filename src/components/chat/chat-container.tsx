@@ -81,8 +81,13 @@ export function ChatContainer({
           </div>
         )}
 
-        {conversation.messages.map((message) => (
-          <MessageBubble key={message.id} message={message} />
+        {conversation.messages.map((message, i) => (
+          <MessageBubble
+            key={message.id}
+            message={message}
+            language={conversation.language}
+            streaming={isStreaming && i === conversation.messages.length - 1}
+          />
         ))}
 
         {isStreaming && (
@@ -133,6 +138,7 @@ export function ChatContainer({
       <ChatInput
         onSend={onSend}
         disabled={isStreaming}
+        pinyinKeyboard={conversation.language === 'chinese'}
         placeholder={
           conversation.language === 'chinese'
             ? 'Type in Chinese or English...'

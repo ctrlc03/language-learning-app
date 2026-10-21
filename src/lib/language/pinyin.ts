@@ -4,7 +4,7 @@
  * that ship without hand-written pinyin — can be annotated for beginners.
  */
 
-import { customPinyin, pinyin } from 'pinyin-pro';
+import { convert, customPinyin, pinyin } from 'pinyin-pro';
 import { chineseVocabulary } from '@/data/chinese/vocabulary';
 import type { FuriSegment } from '@/types';
 
@@ -64,6 +64,24 @@ export function hasHan(text: string): boolean {
 export function toPinyin(text: string): string {
   if (!hasHan(text)) return '';
   return pinyin(text, { toneType: 'symbol', nonZh: 'consecutive' });
+}
+
+/**
+ * Numbered pinyin to tone marks: "ni3 hao3" → "nǐ hǎo", "Bei3 jing1" → "Běi jīng".
+ * 5 (or no digit) is the neutral tone, v is ü, and an erhua r joins the syllable
+ * before it ("zhe4 r5" → "zhèr").
+ */
+export function numberedToMarked(numbered: string): string {
+  const out: string[] = [];
+  for (const syllable of numbered.trim().split(/\s+/)) {
+    const match = syllable.match(/^([a-zü]+?)([0-5]?)$/i);
+    const letters = match ? match[1] : syllable;
+    const tone = match ? match[2] : '';
+    if (letters.toLowerCase() === 'r' && out.length > 0) out[out.length - 1] += letters;
+    else if (tone >= '1' && tone <= '4') out.push(convert(letters + tone));
+    else out.push(letters.replace(/v/g, 'ü').replace(/V/g, 'Ü'));
+  }
+  return out.join(' ');
 }
 
 /**

@@ -35,6 +35,11 @@ const SYLLABLES = new Set(
 );
 const LONGEST = 6; // zhuang, chuang, shuang
 
+/** Beginnings of syllables still being typed: z, zh, zhu, zhua, zhuan. */
+const BEGINNINGS = new Set(
+  [...SYLLABLES].flatMap((s) => Array.from({ length: s.length - 1 }, (_, i) => s.slice(0, i + 1))),
+);
+
 const TONE_MARKS: Record<string, number> = { '\u0304': 1, '\u0301': 2, '\u030C': 3, '\u0300': 4 };
 const DIAERESIS = '\u0308';
 
@@ -55,8 +60,11 @@ interface Letter {
   to: number;
 }
 
-/** End offsets of the syllables in a run of letters, or null when it isn't pinyin. */
-function syllabify(letters: string): number[] | null {
+/**
+ * End offsets of the syllables in a run of letters, or null when it isn't pinyin.
+ * With `unfinished`, the last piece may be the beginning of a syllable.
+ */
+function syllabify(letters: string, unfinished = false): number[] | null {
   const n = letters.length;
   const cost = new Array<number>(n + 1).fill(Infinity);
   const back = new Array<number>(n + 1).fill(-1);
@@ -66,9 +74,13 @@ function syllabify(letters: string): number[] | null {
     for (let len = 1; len <= Math.min(LONGEST, n - i); len++) {
       const piece = letters.slice(i, i + len);
       // An erhua r only follows a syllable; it costs a piece, so real syllables win ties.
-      if (!SYLLABLES.has(piece) && !(piece === 'r' && i > 0)) continue;
-      if (cost[i] + 1 < cost[i + len]) {
-        cost[i + len] = cost[i] + 1;
+      // An unfinished syllable costs more, so a split into whole syllables wins a tie.
+      let step: number;
+      if (SYLLABLES.has(piece) || (piece === 'r' && i > 0)) step = 1;
+      else if (unfinished && i + len === n && BEGINNINGS.has(piece)) step = 1.5;
+      else continue;
+      if (cost[i] + step < cost[i + len]) {
+        cost[i + len] = cost[i] + step;
         back[i + len] = i;
       }
     }
@@ -77,6 +89,26 @@ function syllabify(letters: string): number[] | null {
   const ends: number[] = [];
   for (let end = n; end > 0; end = back[end]) ends.unshift(end);
   return ends;
+}
+
+/** Whether toneless letters (ü written v) are a whole Mandarin syllable. */
+export function isSyllable(letters: string): boolean {
+  return SYLLABLES.has(letters);
+}
+
+/**
+ * Toneless letters as typed on a pinyin keyboard, split into syllables: "nihao"
+ * → ni, hao (ü typed v; an erhua r is its own piece). With `unfinished`, the last
+ * may be a syllable still being typed: "nih" → ni, h. Null when they don't split.
+ */
+export function splitTyped(letters: string, unfinished = false): string[] | null {
+  const ends = syllabify(letters, unfinished);
+  return ends?.map((end, i) => letters.slice(i === 0 ? 0 : ends[i - 1], end)) ?? null;
+}
+
+/** The syllables a beginning can grow into: "zhua" → zhua, zhuai, zhuan, zhuang. */
+export function syllablesStartingWith(beginning: string): string[] {
+  return [...SYLLABLES].filter((s) => s.startsWith(beginning));
 }
 
 /**

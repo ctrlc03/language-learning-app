@@ -1,16 +1,57 @@
 'use client';
 
-import type { ChatMessage } from '@/types';
+import { useMemo } from 'react';
+import type { ChatMessage, Language } from '@/types';
+import type { ReplyPart } from '@/lib/chat/reply';
+import { parseChineseReply, replyChinese } from '@/lib/chat/reply';
 import { SpeakButton } from '@/components/shared/speak-button';
 import { cn } from '@/lib/utils';
 
 interface MessageBubbleProps {
   message: ChatMessage;
+  /** The conversation's language: Chinese replies show each line's pinyin and English. */
+  language?: Language;
+  /** Still streaming in, so its last line may be waiting for its pinyin. */
+  streaming?: boolean;
   showSpeaker?: boolean;
 }
 
-export function MessageBubble({ message, showSpeaker = true }: MessageBubbleProps) {
+/** A Chinese reply: each line in characters, then pinyin, then English. */
+function ChineseReply({ parts }: { parts: ReplyPart[] }) {
+  return (
+    <div className="space-y-2.5">
+      {parts.map((part, i) =>
+        part.kind === 'line' ? (
+          <div key={i} className="space-y-0.5 break-words">
+            <p className="cjk text-base">{part.line.chinese}</p>
+            {part.line.pinyin && (
+              <p className="text-xs text-muted-foreground">{part.line.pinyin}</p>
+            )}
+            {part.line.english && <p>{part.line.english}</p>}
+          </div>
+        ) : (
+          <p key={i} className="break-words text-xs text-muted-foreground">
+            {part.text}
+          </p>
+        ),
+      )}
+    </div>
+  );
+}
+
+export function MessageBubble({
+  message,
+  language,
+  streaming = false,
+  showSpeaker = true,
+}: MessageBubbleProps) {
   const isUser = message.role === 'user';
+  const parts = useMemo(
+    () =>
+      !isUser && language === 'chinese' ? parseChineseReply(message.content, !streaming) : null,
+    [isUser, language, message.content, streaming],
+  );
+  const spoken = parts ? replyChinese(parts) : message.content;
 
   return (
     <div className={cn('flex gap-2 group', isUser ? 'justify-end' : 'justify-start')}>
@@ -29,7 +70,11 @@ export function MessageBubble({ message, showSpeaker = true }: MessageBubbleProp
               : 'bg-muted text-foreground rounded-bl-md',
           )}
         >
-          <p className="whitespace-pre-wrap break-words">{message.content}</p>
+          {parts ? (
+            <ChineseReply parts={parts} />
+          ) : (
+            <p className="whitespace-pre-wrap break-words">{message.content}</p>
+          )}
         </div>
 
         {/* Metadata (corrections, vocab) */}
@@ -68,9 +113,9 @@ export function MessageBubble({ message, showSpeaker = true }: MessageBubbleProp
         )}
 
         {/* Actions */}
-        {!isUser && showSpeaker && message.content && (
+        {!isUser && showSpeaker && spoken && (
           <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-            <SpeakButton text={message.content} size="sm" />
+            <SpeakButton text={spoken} language={language} size="sm" />
           </div>
         )}
       </div>
