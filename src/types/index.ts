@@ -185,6 +185,8 @@ export type ExerciseData =
 export interface MultipleChoiceData {
   type: 'multiple-choice';
   options: string[];
+  /** Pinyin per option when the options are Chinese; shown once answered. */
+  optionReadings?: (string | null)[];
   correctIndex: number;
   explanation: string;
 }
@@ -223,9 +225,13 @@ export interface FillInBlankData {
 export interface TranslationData {
   type: 'translation';
   sourceText: string;
+  /** Pinyin of a Chinese sourceText. */
+  sourcePinyin?: string;
   sourceLanguage: 'english' | Language;
   targetLanguage: 'english' | Language;
   sampleAnswer: string;
+  /** Pinyin of a Chinese sampleAnswer. */
+  samplePinyin?: string;
 }
 
 export interface SentenceConstructionData {
@@ -437,5 +443,9 @@ export interface AppSettings {
   maxNewCardsPerDay: number;
   /** Chinese lesson the learner is on; practice draws from lessons up to it. Unset = latest. */
   currentLesson?: number;
+  /** Where Chinese practice questions come from: written by the AI from the course, or the book's. Unset = AI. */
+  exerciseSource?: ExerciseSource;
   apiKey?: string;
 }
+
+export type ExerciseSource = 'ai' | 'book';

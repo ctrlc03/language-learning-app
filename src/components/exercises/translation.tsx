@@ -32,6 +32,11 @@ export function TranslationExercise({ data, onSubmit, disabled }: TranslationExe
 
       <div className="px-4 py-3 bg-muted/50 rounded-xl">
         <p className="text-base font-medium leading-relaxed">{data.sourceText}</p>
+        {data.sourcePinyin && (
+          <p className="text-sm text-muted-foreground leading-relaxed tracking-wide mt-1">
+            {data.sourcePinyin}
+          </p>
+        )}
       </div>
 
       {!disabled && (
@@ -53,6 +58,11 @@ export function TranslationExercise({ data, onSubmit, disabled }: TranslationExe
         <div className="px-4 py-3 bg-primary/5 rounded-xl">
           <p className="text-xs text-muted-foreground mb-1">Sample answer</p>
           <p className="text-sm font-medium">{data.sampleAnswer}</p>
+          {data.samplePinyin && (
+            <p className="text-xs text-muted-foreground tracking-wide mt-0.5">
+              {data.samplePinyin}
+            </p>
+          )}
         </div>
       )}
     </div>

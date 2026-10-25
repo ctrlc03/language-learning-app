@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-import { nanoid } from 'nanoid';
+import { useRef, useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useProgress } from '@/hooks/use-progress';
 import { useMistakeLog } from '@/hooks/use-mistakes';
@@ -15,7 +14,13 @@ import { TopicReview } from '@/components/exercises/topic-review';
 import { DialogueBrowser } from '@/components/exercises/dialogue-browser';
 import { KanaPractice } from '@/components/exercises/kana-practice';
 import { GrammarReference } from '@/components/exercises/grammar-reference';
-import { getOfflineExercise, isOfflineExerciseType } from '@/lib/exercises/offline';
+import { getOfflineExercise } from '@/lib/exercises/offline';
+import {
+  isAiExerciseType,
+  MAX_SEEN_IDS,
+  requestAiExercise,
+  type AiExerciseType,
+} from '@/lib/exercises/ai';
 import { getLanguageName, getLanguageNativeName } from '@/lib/language/utils';
 import lessonsData from '@/data/chinese/lessons.json';
 import {
@@ -23,80 +28,70 @@ import {
   irodoriLessonIndex,
   irodoriLessonTitles,
 } from '@/data/japanese/irodori-vocab';
-import type { Exercise, ExerciseType, ExerciseResult, Language } from '@/types';
+import { cn } from '@/lib/utils';
+import type { Exercise, ExerciseResult, ExerciseSource, ExerciseType, Language } from '@/types';
 
 const EXERCISE_TYPES: {
   type: ExerciseType;
   label: string;
   description: string;
-  offline: boolean;
   langs?: Language[];
 }[] = [
   {
     type: 'multiple-choice',
     label: 'Multiple Choice',
     description: 'Choose the correct answer',
-    offline: true,
   },
   {
     type: 'sentence-mc',
     label: 'Sentence Quiz',
     description: 'Match full sentences to meaning',
-    offline: true,
   },
   {
     type: 'dialogue-comprehension',
     label: 'Dialogue Quiz',
     description: 'Read a conversation, answer questions',
-    offline: true,
   },
   {
     type: 'fill-in-blank',
     label: 'Fill in the Blank',
     description: 'Complete the sentence',
-    offline: true,
   },
   {
     type: 'typed-recall',
     label: 'Typed Recall',
     description: 'Type the word for a meaning',
-    offline: true,
     langs: ['chinese'],
   },
   {
     type: 'translation',
     label: 'Translation',
     description: 'Translate between languages',
-    offline: false,
   },
   {
     type: 'sentence-construction',
     label: 'Sentence Building',
     description: 'Arrange words in order',
-    offline: true,
   },
   {
     type: 'character-recognition',
     label: 'Character Recognition',
     description: 'Identify character meanings',
-    offline: true,
   },
   {
     type: 'grammar-drill',
     label: 'Grammar Drill',
     description: 'Practice grammar patterns',
-    offline: true,
   },
   {
     type: 'dialogue-reading',
     label: 'Dialogue Reading',
     description: 'Read through full conversations',
-    offline: true,
   },
 ];
 
-// Quiz-style offline types eligible for the mixed drill (dialogue-reading is
-// untimed study material, so it's excluded from the mix).
+// Quiz types eligible for the mixed drill (dialogue-reading is untimed study
+// material and translation needs typing, so they're left out of the mix).
 const MIXED_POOL: ExerciseType[] = [
   'multiple-choice',
   'sentence-mc',
@@ -108,12 +103,35 @@ const MIXED_POOL: ExerciseType[] = [
   'typed-recall',
 ];
 
+interface Supplied {
+  exercise: Exercise;
+  /** Written by the AI, rather than built from the book. */
+  ai: boolean;
+  /** Why the AI's exercise was replaced by the book's. */
+  notice: string | null;
+}
+
+/** The next exercise, requested while the current one is being answered. */
+interface Queued {
+  /** The settings it was requested under; once they change it is stale. */
+  key: string;
+  type: ExerciseType;
+  settled: boolean;
+  promise: Promise<Supplied>;
+}
+
+function randomType(types: ExerciseType[]): ExerciseType {
+  return types[Math.floor(Math.random() * types.length)];
+}
+
 export default function ExercisesPage() {
-  const { language, difficulty } = useLanguage();
+  const { language, difficulty, settings, updateSettings } = useLanguage();
   const [currentLesson] = useCurrentLesson();
   const { recordActivity } = useProgress();
   const { recordExercise } = useMistakeLog();
   const [currentExercise, setCurrentExercise] = useState<Exercise | null>(null);
+  const [aiWritten, setAiWritten] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
   const [mixedMode, setMixedMode] = useState(false);
   const [loading, setLoading] = useState(false);
   const [sessionCount, setSessionCount] = useState(0);
@@ -127,9 +145,13 @@ export default function ExercisesPage() {
   const [showKanaPractice, setShowKanaPractice] = useState(false);
   const [showGrammar, setShowGrammar] = useState(false);
   const [lessonFilter, setLessonFilter] = useState<string | undefined>(undefined);
+  const queued = useRef<Queued | null>(null);
 
   const availableExerciseTypes = EXERCISE_TYPES.filter(
     (t) => !t.langs || t.langs.includes(language),
+  );
+  const mixedPool = MIXED_POOL.filter((type) =>
+    availableExerciseTypes.some((t) => t.type === type),
   );
 
   const chapterLabel = lessonFilter
@@ -138,104 +160,131 @@ export default function ExercisesPage() {
       : lessonFilter
     : 'All chapters';
 
-  // Serve a random exercise type each round (respecting the chapter filter);
-  // types that can't produce an exercise for the current scope are skipped.
-  const generateMixedExercise = useCallback(() => {
-    setLoading(true);
-    setError(null);
-    setMixedMode(true);
+  // Chinese questions are written by the AI from the course unless the learner picks the book's.
+  const source: ExerciseSource = settings.exerciseSource ?? 'ai';
+  const aiSource = language === 'chinese' && source === 'ai';
+  // The chosen chapter as a lesson number (Chinese chapter keys are lesson titles).
+  const chapter =
+    language === 'chinese' && lessonFilter
+      ? lessonsData.lessons.find((l) => l.title === lessonFilter)?.lesson
+      : undefined;
+  const scopeKey = [language, difficulty, currentLesson, lessonFilter ?? '', source].join('|');
 
-    const types = [...MIXED_POOL].sort(() => Math.random() - 0.5);
-    for (const type of types) {
-      const exercise = getOfflineExercise({
-        language,
-        difficulty,
-        type,
-        seen: seenIds,
-        lessonFilter,
-        currentLesson,
-      });
-      if (exercise) {
-        setCurrentExercise(exercise);
-        setSeenIds((prev) => [...prev, exercise.sourceId ?? exercise.id]);
-        setPreviousQuestions((prev) => [...prev, exercise.question].slice(-10));
-        setLoading(false);
-        return;
+  /** Whether the AI writes this type: translation always (the book has none), the rest by the setting. */
+  const usesAi = (type: ExerciseType): type is AiExerciseType =>
+    isAiExerciseType(type) && (type === 'translation' || aiSource);
+
+  // An exercise of `type`: the AI's when it writes this type, else the book's.
+  // When the AI can't deliver, the book's stands in, with a note saying why.
+  const supply = async (
+    type: ExerciseType,
+    seen: string[],
+    recent: string[],
+  ): Promise<Supplied> => {
+    const book = () =>
+      getOfflineExercise({ language, difficulty, type, seen, lessonFilter, currentLesson });
+    if (usesAi(type)) {
+      try {
+        const exercise = await requestAiExercise(
+          language === 'chinese'
+            ? {
+                language,
+                difficulty,
+                exerciseType: type,
+                lesson: currentLesson,
+                chapter,
+                seen: seen.slice(-MAX_SEEN_IDS),
+              }
+            : { language, difficulty, exerciseType: 'translation', previousQuestions: recent },
+        );
+        return { exercise, ai: true, notice: null };
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'The AI could not write an exercise.';
+        const exercise = type === 'translation' ? null : book();
+        if (!exercise) throw new Error(message);
+        return { exercise, ai: false, notice: `${message} This one is from the book.` };
       }
     }
+    const exercise = book();
+    if (!exercise) {
+      throw new Error(
+        lessonFilter
+          ? 'No exercises of this type are available for the selected chapter. Try another type or pick a different chapter.'
+          : 'Not enough vocabulary data for this exercise type.',
+      );
+    }
+    return { exercise, ai: false, notice: null };
+  };
 
-    setLoading(false);
-    setError('No exercises are available for the selected chapter. Try a different chapter.');
-  }, [language, difficulty, seenIds, lessonFilter, currentLesson]);
+  const present = (supplied: Supplied, mixed: boolean) => {
+    const { exercise } = supplied;
+    const seen = [...seenIds, exercise.sourceId ?? exercise.id];
+    const recent = [...previousQuestions, exercise.question].slice(-10);
+    setCurrentExercise(exercise);
+    setAiWritten(supplied.ai);
+    setNotice(supplied.notice);
+    setSeenIds(seen);
+    setPreviousQuestions(recent);
 
-  const generateExercise = useCallback(
-    async (type: ExerciseType, lesson?: string) => {
-      setLoading(true);
-      setError(null);
-      setMixedMode(false);
+    // Have the next exercise ready by the time this one is answered.
+    const nextType = mixed ? randomType(mixedPool) : exercise.type;
+    const next: Queued = {
+      key: scopeKey,
+      type: nextType,
+      settled: false,
+      promise: supply(nextType, seen, recent),
+    };
+    const settle = () => {
+      next.settled = true;
+    };
+    next.promise.then(settle, settle);
+    queued.current = next;
+  };
 
-      try {
-        if (isOfflineExerciseType(type)) {
-          const effectiveLesson = lesson ?? lessonFilter;
-          const exercise = getOfflineExercise({
-            language,
-            difficulty,
-            type,
-            seen: seenIds,
-            lessonFilter: effectiveLesson,
-            currentLesson,
-          });
-          if (!exercise) {
-            throw new Error(
-              effectiveLesson
-                ? 'No exercises of this type are available for the selected chapter. Try another type or pick a different chapter.'
-                : 'Not enough vocabulary data for this exercise type.',
-            );
-          }
-          setCurrentExercise(exercise);
-          setSeenIds((prev) => [...prev, exercise.sourceId ?? exercise.id]);
-          setPreviousQuestions((prev) => [...prev, exercise.question].slice(-10));
-        } else {
-          const res = await fetch('/api/exercises/generate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ language, difficulty, exerciseType: type, previousQuestions }),
-          });
-          const data = await res.json();
+  /**
+   * Show an exercise of `type`, or of a random type for the mixed drill
+   * (`null`): the one queued while the last was answered when it still fits,
+   * otherwise a fresh one. Mixed drill types that can't produce an exercise for
+   * the current scope are skipped.
+   */
+  const run = async (type: ExerciseType | null) => {
+    const mixed = type === null;
+    const ready = queued.current;
+    queued.current = null;
+    const usable = ready && ready.key === scopeKey && (mixed || ready.type === type) ? ready : null;
 
-          if (!res.ok || data.error) {
-            throw new Error(data.error || 'Failed to generate exercise');
-          }
-
-          if (!data.data || !data.data.type) {
-            throw new Error('Invalid exercise data received');
-          }
-
-          const exercise: Exercise = {
-            id: nanoid(),
-            type,
-            language,
-            difficulty,
-            question: data.question,
-            instruction: data.instruction,
-            data: data.data,
-            createdAt: Date.now(),
-          };
-
-          setCurrentExercise(exercise);
-          setPreviousQuestions((prev) => [...prev, exercise.question].slice(-10));
-        }
-      } catch (err) {
-        console.error('Failed to generate exercise:', err);
-        setError(
-          err instanceof Error ? err.message : 'Failed to generate exercise. Please try again.',
-        );
-      } finally {
-        setLoading(false);
+    setError(null);
+    setMixedMode(mixed);
+    if (usable ? !usable.settled : mixed ? aiSource : usesAi(type)) setLoading(true);
+    try {
+      const supplied = usable && (await usable.promise.catch(() => null));
+      if (supplied) {
+        present(supplied, mixed);
+        return;
       }
-    },
-    [language, difficulty, previousQuestions, seenIds, lessonFilter, currentLesson],
-  );
+      const types = mixed ? [...mixedPool].sort(() => Math.random() - 0.5) : [type];
+      let failure: unknown = null;
+      for (const candidate of types) {
+        try {
+          present(await supply(candidate, seenIds, previousQuestions), mixed);
+          return;
+        } catch (err) {
+          failure = err;
+        }
+      }
+      throw mixed
+        ? new Error('No exercises are available for the selected chapter. Try a different chapter.')
+        : failure;
+    } catch (err) {
+      console.error('Failed to get an exercise:', err);
+      setCurrentExercise(null);
+      setError(
+        err instanceof Error ? err.message : 'Failed to generate exercise. Please try again.',
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleComplete = (result: ExerciseResult) => {
     setSessionCount((prev) => prev + 1);
@@ -252,11 +301,7 @@ export default function ExercisesPage() {
 
   const handleNext = () => {
     if (!currentExercise) return;
-    if (mixedMode) {
-      generateMixedExercise();
-    } else {
-      generateExercise(currentExercise.type);
-    }
+    void run(mixedMode ? null : currentExercise.type);
   };
 
   if (showTopicReview) {
@@ -383,6 +428,14 @@ export default function ExercisesPage() {
             &larr; Back
           </Button>
           <div className="flex items-center gap-2">
+            {aiWritten && language === 'chinese' && (
+              <span
+                className="text-[10px] tracking-[0.15em] px-2 py-1 border border-primary/40 text-primary"
+                title="Written by the AI from your lessons"
+              >
+                AI
+              </span>
+            )}
             {lessonFilter && (
               <span className="text-[10px] tracking-[0.15em] px-2 py-1 border border-border text-muted-foreground">
                 {lessonFilter.includes('|')
@@ -405,6 +458,7 @@ export default function ExercisesPage() {
             )}
           </div>
         </div>
+        {notice && <p className="text-[11px] text-muted-foreground leading-relaxed">{notice}</p>}
         <Panel>
           <div className="p-1">
             <ExerciseShell
@@ -455,7 +509,7 @@ export default function ExercisesPage() {
         <div className="text-center py-12">
           <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full mx-auto" />
           <p className="text-xs mt-3 tracking-[0.2em]" style={{ color: 'var(--ink-soft)' }}>
-            Preparing your exercise…
+            {aiSource ? 'Writing an exercise from your lessons…' : 'Preparing your exercise…'}
           </p>
         </div>
       )}
@@ -526,9 +580,38 @@ export default function ExercisesPage() {
                 </button>
               </div>
             </div>
+            {/* Question source — Chinese questions come from the AI or the book */}
+            {language === 'chinese' && (
+              <div className="flex items-center justify-between gap-2 px-4 py-2.5 border-b border-border/50">
+                <div className="text-[10px] tracking-[0.15em] text-muted-foreground min-w-0">
+                  QUESTIONS:{' '}
+                  <span className="text-primary">
+                    {aiSource ? 'AI, from your lessons' : 'From the book'}
+                  </span>
+                </div>
+                <div className="flex gap-1.5 shrink-0" role="group" aria-label="Question source">
+                  {(['ai', 'book'] as const).map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      aria-pressed={source === option}
+                      onClick={() => updateSettings({ exerciseSource: option })}
+                      className={cn(
+                        'text-[9px] tracking-[0.15em] px-1.5 py-0.5 border transition-colors',
+                        source === option
+                          ? 'border-primary/40 text-primary bg-primary/[0.06]'
+                          : 'border-border text-muted-foreground hover:border-primary/40 hover:text-primary',
+                      )}
+                    >
+                      <span>{option === 'ai' ? 'AI' : 'BOOK'}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             {/* Mixed drill — random mix of all quiz types */}
             <button
-              onClick={() => generateMixedExercise()}
+              onClick={() => void run(null)}
               className="w-full text-left px-4 py-3.5 border-b border-border/50 transition-colors hover:bg-primary/[0.06] active:scale-[0.99] bg-primary/[0.03]"
             >
               <div className="flex items-start justify-between gap-2">
@@ -546,10 +629,10 @@ export default function ExercisesPage() {
               </div>
             </button>
             <div className="grid grid-cols-1 sm:grid-cols-2">
-              {availableExerciseTypes.map(({ type, label, description, offline }) => (
+              {availableExerciseTypes.map(({ type, label, description }) => (
                 <button
                   key={type}
-                  onClick={() => generateExercise(type)}
+                  onClick={() => void run(type)}
                   className="text-left px-4 py-3.5 border-b border-r border-border/50 [&:nth-child(2n)]:border-r-0 last:border-b-0 [&:nth-last-child(2):nth-child(odd)]:border-b-0 transition-colors hover:bg-primary/[0.06] active:scale-[0.98]"
                 >
                   <div className="flex items-start justify-between gap-2">
@@ -560,7 +643,7 @@ export default function ExercisesPage() {
                       </p>
                     </div>
                     <span className="text-[9px] tracking-[0.15em] px-1.5 py-0.5 border border-border text-muted-foreground shrink-0 mt-0.5">
-                      {offline ? 'INSTANT' : 'AI'}
+                      {usesAi(type) ? 'AI' : 'INSTANT'}
                     </span>
                   </div>
                 </button>

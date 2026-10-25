@@ -6,6 +6,7 @@
  */
 
 import { chineseVocabulary } from '@/data/chinese/vocabulary';
+import { normalizeOrder } from '@/lib/exercises/tiles';
 import type { VocabularyItem } from '@/types';
 
 const HAN = /\p{Script=Han}/u;
@@ -38,6 +39,28 @@ export function segmentChinese(clean: string): string[] {
     segments.push(piece);
     i += piece.length;
   }
+  return segments;
+}
+
+/** Word tiles for a sentence with no pinyin to cut along: its words, stray single characters merged. */
+export function splitChineseSentence(sentence: string): string[] {
+  const segments = segmentChinese(normalizeOrder(sentence));
+
+  // Merge stray single characters into the previous segment so tiles stay
+  // meaningful, but keep the total count manageable.
+  if (segments.length > 7) {
+    const merged: string[] = [];
+    for (const seg of segments) {
+      const prev = merged[merged.length - 1];
+      if (seg.length === 1 && prev && prev.length === 1) {
+        merged[merged.length - 1] = prev + seg;
+      } else {
+        merged.push(seg);
+      }
+    }
+    return merged;
+  }
+
   return segments;
 }
 

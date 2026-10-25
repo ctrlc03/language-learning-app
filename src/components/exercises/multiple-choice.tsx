@@ -41,6 +41,9 @@ export function MultipleChoice({ data, onSubmit, disabled }: MultipleChoiceProps
             {String.fromCharCode(65 + i)}
           </span>
           {option}
+          {disabled && data.optionReadings?.[i] && (
+            <span className="ml-2 text-xs font-normal opacity-70">{data.optionReadings[i]}</span>
+          )}
         </button>
       ))}
       {disabled && data.explanation && (

@@ -48,7 +48,7 @@ import {
   normalizeOrder,
   segmentByPinyin,
 } from '@/lib/exercises/tiles';
-import { segmentChinese } from '@/lib/language/segment';
+import { segmentChinese, splitChineseSentence } from '@/lib/language/segment';
 
 // Seeded random for reproducibility within a session
 function seededRandom(seed: number): () => number {
@@ -129,23 +129,6 @@ function chapterVocabulary(language: Language, lessonFilter: string): Vocabulary
   const [level, lessonNum] = lessonFilter.split('|');
   const num = parseInt(lessonNum, 10);
   return irodoriVocabulary.filter((v) => v.level === level && v.lesson === num);
-}
-
-// Offline exercise types (excludes 'translation' which needs API)
-export const OFFLINE_EXERCISE_TYPES: ExerciseType[] = [
-  'multiple-choice',
-  'sentence-mc',
-  'fill-in-blank',
-  'sentence-construction',
-  'character-recognition',
-  'grammar-drill',
-  'dialogue-reading',
-  'dialogue-comprehension',
-  'typed-recall',
-];
-
-export function isOfflineExerciseType(type: ExerciseType): boolean {
-  return OFFLINE_EXERCISE_TYPES.includes(type);
 }
 
 export interface OfflineExerciseRequest {
@@ -783,27 +766,6 @@ function generateSentenceConstruction(
     data,
     createdAt: Date.now(),
   };
-}
-
-function splitChineseSentence(sentence: string): string[] {
-  const segments = segmentChinese(normalizeOrder(sentence));
-
-  // Merge stray single characters into the previous segment so tiles stay
-  // meaningful, but keep the total count manageable.
-  if (segments.length > 7) {
-    const merged: string[] = [];
-    for (const seg of segments) {
-      const prev = merged[merged.length - 1];
-      if (seg.length === 1 && prev && prev.length === 1) {
-        merged[merged.length - 1] = prev + seg;
-      } else {
-        merged.push(seg);
-      }
-    }
-    return merged;
-  }
-
-  return segments;
 }
 
 function splitJapaneseSentence(sentence: string): string[] {

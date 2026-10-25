@@ -237,7 +237,7 @@ export function scenarioLanguage(spec: ChatScenarioSpec): Language {
   return spec.kind === 'roleplay' ? 'chinese' : spec.scenario.language;
 }
 
-/** The learner's vocabulary up to a lesson as a plain word list, for a role-play prompt. */
+/** The learner's vocabulary up to a lesson as a plain word list, for role-play and exercise prompts. */
 export function courseWordList(lesson: number): string {
   const words = new Set<string>();
   for (const v of getCourseVocabulary(lesson)) words.add(v.word);
