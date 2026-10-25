@@ -289,6 +289,54 @@ function allDistinct(items: readonly string[], key: (item: string) => string = (
   return new Set(items.map(key)).size === items.length;
 }
 
+// 他, 她 and 它 all sound tā, so a learner hearing a sentence or reading its
+// pinyin can't tell which one is meant.
+const TA_PRONOUNS = /\b(?:he|she|it|him|her|his|hers|its|himself|herself|itself)\b/g;
+
+/**
+ * Options must differ in a way a learner can hear: English ones not only by
+ * he/she/it, Chinese ones not only by same-sounding characters (他/她, 在/再).
+ */
+function checkHeardApart(options: readonly string[], chinese: boolean): void {
+  const sound = chinese
+    ? (text: string) => toPinyin(text).replace(/[^\p{L}]+/gu, '')
+    : (text: string) => looseEnglish(text).replace(TA_PRONOUNS, 'tā');
+  const heard = new Map<string, string>();
+  for (const option of options) {
+    const key = sound(option);
+    const twin = heard.get(key);
+    if (twin !== undefined) {
+      throw new ReplyProblem(
+        chinese
+          ? `"${twin}" and "${option}" sound the same read aloud, so a learner can't tell them apart. Make each option differ by a word that sounds different, never only by a same-sounding character such as 他/她/它 or 在/再.`
+          : `"${twin}" and "${option}" differ only by he, she or it. 他, 她 and 它 all sound tā, so a learner can't tell which is meant: make them differ in something else.`,
+      );
+    }
+    heard.set(key, option);
+  }
+}
+
+/** The practised word's separate meanings: "civil engineering, construction" gives both. */
+const meaningsOf = (word: VocabularyItem) =>
+  word.meaning.split(/[,;]/).map(looseEnglish).filter(Boolean);
+
+/** A wrong option that only swaps in another meaning of the practised word is right too. */
+function checkNoOtherMeaning(word: VocabularyItem, right: string, wrong: readonly string[]): void {
+  const padded = ` ${looseEnglish(right)} `;
+  const wrongs = wrong.map(looseEnglish);
+  const meanings = meaningsOf(word);
+  for (const used of meanings.filter((m) => padded.includes(` ${m} `))) {
+    for (const other of meanings.filter((m) => m !== used)) {
+      const twin = wrongs.indexOf(padded.replace(` ${used} `, ` ${other} `).trim());
+      if (twin >= 0) {
+        throw new ReplyProblem(
+          `"${wrong[twin]}" is right too: ${word.word} means both "${used}" and "${other}". Make each wrong option differ in something else.`,
+        );
+      }
+    }
+  }
+}
+
 function shuffle<T>(items: readonly T[], random: () => number): T[] {
   const out = [...items];
   for (let i = out.length - 1; i > 0; i--) {
@@ -387,6 +435,14 @@ function buildMultipleChoice(
     allDistinct(input.options, chineseOptions ? normalizeOrder : looseEnglish),
     'The four options must all differ.',
   );
+  checkHeardApart(input.options, chineseOptions);
+  if (!chineseOptions) {
+    checkNoOtherMeaning(
+      word,
+      answer,
+      input.options.filter((_, i) => i !== input.correctIndex),
+    );
+  }
   check(
     input.question.includes(word.word) || answer.includes(word.word),
     `The question must practise ${word.word}: ask about it, or make it the answer.`,
@@ -422,6 +478,7 @@ function buildSentenceMc(plan: PlanOf<'sentence-mc'>, raw: unknown, random: () =
       allDistinct([input.sentence, ...input.wrongSentences], normalizeOrder),
       'The four sentences must all differ.',
     );
+    checkHeardApart([input.sentence, ...input.wrongSentences], true);
     const { options, correctIndex } = withAnswer(input.sentence, input.wrongSentences, random);
     const data: SentenceMcData = {
       type: 'sentence-mc',
@@ -449,6 +506,8 @@ function buildSentenceMc(plan: PlanOf<'sentence-mc'>, raw: unknown, random: () =
     allDistinct([input.translation, ...input.wrongTranslations], looseEnglish),
     'The four translations must all differ.',
   );
+  checkHeardApart([input.translation, ...input.wrongTranslations], false);
+  checkNoOtherMeaning(word, input.translation, input.wrongTranslations);
   const { options, correctIndex } = withAnswer(input.translation, input.wrongTranslations, random);
   const data: SentenceMcData = {
     type: 'sentence-mc',
@@ -643,6 +702,7 @@ function buildDialogue(
   check(new Set(input.lines.map((l) => l.speaker)).size === 2, 'Both A and B must speak.');
   chineseSentence(input.titleChinese);
   check(allDistinct(input.options, looseEnglish), 'The four options must all differ.');
+  checkHeardApart(input.options, false);
 
   const { options, correctIndex } = withAnswer(
     input.options[input.correctIndex],

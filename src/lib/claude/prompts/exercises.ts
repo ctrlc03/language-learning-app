@@ -32,7 +32,8 @@ Writing:
 - Use ${SENTENCE_LENGTH[difficulty]}. Write natural, correct, everyday Chinese.
 - Chinese text uses Chinese punctuation and contains no pinyin, English or numbering.
 - Never write pinyin anywhere, not even in English text: the app adds it.
-- Wrong options must be plausible but clearly wrong to someone who knows the answer; never a second right answer.
+- Wrong options must be plausible but clearly wrong to someone who knows the answer; never a second right answer, such as one that only swaps in another meaning of the practised word.
+- 他, 她 and 它 all sound tā, so a learner hearing the Chinese or reading its pinyin can't tell them apart: never make options differ only by he, she or it (him/her, his/her).
 
 Write the exercise by calling the ${EXERCISE_TOOL} tool.
 
@@ -53,10 +54,10 @@ function describeTask(plan: ExercisePlan): string {
 - its opposite, or a word that goes with it (Chinese options);
 - the measure word that goes with it, when it is a noun (Chinese options);
 - what to say in a short everyday situation that calls for it (Chinese options).
-Give four options, one right: all in English, or all in Chinese.`;
+Give four options, one right: all in English, or all in Chinese. No two Chinese options may sound the same read aloud (not 他/她/它, not 在/再).`;
     case 'sentence-mc':
       return plan.direction === 'toSentence'
-        ? `Write one Chinese sentence that uses ${describeWord(plan.word)}, its English translation, and three wrong sentences: Chinese sentences close to the right one that differ in a clear detail (who, when, where, what or how many), so that only one of the four means the translation.`
+        ? `Write one Chinese sentence that uses ${describeWord(plan.word)}, its English translation, and three wrong sentences: Chinese sentences close to the right one that differ in a clear detail (who, when, where, what or how many), so that only one of the four means the translation. Each must sound different read aloud: never change only 他/她/它 or another character that sounds the same.`
         : `Write one Chinese sentence that uses ${describeWord(plan.word)}, its English translation, and three wrong translations: English sentences close to the right one that differ in a clear detail (who, when, where, what or how many), so that only one of the four matches the Chinese.`;
     case 'fill-in-blank':
       return `Write one Chinese sentence that uses ${describeWord(plan.word)}, then replace ${plan.word.word} in it with one blank, written ___. The rest of the sentence must make clear which word belongs in the blank. Give three wrong options: other allowed words, of the same kind as ${plan.word.word} where possible, that do not fit the blank.`;
