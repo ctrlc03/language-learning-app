@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SpeakButton } from '@/components/shared/speak-button';
+import { AutoReadToggle } from '@/components/shared/auto-read-toggle';
 import { MultipleChoice } from './multiple-choice';
 import { SentenceMC } from './sentence-mc';
 import { FillInBlank } from './fill-in-blank';
@@ -75,7 +76,7 @@ function getPromptSpeech(exercise: Exercise): { text: string; language: Language
 }
 
 export function ExerciseShell({ exercise, onComplete, onNext }: ExerciseShellProps) {
-  const { speechRate } = useLanguage();
+  const { speechRate, settings } = useLanguage();
   const [result, setResult] = useState<ExerciseResult | null>(null);
   const [evaluating, setEvaluating] = useState(false);
   const [evalFailure, setEvalFailure] = useState<{ message: string; answer: string } | null>(null);
@@ -152,8 +153,8 @@ export function ExerciseShell({ exercise, onComplete, onNext }: ExerciseShellPro
     setEvaluating(false);
     onComplete(exerciseResult);
 
-    // Pronounce the correct sentence/word after answering
-    const speech = getAnswerSpeech(exercise);
+    // Pronounce the correct sentence/word after answering, unless the learner muted it
+    const speech = settings.readAnswersAloud ? getAnswerSpeech(exercise) : null;
     if (speech) {
       speak(speech, exercise.language, speechRate).catch(() => {
         /* TTS unavailable */
@@ -216,9 +217,12 @@ export function ExerciseShell({ exercise, onComplete, onNext }: ExerciseShellPro
           <Badge variant="outline" className="text-[11px]">
             {TYPE_LABELS[exercise.type] ?? exercise.type}
           </Badge>
-          {promptSpeech && (
-            <SpeakButton text={promptSpeech.text} language={promptSpeech.language} />
-          )}
+          <div className="flex items-center gap-1">
+            {promptSpeech && (
+              <SpeakButton text={promptSpeech.text} language={promptSpeech.language} />
+            )}
+            <AutoReadToggle />
+          </div>
         </div>
 
         {/* Question */}

@@ -24,6 +24,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   difficulty: 'beginner',
   showAnnotations: true,
   speechRate: 0.8,
+  readAnswersAloud: true,
   maxNewCardsPerDay: 20,
 };
 

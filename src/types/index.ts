@@ -443,6 +443,8 @@ export interface AppSettings {
   difficulty: DifficultyLevel;
   showAnnotations: boolean;
   speechRate: number;
+  /** Read the right answer aloud once an exercise is answered. */
+  readAnswersAloud: boolean;
   maxNewCardsPerDay: number;
   /** Chinese lesson the learner is on; practice draws from lessons up to it. Unset = latest. */
   currentLesson?: number;

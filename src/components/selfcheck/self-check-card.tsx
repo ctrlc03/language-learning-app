@@ -151,7 +151,7 @@ export function SelfCheckCard({
   onNext,
   passageShown = false,
 }: SelfCheckCardProps) {
-  const { speechRate } = useLanguage();
+  const { speechRate, settings } = useLanguage();
   const [outcome, setOutcome] = useState<Outcome | null>(null);
   const reported = useRef(false);
   const mode = modeFor(item);
@@ -170,9 +170,9 @@ export function SelfCheckCard({
     });
     onResult(correct, answer);
 
-    // Pronounce the model answer so the learner ties sound to the characters
+    // Pronounce the model answer so the learner ties sound to the characters, unless muted
     const spoken = options?.grade?.answer ?? item.answer;
-    if (spoken && hasHan(spoken)) {
+    if (settings.readAnswersAloud && spoken && hasHan(spoken)) {
       speak(spoken, 'chinese', speechRate).catch(() => {
         /* TTS unavailable */
       });

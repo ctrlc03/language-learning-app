@@ -265,6 +265,31 @@ export default function SettingsPage() {
             </button>
           </div>
 
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium">Read answers aloud</p>
+              <p className="text-xs text-muted-foreground">
+                Say the right answer once you answer an exercise
+              </p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={settings.readAnswersAloud}
+              aria-label="Read answers aloud"
+              onClick={() => updateSettings({ readAnswersAloud: !settings.readAnswersAloud })}
+              className={`relative w-11 h-6 rounded-full transition-colors ${
+                settings.readAnswersAloud ? 'bg-primary' : 'bg-muted'
+              }`}
+            >
+              <span
+                className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${
+                  settings.readAnswersAloud ? 'translate-x-5' : ''
+                }`}
+              />
+            </button>
+          </div>
+
           <div>
             <label className="text-sm font-medium">Speech Rate: {speechRate.toFixed(1)}x</label>
             <input
