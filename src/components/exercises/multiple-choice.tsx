@@ -45,7 +45,9 @@ export function MultipleChoice({ data, onSubmit, disabled }: MultipleChoiceProps
             </span>
             {option}
             {data.optionReadings?.[i] && (
-              <span className="ml-2 text-xs font-normal opacity-70">{data.optionReadings[i]}</span>
+              <span className="block mt-0.5 pl-9 text-xs font-normal opacity-70">
+                {data.optionReadings[i]}
+              </span>
             )}
             {disabled && chinese && (
               <span className="block mt-1 pl-9 text-base font-normal">

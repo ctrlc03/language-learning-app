@@ -53,8 +53,8 @@ function describeTask(plan: ExercisePlan): string {
 - which Chinese word has a given English meaning (Chinese options);
 - its opposite, or a word that goes with it (Chinese options);
 - the measure word that goes with it, when it is a noun (Chinese options);
-- what to say in a short everyday situation that calls for it (Chinese options).
-Give four options, one right: all in English, or all in Chinese. No two Chinese options may sound the same read aloud (not 他/她/它, not 在/再). With English options, make the wrong ones the meanings of other allowed words, and give optionsChinese: the Chinese word for each option, in the same order (${plan.word.word} for the right one).`;
+- what to say in a short everyday situation that calls for it (Chinese options). Set the scene in English: where you are, what you want, and what the other person says, quoted in Chinese; then ask "What do you say?". Give every detail needed so that exactly one reply fits (say you want to eat there, so asking to take it away is wrong).
+Write the question in English, quoting only the Chinese it is about. Give four options, exactly one right: all in English, or all in Chinese. No two Chinese options may sound the same read aloud (not 他/她/它, not 在/再). With English options, make the wrong ones the meanings of other allowed words, and give optionsChinese: the Chinese word for each option, in the same order (${plan.word.word} for the right one).`;
     case 'sentence-mc':
       return plan.direction === 'toSentence'
         ? `Write one Chinese sentence that uses ${describeWord(plan.word)}, its English translation, and three wrong sentences: Chinese sentences close to the right one that differ in a clear detail (who, when, where, what or how many), so that only one of the four means the translation. Each must sound different read aloud: never change only 他/她/它 or another character that sounds the same.`

@@ -290,6 +290,9 @@ const LATIN = /[A-Za-z]/;
 /** Chinese text with no pinyin or English in it. */
 const isChinese = (text: string) => hasHan(text) && !LATIN.test(text);
 const isEnglish = (text: string) => !hasHan(text);
+/** An English sentence that may quote Chinese: a few English words once the Chinese is set aside. */
+const isEnglishQuestion = (text: string) =>
+  (text.replace(/\p{Script=Han}+/gu, ' ').match(/[A-Za-z]+/g) ?? []).length >= 3;
 /** English compared loosely: case and punctuation aside. */
 const looseEnglish = (text: string) =>
   text
@@ -455,6 +458,10 @@ function buildMultipleChoice(
       input.options.filter((_, i) => i !== input.correctIndex),
     );
   }
+  check(
+    isEnglishQuestion(input.question),
+    'Write the question in English, quoting only the Chinese words or lines it is about.',
+  );
   check(
     input.question.includes(word.word) || answer.includes(word.word),
     `The question must practise ${word.word}: ask about it, or make it the answer.`,
