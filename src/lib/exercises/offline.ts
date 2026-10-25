@@ -224,6 +224,11 @@ export function getOfflineExercise(req: OfflineExerciseRequest): Exercise | null
   }
 }
 
+/** A course word with its reading, as one ruby segment. */
+function wordSegments(word: VocabularyItem): FuriSegment[] {
+  return [{ t: word.word, r: word.reading || undefined }];
+}
+
 function generateMultipleChoice(
   { targets }: Scope,
   allVocab: VocabularyItem[],
@@ -242,6 +247,8 @@ function generateMultipleChoice(
   const correctIndex = Math.floor(rng() * 4);
   const options = [...distractors.map((d) => d.meaning)];
   options.splice(correctIndex, 0, target.meaning);
+  const optionWords = [...distractors];
+  optionWords.splice(correctIndex, 0, target);
 
   let explanation = `${target.word} (${target.reading}) — ${target.meaning}`;
   if (target.exampleSentence) {
@@ -259,6 +266,7 @@ function generateMultipleChoice(
   const data: MultipleChoiceData = {
     type: 'multiple-choice',
     options: options.slice(0, 4),
+    optionChinese: language === 'chinese' ? optionWords.slice(0, 4).map(wordSegments) : undefined,
     correctIndex,
     explanation,
   };
@@ -462,9 +470,11 @@ function generateSentenceMC(
     question = `“${target.exampleTranslation}”`;
     instruction = 'Which sentence means this?';
   } else {
-    // toMeaning: options are translations.
+    // toMeaning: options are translations; once answered, each shows the Chinese it translates.
     const options = distractors.map((d) => d.exampleTranslation!);
     options.splice(correctIndex, 0, target.exampleTranslation!);
+    const sentences = distractors.map((d) => d.exampleSentence!);
+    sentences.splice(correctIndex, 0, target.exampleSentence!);
     data = {
       type: 'sentence-mc',
       direction,
@@ -472,6 +482,7 @@ function generateSentenceMC(
       sentenceFurigana: annotate(target.exampleSentence!),
       translation: target.exampleTranslation!,
       options,
+      optionChinese: language === 'chinese' ? sentences.map((s) => annotate(s) ?? null) : undefined,
       correctIndex,
       explanation,
     };
@@ -540,7 +551,7 @@ function generateFillInBlank(
       acceptableAnswers: [target.word],
       hint: target.reading,
       options: options.slice(0, 4),
-      // Shown once the learner has answered; before that they would give the answer away.
+      // Chinese shows these from the start; Japanese once answered (see FillInBlank).
       optionReadings: optionReadings.slice(0, 4),
       correctIndex,
     };
@@ -810,11 +821,14 @@ function generateCharacterRecognition(
   const correctIndex = Math.floor(rng() * 4);
   const options = [...distractors.map((d) => d.meaning)];
   options.splice(correctIndex, 0, target.meaning);
+  const optionWords = [...distractors];
+  optionWords.splice(correctIndex, 0, target);
 
   const data: CharacterRecognitionData = {
     type: 'character-recognition',
     character: target.word,
     options: options.slice(0, 4),
+    optionChinese: language === 'chinese' ? optionWords.slice(0, 4).map(wordSegments) : undefined,
     correctIndex,
     reading: target.reading,
     meaning: target.meaning,

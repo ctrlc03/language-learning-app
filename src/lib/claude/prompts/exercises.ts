@@ -54,11 +54,11 @@ function describeTask(plan: ExercisePlan): string {
 - its opposite, or a word that goes with it (Chinese options);
 - the measure word that goes with it, when it is a noun (Chinese options);
 - what to say in a short everyday situation that calls for it (Chinese options).
-Give four options, one right: all in English, or all in Chinese. No two Chinese options may sound the same read aloud (not 他/她/它, not 在/再).`;
+Give four options, one right: all in English, or all in Chinese. No two Chinese options may sound the same read aloud (not 他/她/它, not 在/再). With English options, make the wrong ones the meanings of other allowed words, and give optionsChinese: the Chinese word for each option, in the same order (${plan.word.word} for the right one).`;
     case 'sentence-mc':
       return plan.direction === 'toSentence'
         ? `Write one Chinese sentence that uses ${describeWord(plan.word)}, its English translation, and three wrong sentences: Chinese sentences close to the right one that differ in a clear detail (who, when, where, what or how many), so that only one of the four means the translation. Each must sound different read aloud: never change only 他/她/它 or another character that sounds the same.`
-        : `Write one Chinese sentence that uses ${describeWord(plan.word)}, its English translation, and three wrong translations: English sentences close to the right one that differ in a clear detail (who, when, where, what or how many), so that only one of the four matches the Chinese.`;
+        : `Write one Chinese sentence that uses ${describeWord(plan.word)}, its English translation, and three wrong translations: English sentences close to the right one that differ in a clear detail (who, when, where, what or how many), so that only one of the four matches the Chinese. Give each wrong translation with the Chinese sentence it translates.`;
     case 'fill-in-blank':
       return `Write one Chinese sentence that uses ${describeWord(plan.word)}, then replace ${plan.word.word} in it with one blank, written ___. The rest of the sentence must make clear which word belongs in the blank. Give three wrong options: other allowed words, of the same kind as ${plan.word.word} where possible, that do not fit the blank.`;
     case 'sentence-construction':

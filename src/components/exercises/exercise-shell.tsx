@@ -171,7 +171,14 @@ export function ExerciseShell({ exercise, onComplete, onNext }: ExerciseShellPro
       case 'sentence-mc':
         return <SentenceMC data={exercise.data} onSubmit={handleSubmit} disabled={!!result} />;
       case 'fill-in-blank':
-        return <FillInBlank data={exercise.data} onSubmit={handleSubmit} disabled={!!result} />;
+        return (
+          <FillInBlank
+            data={exercise.data}
+            language={exercise.language}
+            onSubmit={handleSubmit}
+            disabled={!!result}
+          />
+        );
       case 'translation':
         return (
           <TranslationExercise data={exercise.data} onSubmit={handleSubmit} disabled={!!result} />

@@ -23,6 +23,7 @@ import type {
   Exercise,
   ExerciseData,
   FillInBlankData,
+  FuriSegment,
   GrammarDrillData,
   MultipleChoiceData,
   SentenceConstructionData,
@@ -149,6 +150,10 @@ const correctIndex = z
 const multipleChoiceInput = z.object({
   question: english('The question. Quote Chinese words in characters, without pinyin'),
   options: choices(4, 'Four options, one right: all in English, or all in Chinese'),
+  optionsChinese: choices(
+    4,
+    'Only with English options: the allowed Chinese word each option is the meaning of, in the same order',
+  ).optional(),
   correctIndex,
   explanation: english('One or two sentences on why the answer is right'),
 });
@@ -156,10 +161,17 @@ const multipleChoiceInput = z.object({
 const sentenceToMeaningInput = z.object({
   sentence: chinese('The sentence'),
   translation: english('Its natural translation'),
-  wrongTranslations: choices(
-    3,
-    'Three English sentences close to the translation that do not mean the Chinese sentence',
-  ),
+  wrongTranslations: z
+    .array(
+      z.object({
+        english: english(
+          'A sentence close to the translation that does not mean the Chinese sentence',
+        ),
+        chinese: chinese('The Chinese sentence it translates, also made of allowed words only'),
+      }),
+    )
+    .length(3)
+    .describe('Three wrong translations, each with the Chinese sentence it translates'),
 });
 
 const meaningToSentenceInput = z.object({
@@ -447,6 +459,7 @@ function buildMultipleChoice(
     input.question.includes(word.word) || answer.includes(word.word),
     `The question must practise ${word.word}: ask about it, or make it the answer.`,
   );
+  const chineseOf = chineseOptions ? null : chineseOfEnglishOptions(input, word);
   const { options, correctIndex } = withAnswer(
     answer,
     input.options.filter((_, i) => i !== input.correctIndex),
@@ -456,13 +469,44 @@ function buildMultipleChoice(
     type: 'multiple-choice',
     options,
     optionReadings: chineseOptions ? options.map(readingOf) : undefined,
+    optionChinese: chineseOf ? chineseOfEach(options, chineseOf) : undefined,
     correctIndex,
     explanation: `${wordLine(word)}\n\n${input.explanation}`,
   };
   return {
     exercise: assemble(plan, withPinyin(input.question), '', data),
-    chinese: [input.question, ...(chineseOptions ? input.options : [])],
+    chinese: [input.question, ...(chineseOf ? chineseOf.values() : input.options)],
   };
+}
+
+/** English options' Chinese, keyed by option: each must be allowed, the right one the practised word. */
+function chineseOfEnglishOptions(
+  input: z.infer<typeof multipleChoiceInput>,
+  word: VocabularyItem,
+): Map<string, string> {
+  const given = input.optionsChinese;
+  check(
+    given,
+    'With English options, also give optionsChinese: the Chinese word for each option, in the same order.',
+  );
+  given.forEach((c) => chineseSentence(c));
+  check(
+    given[input.correctIndex].includes(word.word),
+    `The Chinese for the right option must be ${word.word}.`,
+  );
+  check(allDistinct(given, normalizeOrder), 'The Chinese for the four options must all differ.');
+  return new Map(input.options.map((o, i) => [o, given[i]] as const));
+}
+
+/** Each option's Chinese with its pinyin, for showing once answered. */
+function chineseOfEach(
+  options: readonly string[],
+  chineseOf: ReadonlyMap<string, string>,
+): (FuriSegment[] | null)[] {
+  return options.map((option) => {
+    const chinese = chineseOf.get(option);
+    return chinese ? pinyinSegments(chinese) : null;
+  });
 }
 
 function buildSentenceMc(plan: PlanOf<'sentence-mc'>, raw: unknown, random: () => number): Built {
@@ -499,16 +543,26 @@ function buildSentenceMc(plan: PlanOf<'sentence-mc'>, raw: unknown, random: () =
 
   const input = parse(sentenceToMeaningInput, raw);
   chineseSentence(input.sentence, word);
-  [input.translation, ...input.wrongTranslations].forEach((t) =>
-    englishText(t, 'Each translation'),
-  );
+  const wrongEnglish = input.wrongTranslations.map((w) => w.english);
+  const wrongChinese = input.wrongTranslations.map((w) => w.chinese);
+  [input.translation, ...wrongEnglish].forEach((t) => englishText(t, 'Each translation'));
+  wrongChinese.forEach((s) => chineseSentence(s));
   check(
-    allDistinct([input.translation, ...input.wrongTranslations], looseEnglish),
+    allDistinct([input.translation, ...wrongEnglish], looseEnglish),
     'The four translations must all differ.',
   );
-  checkHeardApart([input.translation, ...input.wrongTranslations], false);
-  checkNoOtherMeaning(word, input.translation, input.wrongTranslations);
-  const { options, correctIndex } = withAnswer(input.translation, input.wrongTranslations, random);
+  checkHeardApart([input.translation, ...wrongEnglish], false);
+  checkNoOtherMeaning(word, input.translation, wrongEnglish);
+  check(
+    allDistinct([input.sentence, ...wrongChinese], normalizeOrder),
+    'Each wrong translation needs its own Chinese sentence, different from the right one.',
+  );
+  checkHeardApart([input.sentence, ...wrongChinese], true);
+  const chineseOf = new Map([
+    [input.translation, input.sentence],
+    ...input.wrongTranslations.map((w) => [w.english, w.chinese] as const),
+  ]);
+  const { options, correctIndex } = withAnswer(input.translation, wrongEnglish, random);
   const data: SentenceMcData = {
     type: 'sentence-mc',
     direction,
@@ -516,12 +570,13 @@ function buildSentenceMc(plan: PlanOf<'sentence-mc'>, raw: unknown, random: () =
     sentenceFurigana: pinyinSegments(input.sentence),
     translation: input.translation,
     options,
+    optionChinese: chineseOfEach(options, chineseOf),
     correctIndex,
     explanation: explain(input.sentence),
   };
   return {
     exercise: assemble(plan, 'What does this sentence mean?', '', data),
-    chinese: [input.sentence],
+    chinese: [input.sentence, ...wrongChinese],
   };
 }
 

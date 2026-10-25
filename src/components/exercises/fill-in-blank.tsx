@@ -1,18 +1,19 @@
 'use client';
 
 import { useState } from 'react';
-import type { FillInBlankData } from '@/types';
+import type { FillInBlankData, Language } from '@/types';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 interface FillInBlankProps {
   data: FillInBlankData;
+  language: Language;
   onSubmit: (answer: string, isCorrect: boolean) => void;
   disabled: boolean;
 }
 
-export function FillInBlank({ data, onSubmit, disabled }: FillInBlankProps) {
+export function FillInBlank({ data, language, onSubmit, disabled }: FillInBlankProps) {
   const [answer, setAnswer] = useState('');
   const [selected, setSelected] = useState<number | null>(null);
 
@@ -31,6 +32,8 @@ export function FillInBlank({ data, onSubmit, disabled }: FillInBlankProps) {
 
   const parts = data.sentence.split('___');
   const hasOptions = data.options && data.options.length > 0;
+  // Chinese options carry their pinyin from the start; Japanese readings wait for the answer.
+  const readingsUpfront = language === 'chinese';
 
   return (
     <div className="space-y-4">
@@ -77,6 +80,11 @@ export function FillInBlank({ data, onSubmit, disabled }: FillInBlankProps) {
               )}
             >
               {option}
+              {readingsUpfront && data.optionReadings?.[i] && (
+                <span className="block text-xs font-normal mt-0.5 opacity-70">
+                  {data.optionReadings[i]}
+                </span>
+              )}
             </button>
           ))}
         </div>

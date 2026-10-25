@@ -185,8 +185,10 @@ export type ExerciseData =
 export interface MultipleChoiceData {
   type: 'multiple-choice';
   options: string[];
-  /** Pinyin per option when the options are Chinese; shown once answered. */
+  /** Pinyin per option when the options are Chinese. */
   optionReadings?: (string | null)[];
+  /** The Chinese, with pinyin, that each English option translates; shown once answered. */
+  optionChinese?: (FuriSegment[] | null)[];
   correctIndex: number;
   explanation: string;
 }
@@ -203,6 +205,7 @@ export interface SentenceMcData {
   translation: string; // English meaning of the sentence
   options: string[]; // toMeaning: translations; toSentence: sentences
   optionFurigana?: (FuriSegment[] | null)[]; // furigana for sentence options (toSentence)
+  optionChinese?: (FuriSegment[] | null)[]; // toMeaning: the Chinese each translation translates, shown once answered
   correctIndex: number;
   explanation?: string;
 }
@@ -247,6 +250,8 @@ export interface CharacterRecognitionData {
   type: 'character-recognition';
   character: string;
   options: string[];
+  /** The Chinese, with pinyin, that each meaning belongs to; shown once answered. */
+  optionChinese?: (FuriSegment[] | null)[];
   correctIndex: number;
   reading: string;
   meaning: string;

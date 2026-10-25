@@ -16,6 +16,7 @@
 import { nanoid } from 'nanoid';
 import { chineseGrammarRules, type GrammarRule } from '@/data/chinese/grammar';
 import { alternativeOrders, segmentByPinyin } from '@/lib/exercises/tiles';
+import { pinyinSegments } from '@/lib/language/pinyin';
 import type { Exercise } from '@/types';
 
 type Example = GrammarRule['examples'][number];
@@ -100,6 +101,7 @@ export function buildChecksForRule(rule: GrammarRule, count = 4): Exercise[] {
         direction: 'toSentence',
         sentence: quiz.chinese,
         sentencePinyin: quiz.pinyin,
+        optionFurigana: options.map(pinyinSegments),
         translation: quiz.english,
         options,
         correctIndex,
@@ -142,6 +144,9 @@ export function buildChecksForRule(rule: GrammarRule, count = 4): Exercise[] {
       meaningEx.english,
       pickDistractors(meaningPool, meaningEx.english, 3),
     );
+    // The Chinese behind each English option, shown once answered.
+    const chineseOf = new Map(otherExamples.map((e) => [e.english, e.chinese] as const));
+    chineseOf.set(meaningEx.english, meaningEx.chinese);
     checks.push({
       ...baseExercise(
         `${rule.id}:${meaningIndex}`,
@@ -156,6 +161,10 @@ export function buildChecksForRule(rule: GrammarRule, count = 4): Exercise[] {
         sentencePinyin: meaningEx.pinyin,
         translation: meaningEx.english,
         options,
+        optionChinese: options.map((o) => {
+          const chinese = chineseOf.get(o);
+          return chinese ? pinyinSegments(chinese) : null;
+        }),
         correctIndex,
         explanation: rule.explanation,
       },

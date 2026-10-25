@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { CharacterRecognitionData } from '@/types';
+import { Furigana } from '@/components/shared/furigana';
 import { SpeakButton } from '@/components/shared/speak-button';
 import { cn } from '@/lib/utils';
 
@@ -30,25 +31,33 @@ export function CharacterRecognition({ data, onSubmit, disabled }: CharacterReco
       </div>
 
       <div className="grid grid-cols-2 gap-2.5">
-        {data.options.map((option, i) => (
-          <button
-            key={i}
-            onClick={() => handleSelect(i)}
-            disabled={disabled}
-            className={cn(
-              'px-4 py-3.5 rounded-xl border text-center text-sm font-medium transition-all',
-              selected === null
-                ? 'border-border hover:border-primary/40 hover:bg-primary/[0.03] active:scale-[0.98]'
-                : i === data.correctIndex
-                  ? 'border-success/50 bg-success/10 text-success'
-                  : selected === i
-                    ? 'border-destructive/50 bg-destructive/10 text-destructive'
-                    : 'border-border/50 opacity-40',
-            )}
-          >
-            {option}
-          </button>
-        ))}
+        {data.options.map((option, i) => {
+          const chinese = data.optionChinese?.[i];
+          return (
+            <button
+              key={i}
+              onClick={() => handleSelect(i)}
+              disabled={disabled}
+              className={cn(
+                'px-4 py-3.5 rounded-xl border text-center text-sm font-medium transition-all',
+                selected === null
+                  ? 'border-border hover:border-primary/40 hover:bg-primary/[0.03] active:scale-[0.98]'
+                  : i === data.correctIndex
+                    ? 'border-success/50 bg-success/10 text-success'
+                    : selected === i
+                      ? 'border-destructive/50 bg-destructive/10 text-destructive'
+                      : 'border-border/50 opacity-40',
+              )}
+            >
+              {option}
+              {disabled && chinese && (
+                <span className="block mt-1 text-base font-normal">
+                  <Furigana segments={chinese} />
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
       {disabled && (

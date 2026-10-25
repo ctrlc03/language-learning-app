@@ -50,6 +50,7 @@ export function SentenceMC({ data, onSubmit, disabled }: SentenceMcProps) {
       <div className="space-y-2.5">
         {data.options.map((option, i) => {
           const furi = data.optionFurigana?.[i];
+          const chinese = data.optionChinese?.[i];
           return (
             <button
               key={i}
@@ -70,6 +71,11 @@ export function SentenceMC({ data, onSubmit, disabled }: SentenceMcProps) {
                 {String.fromCharCode(65 + i)}
               </span>
               {furi ? <Furigana segments={furi} className="text-base" /> : option}
+              {answered && chinese && (
+                <span className="block mt-1 pl-9 text-base">
+                  <Furigana segments={chinese} />
+                </span>
+              )}
             </button>
           );
         })}
@@ -84,6 +90,9 @@ export function SentenceMC({ data, onSubmit, disabled }: SentenceMcProps) {
                 <Furigana segments={data.sentenceFurigana} />
               ) : (
                 data.sentence
+              )}
+              {!data.sentenceFurigana && data.sentencePinyin && (
+                <span className="block tracking-wide">{data.sentencePinyin}</span>
               )}
             </p>
           )}
