@@ -25,20 +25,23 @@ export function SentenceMC({ data, onSubmit, disabled }: SentenceMcProps) {
 
   return (
     <div className="space-y-4">
-      {/* Stimulus: the sentence with readings (toMeaning) or just the romanized
-          reading (pinyinToMeaning). toSentence shows no stimulus — the options
-          are the sentences. */}
-      {(data.direction === 'toMeaning' || data.direction === 'pinyinToMeaning') && (
+      {/* Stimulus: the sentence in characters with its reading (toMeaning).
+          toSentence shows no stimulus — the options are the sentences. Saved
+          exercises from the retired pinyin-only direction show this way too. */}
+      {data.direction !== 'toSentence' && (
         <div className="flex items-start justify-between gap-2 rounded-xl border border-border bg-muted/40 px-4 py-3">
-          <p className="text-lg font-medium">
-            {data.direction === 'pinyinToMeaning' ? (
-              <span className="italic tracking-wide">{data.sentencePinyin ?? data.sentence}</span>
-            ) : data.sentenceFurigana ? (
-              <Furigana segments={data.sentenceFurigana} />
-            ) : (
-              data.sentence
+          <div className="space-y-1">
+            <p className="text-lg font-medium">
+              {data.sentenceFurigana ? (
+                <Furigana segments={data.sentenceFurigana} />
+              ) : (
+                data.sentence
+              )}
+            </p>
+            {!data.sentenceFurigana && data.sentencePinyin && (
+              <p className="text-sm text-muted-foreground tracking-wide">{data.sentencePinyin}</p>
             )}
-          </p>
+          </div>
           <SpeakButton text={data.sentence} size="icon" />
         </div>
       )}
@@ -75,7 +78,7 @@ export function SentenceMC({ data, onSubmit, disabled }: SentenceMcProps) {
       {/* After answering: show the sentence + reading + meaning for context */}
       {answered && (
         <div className="text-xs text-muted-foreground leading-relaxed space-y-0.5 pt-1">
-          {(data.direction === 'toSentence' || data.direction === 'pinyinToMeaning') && (
+          {data.direction === 'toSentence' && (
             <p className="text-foreground/80">
               {data.sentenceFurigana ? (
                 <Furigana segments={data.sentenceFurigana} />

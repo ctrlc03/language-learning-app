@@ -425,14 +425,7 @@ function generateSentenceMC(
   }
 
   const correctIndex = Math.floor(rng() * 4);
-  // Pick a direction. Chinese gets a third mode, 'pinyinToMeaning', which shows
-  // only the romanized reading and asks for the English meaning. Japanese keeps
-  // the two character-based directions (pinyin is meaningless there).
-  const directions =
-    language === 'chinese'
-      ? (['toMeaning', 'toSentence', 'pinyinToMeaning'] as const)
-      : (['toMeaning', 'toSentence'] as const);
-  const direction = directions[Math.floor(rng() * directions.length)];
+  const direction: 'toMeaning' | 'toSentence' = rng() < 0.5 ? 'toMeaning' : 'toSentence';
 
   // Per-character pinyin ruby so beginners can read every sentence, not just
   // the target word. (Rendered like Japanese furigana.) Only for Chinese —
@@ -469,8 +462,7 @@ function generateSentenceMC(
     question = `“${target.exampleTranslation}”`;
     instruction = 'Which sentence means this?';
   } else {
-    // toMeaning + pinyinToMeaning: options are translations. pinyinToMeaning
-    // shows only the romanized reading as the stimulus.
+    // toMeaning: options are translations.
     const options = distractors.map((d) => d.exampleTranslation!);
     options.splice(correctIndex, 0, target.exampleTranslation!);
     data = {
@@ -478,15 +470,13 @@ function generateSentenceMC(
       direction,
       sentence: target.exampleSentence!,
       sentenceFurigana: annotate(target.exampleSentence!),
-      sentencePinyin: direction === 'pinyinToMeaning' ? readingLine || undefined : undefined,
       translation: target.exampleTranslation!,
       options,
       correctIndex,
       explanation,
     };
     question = 'What does this sentence mean?';
-    instruction =
-      direction === 'pinyinToMeaning' ? 'Read the pinyin, then choose the English meaning.' : '';
+    instruction = '';
   }
 
   return {

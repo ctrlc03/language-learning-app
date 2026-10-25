@@ -72,7 +72,7 @@ export interface PlanRequest {
 }
 
 const HAN_ONLY = /^\p{Script=Han}+$/u;
-const SENTENCE_DIRECTIONS = ['toMeaning', 'toSentence', 'pinyinToMeaning'] as const;
+const SENTENCE_DIRECTIONS = ['toMeaning', 'toSentence'] as const;
 const TRANSLATION_DIRECTIONS = ['toEnglish', 'toChinese'] as const;
 
 function pick<T>(items: readonly T[], random: () => number): T {
@@ -514,19 +514,13 @@ function buildSentenceMc(plan: PlanOf<'sentence-mc'>, raw: unknown, random: () =
     direction,
     sentence: input.sentence,
     sentenceFurigana: pinyinSegments(input.sentence),
-    sentencePinyin: direction === 'pinyinToMeaning' ? toPinyin(input.sentence) : undefined,
     translation: input.translation,
     options,
     correctIndex,
     explanation: explain(input.sentence),
   };
   return {
-    exercise: assemble(
-      plan,
-      'What does this sentence mean?',
-      direction === 'pinyinToMeaning' ? 'Read the pinyin, then choose the English meaning.' : '',
-      data,
-    ),
+    exercise: assemble(plan, 'What does this sentence mean?', '', data),
     chinese: [input.sentence],
   };
 }

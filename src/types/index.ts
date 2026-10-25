@@ -191,17 +191,15 @@ export interface MultipleChoiceData {
   explanation: string;
 }
 
-// Sentence-level multiple choice. Three directions:
-//  - 'toMeaning': show the sentence (with furigana), options are translations
-//  - 'toSentence': show the meaning, options are full sentences (with furigana)
-//  - 'pinyinToMeaning': show only the romanized reading (pinyin), options are
-//    translations — train reading the romanization without the characters
+// Sentence-level multiple choice. Two directions:
+//  - 'toMeaning': show the sentence (with furigana or pinyin), options are translations
+//  - 'toSentence': show the meaning, options are full sentences (with furigana or pinyin)
 export interface SentenceMcData {
   type: 'sentence-mc';
-  direction: 'toMeaning' | 'toSentence' | 'pinyinToMeaning';
+  direction: 'toMeaning' | 'toSentence';
   sentence: string; // the target sentence (native script)
   sentenceFurigana?: FuriSegment[]; // per-kanji ruby for the sentence
-  sentencePinyin?: string; // romanized reading (pinyinToMeaning prompt)
+  sentencePinyin?: string; // whole-sentence pinyin, shown when there is no ruby
   translation: string; // English meaning of the sentence
   options: string[]; // toMeaning: translations; toSentence: sentences
   optionFurigana?: (FuriSegment[] | null)[]; // furigana for sentence options (toSentence)
