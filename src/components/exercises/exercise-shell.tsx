@@ -182,7 +182,12 @@ export function ExerciseShell({ exercise, onComplete, onNext }: ExerciseShellPro
         );
       case 'translation':
         return (
-          <TranslationExercise data={exercise.data} onSubmit={handleSubmit} disabled={!!result} />
+          <TranslationExercise
+            data={exercise.data}
+            sourceId={exercise.sourceId}
+            onSubmit={handleSubmit}
+            disabled={!!result}
+          />
         );
       case 'sentence-construction':
         return (

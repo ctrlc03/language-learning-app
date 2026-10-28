@@ -161,13 +161,20 @@ export function buildExerciseEvaluationPrompt(
   difficulty: DifficultyLevel,
 ): string {
   const langName = LANGUAGE_NAMES[language];
+  // Learners without a Chinese keyboard answer in pinyin. Pinyin that spells the sample answer
+  // is accepted before it gets here (see TranslationExercise); this covers the rest.
+  const pinyin =
+    language === 'chinese'
+      ? `
+- Chinese written in pinyin instead of characters, even where the instruction asks for characters. Grade it as the characters it spells: spaces, capitals and tones are optional, but a tone that is given must be right (mǎi "buy" is not mài "sell"; 一 and 不 may take either tone). For a pinyin answer, give it in characters in the feedback.`
+      : '';
 
   return `You are evaluating a ${difficulty} level ${langName} learner's answer to an exercise.
 
 Evaluate whether the answer is correct or acceptable. Consider:
 - Alternative correct answers
 - Minor spelling/character variations
-- Acceptable paraphrasing for translation exercises
+- Acceptable paraphrasing for translation exercises${pinyin}
 
 Respond with JSON:
 {

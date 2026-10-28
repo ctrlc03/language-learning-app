@@ -9,6 +9,10 @@ export function verdictLabel(grade: AnswerGrade): string {
   return grade.verdict === 'tones' ? 'Almost — check the tones' : 'Not quite';
 }
 
+/** Pinyin typed without tones was accepted on its letters alone. */
+export const TONES_UNCHECKED_NOTE =
+  'Tones not checked — add them as marks or numbers (ni3 hao3) to have them checked.';
+
 /** Typed characters corrected against the answer: missing ones underlined, extra ones struck through. */
 export function CharDiff({ diff, className }: { diff: DiffPiece[]; className?: string }) {
   return (
@@ -66,9 +70,7 @@ export function AnswerFeedback({ grade, className }: { grade: AnswerGrade; class
         {grade.answerPinyin && <span className="text-muted-foreground">{grade.answerPinyin}</span>}
       </p>
       {grade.verdict === 'correct' && grade.tonesUnchecked && (
-        <p className="text-xs text-muted-foreground">
-          Tones not checked — add them as marks or numbers (ni3 hao3) to have them checked.
-        </p>
+        <p className="text-xs text-muted-foreground">{TONES_UNCHECKED_NOTE}</p>
       )}
     </div>
   );

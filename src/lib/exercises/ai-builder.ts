@@ -823,7 +823,7 @@ function buildTranslation(plan: PlanOf<'translation'>, raw: unknown): Built {
     exercise: assemble(
       plan,
       toEnglish ? 'Translate into English.' : 'Translate into Chinese.',
-      toEnglish ? '' : 'Write it in Chinese characters.',
+      toEnglish ? '' : 'Write it in Chinese characters or pinyin.',
       data,
     ),
     chinese: [input.chinese],
