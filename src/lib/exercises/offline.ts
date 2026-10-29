@@ -1484,6 +1484,8 @@ function generateGrammarDrillFromVocab(
       ...(gp.pinyin(word)
         ? {
             pinyin: gp.pinyin(word),
+            // The blank's word as the course reads it, filled in once answered
+            answerReading: answer === word.word ? word.reading : wordPinyin(answer),
             translation: gp.translation(word),
           }
         : {}),

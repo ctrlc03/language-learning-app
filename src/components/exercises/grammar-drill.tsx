@@ -35,6 +35,9 @@ export function GrammarDrill({ data, onSubmit, disabled }: GrammarDrillProps) {
   };
 
   const parts = data.sentence.split('___');
+  // Once answered, the answer's pinyin fills the pinyin line's blank.
+  const pinyinParts = data.pinyin?.split('___') ?? [];
+  const fillPinyin = disabled && !!data.answerReading && pinyinParts.length === 2;
 
   return (
     <div className="space-y-4">
@@ -43,7 +46,17 @@ export function GrammarDrill({ data, onSubmit, disabled }: GrammarDrillProps) {
       </Badge>
 
       {data.pinyin && (
-        <p className="text-sm text-muted-foreground leading-relaxed tracking-wide">{data.pinyin}</p>
+        <p className="text-sm text-muted-foreground leading-relaxed tracking-wide">
+          {fillPinyin ? (
+            <>
+              {pinyinParts[0]}
+              <span className="text-success font-medium">{data.answerReading}</span>
+              {pinyinParts[1]}
+            </>
+          ) : (
+            data.pinyin
+          )}
+        </p>
       )}
 
       <p className="text-base leading-relaxed">

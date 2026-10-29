@@ -265,6 +265,7 @@ export interface GrammarDrillData {
   acceptableAnswers: string[];
   explanation: string;
   pinyin?: string; // sentence with pinyin (blank matches sentence blank)
+  answerReading?: string; // pinyin of the answer, filled into the pinyin's blank once answered
   translation?: string; // English translation/hint
   options?: string[]; // multiple choice options (when present, renders as pick-from-options)
   optionReadings?: (string | null)[]; // pinyin reading per option

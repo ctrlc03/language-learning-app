@@ -14,7 +14,14 @@ import { chineseGrammarRules, type GrammarRule } from '@/data/chinese/grammar';
 import { getCourseVocabulary, getLessonVocabulary } from '@/data/chinese/vocabulary';
 import type { AiExerciseType } from '@/lib/exercises/ai';
 import { alternativeOrders, isAcceptedOrder, normalizeOrder } from '@/lib/exercises/tiles';
-import { hasHan, piecesPinyin, pinyinSegments, toPinyin, wordPinyin } from '@/lib/language/pinyin';
+import {
+  hasHan,
+  hasSeveralReadings,
+  piecesPinyin,
+  pinyinSegments,
+  toPinyin,
+  wordPinyin,
+} from '@/lib/language/pinyin';
 import { lookupWord, splitChineseSentence } from '@/lib/language/segment';
 import { findUnknown } from '@/lib/reader/coverage';
 import type {
@@ -371,20 +378,37 @@ function withAnswer(
   return { options, correctIndex: options.indexOf(answer) };
 }
 
-/** A course word as the course reads it; anything else read in context by pinyin-pro. */
-function readingOf(text: string): string {
+/**
+ * A course word as the course reads it, the practised word as its own entry (得
+ * děi, not the 得 de listed first); anything else read by pinyin-pro.
+ */
+function readingOf(text: string, word?: VocabularyItem): string {
+  if (text === word?.word) return word.reading;
   return lookupWord(text)?.reading || wordPinyin(text);
 }
 
 /** Chinese quoted in an English line gets its pinyin after it: 忙 → 忙 (máng). */
-function withPinyin(text: string): string {
+function withPinyin(text: string, word: VocabularyItem): string {
   return text.replace(
     /(\p{Script=Han}+)([”"」』]?)/gu,
-    (_, han: string, close: string) => `${han}${close} (${readingOf(han)})`,
+    (_, han: string, close: string) => `${han}${close} (${readingOf(han, word)})`,
   );
 }
 
 const BLANK = '___';
+
+/**
+ * Each option's reading in the sentence's blank: a word the course reads two
+ * ways (得 de/děi) as the sentence reads it there, any other as readingOf does.
+ */
+function blankReadings(options: string[], sentence: string, word?: VocabularyItem): string[] {
+  const [before, after] = sentence.split(BLANK);
+  return options.map((option) =>
+    option !== word?.word && hasSeveralReadings(option)
+      ? piecesPinyin([before, option, after])[1]
+      : readingOf(option, word),
+  );
+}
 
 /** A sentence with each run of underscores written as one blank, and how many blanks it has. */
 function normalizeBlank(sentence: string): { text: string; blanks: number } {
@@ -475,13 +499,13 @@ function buildMultipleChoice(
   const data: MultipleChoiceData = {
     type: 'multiple-choice',
     options,
-    optionReadings: chineseOptions ? options.map(readingOf) : undefined,
+    optionReadings: chineseOptions ? options.map((o) => readingOf(o, word)) : undefined,
     optionChinese: chineseOf ? chineseOfEach(options, chineseOf) : undefined,
     correctIndex,
     explanation: `${wordLine(word)}\n\n${input.explanation}`,
   };
   return {
-    exercise: assemble(plan, withPinyin(input.question), '', data),
+    exercise: assemble(plan, withPinyin(input.question, word), '', data),
     chinese: [input.question, ...(chineseOf ? chineseOf.values() : input.options)],
   };
 }
@@ -618,7 +642,7 @@ function buildFillInBlank(
     acceptableAnswers: [word.word],
     hint: word.reading,
     options,
-    optionReadings: options.map(readingOf),
+    optionReadings: blankReadings(options, sentence, word),
     correctIndex,
   };
   return {
@@ -717,6 +741,7 @@ function buildGrammarDrill(
   englishText(input.translation, 'The translation');
 
   const { options, correctIndex } = withAnswer(answer, wrong, random);
+  const optionReadings = blankReadings(options, sentence);
   const data: GrammarDrillData = {
     type: 'grammar-drill',
     grammarPoint: rule.title,
@@ -725,9 +750,10 @@ function buildGrammarDrill(
     acceptableAnswers: [answer],
     explanation: input.explanation,
     pinyin: toPinyin(sentence),
+    answerReading: optionReadings[correctIndex],
     translation: input.translation,
     options,
-    optionReadings: options.map(readingOf),
+    optionReadings,
     correctIndex,
   };
   return {

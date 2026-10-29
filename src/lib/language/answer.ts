@@ -12,7 +12,7 @@
  *   letters alone.
  */
 
-import { hasHan, normalizePinyin, pinyin, toPinyin } from '@/lib/language/pinyin';
+import { hasHan, normalizePinyin, readCharacters, toPinyin } from '@/lib/language/pinyin';
 import { parsePinyin } from '@/lib/language/pinyin-syllables';
 
 export interface AnswerKey {
@@ -226,7 +226,7 @@ function buildForm(answer: string, parts: FormPart[]): PinyinForm {
  * is an erhua suffix when spelled out (yì diǎn er), so it takes any tone.
  */
 function machineForm(answer: string): PinyinForm {
-  const parts = pinyin(answer, { type: 'all' })
+  const parts = readCharacters(answer)
     .filter((c) => c.isZh && c.pinyin)
     .map((c, i) => ({
       text: c.pinyin,
