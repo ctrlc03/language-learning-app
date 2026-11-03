@@ -229,6 +229,19 @@ function wordSegments(word: VocabularyItem): FuriSegment[] {
   return [{ t: word.word, r: word.reading || undefined }];
 }
 
+/** A course word as English text quotes it: 跑 (pǎo). */
+const quoteWord = (w: VocabularyItem) => (w.reading ? `${w.word} (${w.reading})` : w.word);
+
+/** Chinese: why each meaning but the right one is wrong, from the word it means. */
+function meaningWhyWrong(words: VocabularyItem[], correctIndex: number): (string | null)[] {
+  return words.map((w, i) => (i === correctIndex ? null : `That is what ${quoteWord(w)} means.`));
+}
+
+/** Chinese: why each word but the right one is wrong, from what it means. */
+function wordWhyWrong(words: VocabularyItem[], correctIndex: number): (string | null)[] {
+  return words.map((w, i) => (i === correctIndex ? null : `${quoteWord(w)} means “${w.meaning}”.`));
+}
+
 function generateMultipleChoice(
   { targets }: Scope,
   allVocab: VocabularyItem[],
@@ -268,6 +281,8 @@ function generateMultipleChoice(
     options: options.slice(0, 4),
     optionChinese: language === 'chinese' ? optionWords.slice(0, 4).map(wordSegments) : undefined,
     correctIndex,
+    whyWrong:
+      language === 'chinese' ? meaningWhyWrong(optionWords.slice(0, 4), correctIndex) : undefined,
     explanation,
   };
 
@@ -434,6 +449,13 @@ function generateSentenceMC(
 
   const correctIndex = Math.floor(rng() * 4);
   const direction: 'toMeaning' | 'toSentence' = rng() < 0.5 ? 'toMeaning' : 'toSentence';
+  // Chinese: a wrong pick is told what it is instead, from the word it was the example of.
+  const optionItems = [...distractors];
+  optionItems.splice(correctIndex, 0, target);
+  const whyWrong = (note: (item: VocabularyItem) => string) =>
+    language === 'chinese'
+      ? optionItems.map((item, i) => (i === correctIndex ? null : note(item)))
+      : undefined;
 
   // Per-character pinyin ruby so beginners can read every sentence, not just
   // the target word. (Rendered like Japanese furigana.) Only for Chinese —
@@ -465,6 +487,7 @@ function generateSentenceMC(
       options,
       optionFurigana,
       correctIndex,
+      whyWrong: whyWrong((d) => `That means “${d.exampleTranslation}”`),
       explanation,
     };
     question = `“${target.exampleTranslation}”`;
@@ -484,6 +507,7 @@ function generateSentenceMC(
       options,
       optionChinese: language === 'chinese' ? sentences.map((s) => annotate(s) ?? null) : undefined,
       correctIndex,
+      whyWrong: whyWrong((d) => `That is what “${d.exampleSentence}” means.`),
       explanation,
     };
     question = 'What does this sentence mean?';
@@ -539,6 +563,8 @@ function generateFillInBlank(
     options.splice(correctIndex, 0, target.word);
     const optionReadings: (string | null)[] = distractorItems.map((v) => v.reading || null);
     optionReadings.splice(correctIndex, 0, target.reading || null);
+    const optionWords = [...distractorItems];
+    optionWords.splice(correctIndex, 0, target);
 
     const data: FillInBlankData = {
       type: 'fill-in-blank',
@@ -554,6 +580,8 @@ function generateFillInBlank(
       // Chinese shows these from the start; Japanese once answered (see FillInBlank).
       optionReadings: optionReadings.slice(0, 4),
       correctIndex,
+      whyWrong:
+        language === 'chinese' ? wordWhyWrong(optionWords.slice(0, 4), correctIndex) : undefined,
     };
 
     return {
@@ -655,6 +683,8 @@ function createSimpleFillInBlank(
   options.splice(correctIndex, 0, target.word);
   const optionReadings: (string | null)[] = distractorItems.map((v) => v.reading || null);
   optionReadings.splice(correctIndex, 0, target.reading || null);
+  const optionWords = [...distractorItems];
+  optionWords.splice(correctIndex, 0, target);
 
   const data: FillInBlankData = {
     type: 'fill-in-blank',
@@ -665,6 +695,8 @@ function createSimpleFillInBlank(
     options: options.slice(0, 4),
     optionReadings: optionReadings.slice(0, 4),
     correctIndex,
+    whyWrong:
+      language === 'chinese' ? wordWhyWrong(optionWords.slice(0, 4), correctIndex) : undefined,
   };
 
   return {
@@ -830,6 +862,8 @@ function generateCharacterRecognition(
     options: options.slice(0, 4),
     optionChinese: language === 'chinese' ? optionWords.slice(0, 4).map(wordSegments) : undefined,
     correctIndex,
+    whyWrong:
+      language === 'chinese' ? meaningWhyWrong(optionWords.slice(0, 4), correctIndex) : undefined,
     reading: target.reading,
     meaning: target.meaning,
   };
@@ -1197,11 +1231,12 @@ interface DrillTemplate {
   translation: (w: VocabularyItem) => string;
   filter: (v: VocabularyItem) => boolean;
   /**
-   * Chinese: choices that are wrong in the blank for every word `filter` admits.
-   * Absent when the answer is the word itself: any other word of its kind fits
-   * just as well, so the learner types it instead of choosing.
+   * Chinese: choices that are wrong in the blank for every word `filter` admits,
+   * each with why, told to a learner who picks it. Absent when the answer is the
+   * word itself: any other word of its kind fits just as well, so the learner
+   * types it instead of choosing.
    */
-  distractors?: string[];
+  distractors?: Record<string, string>;
   /** Chinese: other typed answers that are also right in the blank. */
   alsoAccept?: string[];
 }
@@ -1244,7 +1279,13 @@ function generateGrammarDrillFromVocab(
         (NEGATABLE_WORDS.includes(v.word) &&
           (v.partOfSpeech === 'verb' || v.partOfSpeech === 'adjective')),
       // Particles that only follow a word can never open one: wrong before any verb or adjective.
-      distractors: ['吗', '吧', '了', '的', '呢'],
+      distractors: {
+        吗: '吗 (ma) ends a sentence to make it a yes/no question, so it never starts a phrase.',
+        吧: '吧 (ba) ends a sentence to make a suggestion, so it never starts a phrase.',
+        了: '了 (le) follows a verb or ends a sentence, so it never starts a phrase.',
+        的: '的 (de) follows a word to link it to a noun, so it never starts a phrase.',
+        呢: '呢 (ne) ends a sentence or question, so it never starts a phrase.',
+      },
     },
     {
       pattern: '没有 + noun',
@@ -1254,7 +1295,11 @@ function generateGrammarDrillFromVocab(
       pinyin: (w) => `___ ${w.reading}`,
       translation: (w) => `don't have ${briefMeaning(w)}`,
       filter: (v) => v.partOfSpeech === 'noun' && CONCRETE_NOUNS.includes(v.word),
-      distractors: ['不', '也', '都'],
+      distractors: {
+        不: '不 (bù) never goes straight before a noun: to say you don’t have something, use 没有 (méiyǒu).',
+        也: '也 (yě) means “also” and goes before a verb, never straight before a noun.',
+        都: '都 (dōu) means “all” or “both” and goes before a verb, never straight before a noun.',
+      },
       alsoAccept: ['没'],
     },
   ];
@@ -1435,7 +1480,7 @@ function generateGrammarDrillFromVocab(
     let uniqueDistractors: string[] = [];
     const particlePool = PARTICLE_DISTRACTORS[answer];
     if (gp.distractors) {
-      uniqueDistractors = shuffle(gp.distractors, rng).slice(0, 3);
+      uniqueDistractors = shuffle(Object.keys(gp.distractors), rng).slice(0, 3);
     } else if (language === 'japanese') {
       if (particlePool) {
         // For particle/grammar answers, use the category-aware distractor pool
@@ -1481,6 +1526,10 @@ function generateGrammarDrillFromVocab(
       optionReadings:
         options && language === 'chinese' ? options.map((o) => wordPinyin(o) || null) : undefined,
       correctIndex,
+      whyWrong:
+        options && gp.distractors
+          ? options.map((o, i) => (i === correctIndex ? null : gp.distractors![o]))
+          : undefined,
       ...(gp.pinyin(word)
         ? {
             pinyin: gp.pinyin(word),
@@ -1522,7 +1571,13 @@ interface DialogueSource {
   level?: string;
   lesson?: number;
   lines: DialogueLine[];
-  questions: { question: string; options: string[]; correctIndex: number; explanation?: string }[];
+  questions: {
+    question: string;
+    options: string[];
+    correctIndex: number;
+    explanation?: string;
+    whyWrong?: (string | null)[];
+  }[];
 }
 
 // Chinese dialogues ship without hand-written questions, so synthesize
@@ -1559,6 +1614,14 @@ function buildChineseDialogueQuestions(
         options,
         correctIndex,
         explanation: `${line.text}\n${line.pinyin}\n${line.translation}`,
+        // A wrong pick is another line's meaning: whose, when it is in this conversation.
+        whyWrong: options.map((option, i) => {
+          if (i === correctIndex) return null;
+          const said = dialogue.lines.find((l) => l.translation === option);
+          return said
+            ? `That is what ${said.speaker} means by “${said.text}”`
+            : 'No one says that in this conversation.';
+        }),
       };
     })
     .filter((q): q is NonNullable<typeof q> => q !== null);
@@ -1686,6 +1749,7 @@ function generateDialogueComprehension(
     question: q.question,
     options: q.options,
     correctIndex: q.correctIndex,
+    whyWrong: q.whyWrong,
     explanation: q.explanation,
   };
 

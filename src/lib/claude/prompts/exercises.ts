@@ -33,6 +33,7 @@ Writing:
 - Chinese text uses Chinese punctuation and contains no pinyin, English or numbering.
 - Never write pinyin anywhere, not even in English text: the app adds it.
 - Wrong options must be plausible but clearly wrong to someone who knows the answer; never a second right answer, such as one that only swaps in another meaning of the practised word.
+- A learner who picks a wrong option is told why it is wrong: one short English sentence saying what that option means or does instead, so they see the difference from the answer.
 - 他, 她 and 它 all sound tā, so a learner hearing the Chinese or reading its pinyin can't tell them apart: never make options differ only by he, she or it (him/her, his/her).
 
 Write the exercise by calling the ${EXERCISE_TOOL} tool.

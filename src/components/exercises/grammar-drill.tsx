@@ -9,7 +9,8 @@ import { cn } from '@/lib/utils';
 
 interface GrammarDrillProps {
   data: GrammarDrillData;
-  onSubmit: (answer: string, isCorrect: boolean) => void;
+  /** `note`: why a wrong pick is wrong, shown with the verdict. */
+  onSubmit: (answer: string, isCorrect: boolean, note?: string) => void;
   disabled: boolean;
 }
 
@@ -24,14 +25,17 @@ export function GrammarDrill({ data, onSubmit, disabled }: GrammarDrillProps) {
       trimmed === data.answer ||
       trimmed === data.answer.toLowerCase() ||
       data.acceptableAnswers.some((a) => a.toLowerCase() === trimmed);
-    onSubmit(answer.trim(), isCorrect);
+    // A typed answer that is one of the wrong options gets that option's reason.
+    const picked = data.options?.indexOf(answer.trim()) ?? -1;
+    const note = isCorrect || picked < 0 ? undefined : (data.whyWrong?.[picked] ?? undefined);
+    onSubmit(answer.trim(), isCorrect, note);
   };
 
   const handleOptionSelect = (index: number) => {
     if (disabled) return;
     setSelected(index);
     const isCorrect = index === data.correctIndex;
-    onSubmit(data.options![index], isCorrect);
+    onSubmit(data.options![index], isCorrect, data.whyWrong?.[index] ?? undefined);
   };
 
   const parts = data.sentence.split('___');

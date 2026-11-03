@@ -147,6 +147,9 @@ const chinese = (what: string) =>
 const english = (what: string) => z.string().trim().min(1).describe(`${what}, in English`);
 const choices = (count: number, what: string) =>
   z.array(z.string().trim().min(1)).length(count).describe(what);
+/** What a learner who picks a wrong option is told: one short English sentence each. */
+const reasons = (count: number, what: string) =>
+  z.array(english('One short sentence')).length(count).describe(what);
 const correctIndex = z
   .number()
   .int()
@@ -162,6 +165,10 @@ const multipleChoiceInput = z.object({
     'Only with English options: the allowed Chinese word each option is the meaning of, in the same order',
   ).optional(),
   correctIndex,
+  optionNotes: reasons(
+    4,
+    'For each option, in the same order: why it is wrong, saying what it means or does instead; for the right one, why it is right',
+  ),
   explanation: english('One or two sentences on why the answer is right'),
 });
 
@@ -175,6 +182,7 @@ const sentenceToMeaningInput = z.object({
           'A sentence close to the translation that does not mean the Chinese sentence',
         ),
         chinese: chinese('The Chinese sentence it translates, also made of allowed words only'),
+        whyWrong: english('One short sentence on how it differs from the Chinese sentence'),
       }),
     )
     .length(3)
@@ -188,12 +196,20 @@ const meaningToSentenceInput = z.object({
     3,
     'Three Chinese sentences, also made of allowed words only, that do not mean the translation',
   ),
+  whyWrong: reasons(
+    3,
+    'For each wrong sentence, in the same order: how its meaning differs from the translation',
+  ),
 });
 
 const fillInBlankInput = z.object({
   sentence: chinese('The sentence, with the practised word replaced by one blank written ___'),
   translation: english('The translation of the complete sentence'),
   wrongOptions: choices(3, 'Three other allowed words that do not fit the blank'),
+  whyWrong: reasons(
+    3,
+    'For each wrong option, in the same order: why it does not fit the blank, saying what it means instead',
+  ),
 });
 
 const sentenceBuildingInput = z.object({
@@ -215,6 +231,10 @@ const grammarDrillInput = z.object({
   ),
   answer: chinese('What goes in the blank'),
   wrongOptions: choices(3, 'Three wrong fillers a learner might confuse with the answer'),
+  whyWrong: reasons(
+    3,
+    'For each wrong option, in the same order: why it does not fit the blank, saying what it means or does instead',
+  ),
   translation: english('The translation of the complete sentence'),
   explanation: english('One or two sentences on why the answer is right'),
 });
@@ -236,6 +256,10 @@ const dialogueInput = z.object({
   question: english('A question about the conversation'),
   options: choices(4, 'Four answers in English, one right'),
   correctIndex,
+  optionNotes: reasons(
+    4,
+    'For each option, in the same order: why it is wrong, pointing to what the conversation says instead; for the right one, why it is right',
+  ),
   explanation: english('One or two sentences on where the conversation gives the answer'),
 });
 
@@ -388,11 +412,30 @@ function readingOf(text: string, word?: VocabularyItem): string {
 }
 
 /** Chinese quoted in an English line gets its pinyin after it: 忙 → 忙 (máng). */
-function withPinyin(text: string, word: VocabularyItem): string {
+function withPinyin(text: string, read: (han: string) => string): string {
   return text.replace(
     /(\p{Script=Han}+)([”"」』]?)/gu,
-    (_, han: string, close: string) => `${han}${close} (${readingOf(han, word)})`,
+    (_, han: string, close: string) => `${han}${close} (${read(han)})`,
   );
+}
+
+/**
+ * What a learner who picks each wrong option is told: the reason given with it
+ * in `wrong`, with pinyin after the Chinese it quotes; null for the answer.
+ */
+function whyWrongOf(
+  options: readonly string[],
+  correctIndex: number,
+  wrong: readonly string[],
+  reasons: readonly string[],
+  read: (han: string) => string,
+): (string | null)[] {
+  return options.map((option, i) => {
+    if (i === correctIndex) return null;
+    const reason = reasons[wrong.indexOf(option)];
+    check(LATIN.test(reason), 'Write each reason in English, quoting Chinese only in characters.');
+    return withPinyin(reason, read);
+  });
 }
 
 const BLANK = '___';
@@ -408,6 +451,18 @@ function blankReadings(options: string[], sentence: string, word?: VocabularyIte
       ? piecesPinyin([before, option, after])[1]
       : readingOf(option, word),
   );
+}
+
+/** Reads an option as `readings` has it in the blank, other Chinese as readingOf does. */
+function optionReader(
+  options: readonly string[],
+  readings: readonly string[],
+  word?: VocabularyItem,
+): (han: string) => string {
+  return (han) => {
+    const i = options.indexOf(han);
+    return i >= 0 ? readings[i] : readingOf(han, word);
+  };
 }
 
 /** A sentence with each run of underscores written as one blank, and how many blanks it has. */
@@ -496,16 +551,18 @@ function buildMultipleChoice(
     input.options.filter((_, i) => i !== input.correctIndex),
     random,
   );
+  const read = (han: string) => readingOf(han, word);
   const data: MultipleChoiceData = {
     type: 'multiple-choice',
     options,
-    optionReadings: chineseOptions ? options.map((o) => readingOf(o, word)) : undefined,
+    optionReadings: chineseOptions ? options.map(read) : undefined,
     optionChinese: chineseOf ? chineseOfEach(options, chineseOf) : undefined,
     correctIndex,
+    whyWrong: whyWrongOf(options, correctIndex, input.options, input.optionNotes, read),
     explanation: `${wordLine(word)}\n\n${input.explanation}`,
   };
   return {
-    exercise: assemble(plan, withPinyin(input.question, word), '', data),
+    exercise: assemble(plan, withPinyin(input.question, read), '', data),
     chinese: [input.question, ...(chineseOf ? chineseOf.values() : input.options)],
   };
 }
@@ -543,6 +600,7 @@ function chineseOfEach(
 function buildSentenceMc(plan: PlanOf<'sentence-mc'>, raw: unknown, random: () => number): Built {
   const { word, direction } = plan;
   const explain = (sentence: string) => `${sentence}\n${toPinyin(sentence)}\n${wordLine(word)}`;
+  const read = (han: string) => readingOf(han, word);
 
   if (direction === 'toSentence') {
     const input = parse(meaningToSentenceInput, raw);
@@ -564,6 +622,7 @@ function buildSentenceMc(plan: PlanOf<'sentence-mc'>, raw: unknown, random: () =
       options,
       optionFurigana: options.map(pinyinSegments),
       correctIndex,
+      whyWrong: whyWrongOf(options, correctIndex, input.wrongSentences, input.whyWrong, read),
       explanation: explain(input.sentence),
     };
     return {
@@ -603,6 +662,13 @@ function buildSentenceMc(plan: PlanOf<'sentence-mc'>, raw: unknown, random: () =
     options,
     optionChinese: chineseOfEach(options, chineseOf),
     correctIndex,
+    whyWrong: whyWrongOf(
+      options,
+      correctIndex,
+      wrongEnglish,
+      input.wrongTranslations.map((w) => w.whyWrong),
+      read,
+    ),
     explanation: explain(input.sentence),
   };
   return {
@@ -633,6 +699,7 @@ function buildFillInBlank(
     `The wrong options must differ from each other and from ${word.word}.`,
   );
   const { options, correctIndex } = withAnswer(word.word, input.wrongOptions, random);
+  const optionReadings = blankReadings(options, sentence, word);
   const data: FillInBlankData = {
     type: 'fill-in-blank',
     sentence,
@@ -642,8 +709,15 @@ function buildFillInBlank(
     acceptableAnswers: [word.word],
     hint: word.reading,
     options,
-    optionReadings: blankReadings(options, sentence, word),
+    optionReadings,
     correctIndex,
+    whyWrong: whyWrongOf(
+      options,
+      correctIndex,
+      input.wrongOptions,
+      input.whyWrong,
+      optionReader(options, optionReadings, word),
+    ),
   };
   return {
     exercise: assemble(
@@ -755,6 +829,13 @@ function buildGrammarDrill(
     options,
     optionReadings,
     correctIndex,
+    whyWrong: whyWrongOf(
+      options,
+      correctIndex,
+      wrong,
+      input.whyWrong,
+      optionReader(options, optionReadings),
+    ),
   };
   return {
     exercise: assemble(
@@ -804,6 +885,9 @@ function buildDialogue(
     question: input.question,
     options,
     correctIndex,
+    whyWrong: whyWrongOf(options, correctIndex, input.options, input.optionNotes, (han) =>
+      readingOf(han, plan.word),
+    ),
     explanation: input.explanation,
   };
   return {

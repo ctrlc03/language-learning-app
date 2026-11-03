@@ -7,7 +7,8 @@ import { cn } from '@/lib/utils';
 
 interface MultipleChoiceProps {
   data: MultipleChoiceData;
-  onSubmit: (answer: string, isCorrect: boolean) => void;
+  /** `note`: why a wrong pick is wrong, shown with the verdict. */
+  onSubmit: (answer: string, isCorrect: boolean, note?: string) => void;
   disabled: boolean;
 }
 
@@ -17,7 +18,7 @@ export function MultipleChoice({ data, onSubmit, disabled }: MultipleChoiceProps
   const handleSelect = (index: number) => {
     if (disabled) return;
     setSelected(index);
-    onSubmit(data.options[index], index === data.correctIndex);
+    onSubmit(data.options[index], index === data.correctIndex, data.whyWrong?.[index] ?? undefined);
   };
 
   return (

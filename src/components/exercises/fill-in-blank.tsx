@@ -9,7 +9,8 @@ import { cn } from '@/lib/utils';
 interface FillInBlankProps {
   data: FillInBlankData;
   language: Language;
-  onSubmit: (answer: string, isCorrect: boolean) => void;
+  /** `note`: why a wrong pick is wrong, shown with the verdict. */
+  onSubmit: (answer: string, isCorrect: boolean, note?: string) => void;
   disabled: boolean;
 }
 
@@ -27,7 +28,7 @@ export function FillInBlank({ data, language, onSubmit, disabled }: FillInBlankP
     if (disabled) return;
     setSelected(index);
     const isCorrect = option === data.answer || data.acceptableAnswers.includes(option);
-    onSubmit(option, isCorrect);
+    onSubmit(option, isCorrect, isCorrect ? undefined : (data.whyWrong?.[index] ?? undefined));
   };
 
   const parts = data.sentence.split('___');

@@ -190,6 +190,8 @@ export interface MultipleChoiceData {
   /** The Chinese, with pinyin, that each English option translates; shown once answered. */
   optionChinese?: (FuriSegment[] | null)[];
   correctIndex: number;
+  /** Why each option is wrong, told to a learner who picks it; null for the right one. */
+  whyWrong?: (string | null)[];
   explanation: string;
 }
 
@@ -207,6 +209,7 @@ export interface SentenceMcData {
   optionFurigana?: (FuriSegment[] | null)[]; // furigana for sentence options (toSentence)
   optionChinese?: (FuriSegment[] | null)[]; // toMeaning: the Chinese each translation translates, shown once answered
   correctIndex: number;
+  whyWrong?: (string | null)[]; // why each option is wrong, told to a learner who picks it; null for the answer
   explanation?: string;
 }
 
@@ -221,6 +224,7 @@ export interface FillInBlankData {
   options?: string[]; // clickable word options (when present, renders as pick-from-options)
   optionReadings?: (string | null)[]; // pinyin/kana reading per option
   correctIndex?: number; // index of correct option in options[]
+  whyWrong?: (string | null)[]; // why each option is wrong, told to a learner who picks it; null for the answer
 }
 
 export interface TranslationData {
@@ -253,6 +257,8 @@ export interface CharacterRecognitionData {
   /** The Chinese, with pinyin, that each meaning belongs to; shown once answered. */
   optionChinese?: (FuriSegment[] | null)[];
   correctIndex: number;
+  /** Why each option is wrong, told to a learner who picks it; null for the right one. */
+  whyWrong?: (string | null)[];
   reading: string;
   meaning: string;
 }
@@ -270,6 +276,7 @@ export interface GrammarDrillData {
   options?: string[]; // multiple choice options (when present, renders as pick-from-options)
   optionReadings?: (string | null)[]; // pinyin reading per option
   correctIndex?: number; // index of correct option in options[]
+  whyWrong?: (string | null)[]; // why each option is wrong, told to a learner who picks it; null for the answer
 }
 
 // A run of text with an optional furigana reading. `r` is present only when
@@ -305,6 +312,8 @@ export interface DialogueComprehensionExerciseData {
   question: string;
   options: string[];
   correctIndex: number;
+  /** Why each option is wrong, told to a learner who picks it; null for the right one. */
+  whyWrong?: (string | null)[];
   explanation?: string;
 }
 

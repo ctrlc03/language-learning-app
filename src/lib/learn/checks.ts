@@ -93,6 +93,8 @@ export function buildChecksForRule(rule: GrammarRule, count = 4): Exercise[] {
       quiz.chinese,
       pickDistractors(sentencePool, quiz.chinese, 3),
     );
+    // What each other rule's example means, told to a learner who picks it.
+    const englishOf = new Map(otherExamples.map((e) => [e.chinese, e.english] as const));
     checks.push({
       ...baseExercise(`${rule.id}:${quizIndex}`, 'Which sentence means:', `"${quiz.english}"`),
       type: 'sentence-mc',
@@ -105,6 +107,9 @@ export function buildChecksForRule(rule: GrammarRule, count = 4): Exercise[] {
         translation: quiz.english,
         options,
         correctIndex,
+        whyWrong: options.map((o, i) =>
+          i === correctIndex ? null : `That means “${englishOf.get(o)}”`,
+        ),
         explanation: rule.explanation,
       },
     });
@@ -166,6 +171,9 @@ export function buildChecksForRule(rule: GrammarRule, count = 4): Exercise[] {
           return chinese ? pinyinSegments(chinese) : null;
         }),
         correctIndex,
+        whyWrong: options.map((o, i) =>
+          i === correctIndex ? null : `That is what “${chineseOf.get(o)}” means.`,
+        ),
         explanation: rule.explanation,
       },
     });

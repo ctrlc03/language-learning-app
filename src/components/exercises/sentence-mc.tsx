@@ -8,7 +8,8 @@ import { cn } from '@/lib/utils';
 
 interface SentenceMcProps {
   data: SentenceMcData;
-  onSubmit: (answer: string, isCorrect: boolean) => void;
+  /** `note`: why a wrong pick is wrong, shown with the verdict. */
+  onSubmit: (answer: string, isCorrect: boolean, note?: string) => void;
   disabled: boolean;
 }
 
@@ -18,7 +19,7 @@ export function SentenceMC({ data, onSubmit, disabled }: SentenceMcProps) {
   const handleSelect = (i: number) => {
     if (disabled || selected !== null) return;
     setSelected(i);
-    onSubmit(data.options[i], i === data.correctIndex);
+    onSubmit(data.options[i], i === data.correctIndex, data.whyWrong?.[i] ?? undefined);
   };
 
   const answered = selected !== null;
