@@ -4504,4 +4504,171 @@ export const chineseDialogues: Dialogue[] = [
       },
     ],
   },
+
+  // ============================================================
+  // Lesson 34 - Is There a Supermarket Near the School? 学校附近有超市吗？
+  // ============================================================
+  {
+    id: 'dlg-l34-01',
+    title: 'A Tour of the Campus',
+    titleChinese: '学校附近有超市吗？',
+    setting:
+      'Xie Dong shows two new international students, Aihua and Chris, around the campus. At one point Chris whispers to Aihua.',
+    lesson: 34,
+    lines: [
+      {
+        speaker: 'Xie Dong',
+        text: '前面就是咱们学校最大的教学楼。',
+        pinyin: 'Qiánmiàn jiù shì zánmen xuéxiào zuì dà de jiàoxuélóu.',
+        translation: "Just ahead is our school's biggest classroom building.",
+      },
+      {
+        speaker: 'Aihua',
+        text: '国际学生办公室就在楼里，是吗？',
+        pinyin: 'Guójì xuésheng bàngōngshì jiù zài lóu li, shì ma?',
+        translation: "The International Students' Office is in this building, isn't it?",
+      },
+      {
+        speaker: 'Xie Dong',
+        text: '是的。国际学生办公室在教学楼三层。',
+        pinyin: 'Shì de. Guójì xuésheng bàngōngshì zài jiàoxuélóu sān céng.',
+        translation:
+          "That's right. The International Students' Office is on the third floor of the classroom building.",
+      },
+      {
+        speaker: 'Chris',
+        text: '听说办公室里有位特别帅的老师。',
+        pinyin: 'Tīngshuō bàngōngshì li yǒu wèi tèbié shuài de lǎoshī.',
+        translation: "I hear there's a really handsome teacher in that office.",
+      },
+      {
+        speaker: 'Xie Dong',
+        text: '请向前走。左边是食堂，右边是网球场。',
+        pinyin: 'Qǐng xiàng qián zǒu. Zuǒbian shì shítáng, yòubian shì wǎngqiúchǎng.',
+        translation:
+          'Please keep going straight ahead. On the left is the canteen, and on the right is the tennis court.',
+      },
+      {
+        speaker: 'Aihua',
+        text: '请问图书馆在哪儿？',
+        pinyin: 'Qǐngwèn túshūguǎn zài nǎr?',
+        translation: "Excuse me, where's the library?",
+      },
+      {
+        speaker: 'Xie Dong',
+        text: '图书馆在食堂对面。看，足球场右边就是图书馆。',
+        pinyin: 'Túshūguǎn zài shítáng duìmiàn. Kàn, zúqiúchǎng yòubian jiù shì túshūguǎn.',
+        translation:
+          "The library is opposite the canteen. Look — that's the library, just to the right of the football pitch.",
+      },
+      {
+        speaker: 'Chris',
+        text: '学校附近有超市吗？',
+        pinyin: 'Xuéxiào fùjìn yǒu chāoshì ma?',
+        translation: 'Is there a supermarket near the school?',
+      },
+      {
+        speaker: 'Xie Dong',
+        text: '有，学校东边就有一个大超市，买东西很方便。',
+        pinyin: 'Yǒu, xuéxiào dōngbian jiù yǒu yí ge dà chāoshì, mǎi dōngxi hěn fāngbiàn.',
+        translation:
+          "Yes — there's a big supermarket just east of the school, so shopping is very convenient.",
+      },
+    ],
+  },
+  {
+    id: 'dlg-l34-02',
+    title: 'The New Café by the East Gate',
+    titleChinese: '新开的咖啡厅',
+    setting:
+      'Aihua talks Chris into trying a new café near the east gate. In the café, Chris reads while Aihua drinks her coffee and checks the school announcements on her phone.',
+    lesson: 34,
+    lines: [
+      {
+        speaker: 'Aihua',
+        text: '学校东门附近有一家新开的咖啡厅。听说那儿的咖啡不错，咱们去尝尝？',
+        pinyin:
+          'Xuéxiào dōngmén fùjìn yǒu yì jiā xīn kāi de kāfēitīng. Tīngshuō nàr de kāfēi búcuò, zánmen qù chángchang?',
+        translation:
+          'A new café has opened near the east gate. I hear the coffee there is good — shall we go and try it?',
+      },
+      {
+        speaker: 'Chris',
+        text: '改天吧，我得去自习。',
+        pinyin: 'Gǎitiān ba, wǒ děi qù zìxí.',
+        translation: 'Maybe another day — I have to go and study.',
+      },
+      {
+        speaker: 'Aihua',
+        text: '咱们就休息一会儿，放松放松！',
+        pinyin: 'Zánmen jiù xiūxi yíhuìr, fàngsōng fàngsōng!',
+        translation: "Let's just take a short break and relax a little!",
+      },
+      {
+        speaker: 'Aihua',
+        text: '你知道309教室在哪儿吗？',
+        pinyin: 'Nǐ zhīdào sān líng jiǔ jiàoshì zài nǎr ma?',
+        translation: 'Do you know where Room 309 is?',
+      },
+      {
+        speaker: 'Chris',
+        text: '就是三层中间那个大教室。',
+        pinyin: 'Jiù shì sān céng zhōngjiān nàge dà jiàoshì.',
+        translation: "It's that big classroom in the middle of the third floor.",
+      },
+      {
+        speaker: 'Aihua',
+        text: '就在国际学生办公室旁边吗？',
+        pinyin: 'Jiù zài guójì xuésheng bàngōngshì pángbiān ma?',
+        translation: "Right next to the International Students' Office?",
+      },
+      {
+        speaker: 'Chris',
+        text: '对。',
+        pinyin: 'Duì.',
+        translation: "That's right.",
+      },
+      {
+        speaker: 'Aihua',
+        text: '明天下午那里有个关于新生选课的讲座！',
+        pinyin: 'Míngtiān xiàwǔ nàlǐ yǒu ge guānyú xīnshēng xuǎnkè de jiǎngzuò!',
+        translation:
+          "There's a talk there tomorrow afternoon about choosing courses for new students!",
+      },
+      {
+        speaker: 'Chris',
+        text: '咱们可以顺便去看看那位最帅的老师！',
+        pinyin: 'Zánmen kěyǐ shùnbiàn qù kànkan nà wèi zuì shuài de lǎoshī!',
+        translation: "And while we're there, we can go and see that super handsome teacher!",
+      },
+    ],
+  },
+  {
+    id: 'dlg-l34-03',
+    title: "An International Student's Week",
+    titleChinese: '我的一周',
+    setting: 'A French student at a Chinese university describes a typical week.',
+    lesson: 34,
+    lines: [
+      {
+        speaker: 'Narrator',
+        text: '我是法国留学生。',
+        pinyin: 'Wǒ shì Fǎguó liúxuéshēng.',
+        translation: "I'm an international student from France.",
+      },
+      {
+        speaker: 'Narrator',
+        text: '我从星期一到星期五都很忙。',
+        pinyin: 'Wǒ cóng xīngqīyī dào xīngqīwǔ dōu hěn máng.',
+        translation: "I'm busy every day from Monday to Friday.",
+      },
+      {
+        speaker: 'Narrator',
+        text: '休息的时候，我喜欢在宿舍上网，也喜欢跟朋友聊天儿。',
+        pinyin: 'Xiūxi de shíhou, wǒ xǐhuan zài sùshè shàngwǎng, yě xǐhuan gēn péngyou liáotiānr.',
+        translation:
+          'When I have time off, I like going online in my dorm and chatting with friends.',
+      },
+    ],
+  },
 ];

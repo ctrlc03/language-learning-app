@@ -183,7 +183,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-09',
-    lessons: [3, 32],
+    lessons: [3, 32, 34],
     title: 'Most / Superlative with 最',
     titleChinese: '用最表示最高级',
     pattern: 'Subject + 最 + Adj/Verb',
@@ -247,7 +247,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   // ── Location & Direction ──
   {
     id: 'gr-12',
-    lessons: [10, 27, 28, 31],
+    lessons: [10, 27, 28, 31, 34],
     title: 'Location with 在',
     titleChinese: '在字表示位置',
     pattern: 'Subject + 在 + Place',
@@ -677,7 +677,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-31',
-    lessons: [12, 25, 26, 29],
+    lessons: [12, 25, 26, 29, 34],
     title: 'Verb Reduplication',
     titleChinese: '动词重叠',
     pattern: 'VV / V一V (single) · ABAB (two-syllable)',
@@ -704,7 +704,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-32',
-    lessons: [6, 27, 30],
+    lessons: [6, 27, 30, 34],
     title: 'Attributive Particle 的',
     titleChinese: '结构助词「的」',
     pattern: 'Modifier + 的 + Noun',
@@ -1326,7 +1326,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   // ── Characters: One Person to Many (Lesson 28) ──
   {
     id: 'gr-51',
-    lessons: [27, 28],
+    lessons: [27, 28, 34],
     title: 'From … to … with 从…到…',
     titleChinese: '从…到…',
     pattern: '从 + Start + 到 + End',
@@ -1356,6 +1356,12 @@ export const chineseGrammarRules: GrammarRule[] = [
         pinyin: 'Tā cóng zǎo dào wǎn dōu zài xuéxí.',
         english: 'He studies from morning till night.',
         note: 'fixed pair 从早到晚',
+      },
+      {
+        chinese: '我从星期一到星期五都很忙。',
+        pinyin: 'Wǒ cóng xīngqīyī dào xīngqīwǔ dōu hěn máng.',
+        english: "I'm busy every day from Monday to Friday.",
+        note: 'days of the week',
       },
     ],
   },
@@ -1686,7 +1692,7 @@ export const chineseGrammarRules: GrammarRule[] = [
   },
   {
     id: 'gr-60',
-    lessons: [31],
+    lessons: [31, 34],
     title: 'Have To with 得 (děi)',
     titleChinese: '能愿动词「得」',
     pattern: 'Subject + 得 + Verb (+ others) · Subject + 不用 + Verb',
@@ -2036,6 +2042,156 @@ export const chineseGrammarRules: GrammarRule[] = [
         english:
           "My parents are in good health, but they're getting on in years, so they need to be a bit careful.",
         note: 'Concern: 不过 flags the worry',
+      },
+    ],
+  },
+
+  // ── Is There a Supermarket Near the School? (Lesson 34) ──
+  {
+    id: 'gr-70',
+    lessons: [34],
+    title: 'Saying What Is Where — 在, 有 and 是',
+    titleChinese: '存在句',
+    pattern: 'Thing + 在 + Place · Place + 有 + Thing · Place + 是 + Thing',
+    explanation:
+      'Chinese has three patterns for saying what is where. Thing + 在 + place tells you where a known thing is: 咖啡厅在图书馆后面. Place + 有 + thing says that something exists there, like "there is / there are"; the thing is usually new to the listener, often with 一个 or just 个: 学校附近有个大超市. Place + 是 + thing names what is at the place: 图书馆后面是咖啡厅. In 有 and 是 sentences the place comes first, with no 在 in front, and is normally a noun plus a position word (桌子上, 教室里边, 学校附近). A specific, known thing can\'t follow 有: say 医院对面是我家 or 我家在医院对面, not 医院对面有我家.',
+    examples: [
+      {
+        chinese: '咖啡厅在图书馆后面。',
+        pinyin: 'Kāfēitīng zài túshūguǎn hòumiàn.',
+        english: 'The café is behind the library.',
+        note: 'Thing + 在 + place',
+      },
+      {
+        chinese: '学校附近有个大超市。',
+        pinyin: 'Xuéxiào fùjìn yǒu ge dà chāoshì.',
+        english: "There's a big supermarket near the school.",
+        note: 'Place + 有 + thing: there is …',
+      },
+      {
+        chinese: '图书馆后面是咖啡厅。',
+        pinyin: 'Túshūguǎn hòumiàn shì kāfēitīng.',
+        english: 'Behind the library is the café.',
+        note: 'Place + 是 + thing: what is there',
+      },
+      {
+        chinese: '教室里边有桌子。',
+        pinyin: 'Jiàoshì lǐbian yǒu zhuōzi.',
+        english: 'There are desks in the classroom.',
+      },
+      {
+        chinese: '医院对面是我家。',
+        pinyin: 'Yīyuàn duìmiàn shì wǒ jiā.',
+        english: 'Opposite the hospital is my home.',
+        note: 'Not 医院对面有我家: 有 brings in something new, not a known place',
+      },
+    ],
+  },
+  {
+    id: 'gr-71',
+    lessons: [34],
+    title: 'Describing with a Verb Phrase + 的',
+    titleChinese: '动词短语 + 的 + 名词',
+    pattern: '(Subject +) Verb (+ Object) + 的 + Noun',
+    explanation:
+      'To describe a noun by an action — "the clothes my sister bought", "the person playing tennis" — put the whole verb phrase in front of the noun and join them with 的. English puts this part after the noun; Chinese puts it before, and 的 does the work of "that", "who" or "which". The phrase can include a subject (姐姐买的衣服), an object (打网球的邻居) or an adverb (新开的咖啡厅, 正在睡觉的猫). The whole chunk then acts as one noun: it can be the subject or the object of a sentence, and any number and measure word go in front of it (一家新开的咖啡厅).',
+    examples: [
+      {
+        chinese: '姐姐买的衣服太大了。',
+        pinyin: 'Jiějie mǎi de yīfu tài dà le.',
+        english: 'The clothes my older sister bought are too big.',
+        note: 'Subject + verb + 的 + noun',
+      },
+      {
+        chinese: '我收到了同学送的礼物。',
+        pinyin: 'Wǒ shōudào le tóngxué sòng de lǐwù.',
+        english: 'I got the present my classmate gave me.',
+        note: 'The whole chunk is the object',
+      },
+      {
+        chinese: '那个打网球的人是我的邻居。',
+        pinyin: 'Nàge dǎ wǎngqiú de rén shì wǒ de línjū.',
+        english: 'The person playing tennis is my neighbour.',
+        note: 'Verb + object + 的 + noun',
+      },
+      {
+        chinese: '学校东门附近有一家新开的咖啡厅。',
+        pinyin: 'Xuéxiào dōngmén fùjìn yǒu yì jiā xīn kāi de kāfēitīng.',
+        english: "There's a newly opened café near the school's east gate.",
+        note: 'Number + measure word come first: 一家 + 新开的 + 咖啡厅',
+      },
+      {
+        chinese: '你最喜欢看谁演的电影？',
+        pinyin: 'Nǐ zuì xǐhuan kàn shéi yǎn de diànyǐng?',
+        english: 'Whose films do you most like watching?',
+      },
+    ],
+  },
+  {
+    id: 'gr-72',
+    lessons: [34],
+    title: "While You're at It with 顺便",
+    titleChinese: '顺便',
+    pattern: 'Subject + (Modal verb) + 顺便 + Verb1 + Object1 (+ Verb2 + Object2)',
+    explanation:
+      '顺便 shùnbiàn says you do something extra because it is convenient — you are going that way, or doing something else, anyway. It goes before the verb, after a modal verb such as 能 or 可以: 你能顺便帮我买个面包吗？ The main plan often comes first and 顺便 adds the extra errand: 我一会儿去超市，顺便去学校接孩子. In a request, 顺便 makes the favour sound small and easy.',
+    examples: [
+      {
+        chinese: '你能顺便帮我买个面包吗？',
+        pinyin: 'Nǐ néng shùnbiàn bāng wǒ mǎi ge miànbāo ma?',
+        english: "Could you buy me some bread while you're at it?",
+      },
+      {
+        chinese: '我一会儿去超市，顺便去学校接孩子。',
+        pinyin: 'Wǒ yíhuìr qù chāoshì, shùnbiàn qù xuéxiào jiē háizi.',
+        english:
+          "I'm going to the supermarket in a bit, and I'll pick the kids up from school on the way.",
+      },
+      {
+        chinese: '他顺便去了医院看妈妈。',
+        pinyin: 'Tā shùnbiàn qù le yīyuàn kàn māma.',
+        english: 'He dropped in at the hospital to see his mother while he was out.',
+      },
+      {
+        chinese: '咱们可以顺便去看看那位最帅的老师！',
+        pinyin: 'Zánmen kěyǐ shùnbiàn qù kànkan nà wèi zuì shuài de lǎoshī!',
+        english: "While we're there, we can go and see that super handsome teacher!",
+      },
+    ],
+  },
+  {
+    id: 'gr-73',
+    lessons: [34],
+    title: 'When … with …的时候',
+    titleChinese: '……的时候',
+    pattern: 'Verb phrase / Clause + 的时候，Main clause',
+    explanation:
+      '……的时候 means "when …" or "while …". End the time clause with 的时候 and put it before the main clause: 休息的时候，我喜欢上网. English can put "when" at either end of the sentence, but Chinese keeps the 的时候 part first; the subject may come before it (我休息的时候…). It works after a verb phrase (做饭的时候), a whole clause (你给我打电话的时候), a noun (周末的时候) or an adjective (小的时候, "as a child").',
+    examples: [
+      {
+        chinese: '休息的时候，我喜欢在宿舍上网。',
+        pinyin: 'Xiūxi de shíhou, wǒ xǐhuan zài sùshè shàngwǎng.',
+        english: 'When I have a break, I like going online in my dorm.',
+      },
+      {
+        chinese: '周末的时候，我喜欢爬山。',
+        pinyin: 'Zhōumò de shíhou, wǒ xǐhuan pá shān.',
+        english: 'At the weekend, I like hiking.',
+      },
+      {
+        chinese: '有空的时候，我常常看电影。',
+        pinyin: 'Yǒu kòng de shíhou, wǒ chángcháng kàn diànyǐng.',
+        english: 'When I have free time, I often watch films.',
+      },
+      {
+        chinese: '做饭的时候，我也听音乐。',
+        pinyin: 'Zuò fàn de shíhou, wǒ yě tīng yīnyuè.',
+        english: 'When I cook, I listen to music too.',
+      },
+      {
+        chinese: '下雨的时候，我在家做饭。',
+        pinyin: 'Xià yǔ de shíhou, wǒ zài jiā zuò fàn.',
+        english: 'When it rains, I cook at home.',
       },
     ],
   },

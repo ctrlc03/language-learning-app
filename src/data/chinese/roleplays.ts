@@ -322,4 +322,20 @@ export const chineseRolePlays: RolePlayContent[] = [
     ],
     dialogueId: 'dlg-l33-02',
   },
+  {
+    id: 'lesson-34',
+    lesson: 34,
+    title: 'Is There a Supermarket Near the School?',
+    titleChinese: '学校附近有超市吗？',
+    setting:
+      'It is your first week at a Chinese university, and a student is showing you around the campus.',
+    aiRole: 'a student showing new international students around the campus',
+    learnerRole: 'a new international student',
+    goals: [
+      'Ask where the library is',
+      'Find out whether there is a supermarket near the school',
+      'Say where a building is, using words like opposite, next to or behind',
+    ],
+    dialogueId: 'dlg-l34-01',
+  },
 ];

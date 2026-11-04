@@ -18185,6 +18185,1081 @@
           "a": "吃月饼、赏月、和家人团圆。(Chī yuèbing, shǎngyuè, hé jiārén tuányuán.)"
         }
       ]
+    },
+    {
+      "lesson": 34,
+      "title": "Is There a Supermarket Near the School?",
+      "titleChinese": "学校附近有超市吗？",
+      "vocabulary": [
+        {
+          "word": "前面",
+          "reading": "qián miàn",
+          "meaning": "front, ahead, in front of",
+          "partOfSpeech": "noun",
+          "topic": "directions",
+          "exampleSentence": "请问，前面是图书馆吗？",
+          "examplePinyin": "Qǐngwèn, qiánmiàn shì túshūguǎn ma?",
+          "exampleTranslation": "Excuse me, is that the library up ahead?"
+        },
+        {
+          "word": "后面",
+          "reading": "hòu miàn",
+          "meaning": "back, behind",
+          "partOfSpeech": "noun",
+          "topic": "directions",
+          "exampleSentence": "咖啡厅在图书馆后面。",
+          "examplePinyin": "Kāfēitīng zài túshūguǎn hòumiàn.",
+          "exampleTranslation": "The café is behind the library."
+        },
+        {
+          "word": "左边",
+          "reading": "zuǒ biān",
+          "meaning": "left, left side",
+          "partOfSpeech": "noun",
+          "topic": "directions",
+          "exampleSentence": "爱华坐在我左边。",
+          "examplePinyin": "Àihuá zuò zài wǒ zuǒbian.",
+          "exampleTranslation": "Aihua is sitting on my left."
+        },
+        {
+          "word": "右边",
+          "reading": "yòu biān",
+          "meaning": "right, right side",
+          "partOfSpeech": "noun",
+          "topic": "directions",
+          "exampleSentence": "超市在银行右边。",
+          "examplePinyin": "Chāoshì zài yínháng yòubian.",
+          "exampleTranslation": "The supermarket is to the right of the bank."
+        },
+        {
+          "word": "东边",
+          "reading": "dōng bian",
+          "meaning": "east, east side",
+          "partOfSpeech": "noun",
+          "topic": "directions",
+          "exampleSentence": "学校东边就有一个大超市。",
+          "examplePinyin": "Xuéxiào dōngbian jiù yǒu yí ge dà chāoshì.",
+          "exampleTranslation": "There's a big supermarket just east of the school."
+        },
+        {
+          "word": "西边",
+          "reading": "xī bian",
+          "meaning": "west, west side",
+          "partOfSpeech": "noun",
+          "topic": "directions",
+          "exampleSentence": "学校西边是一个公园。",
+          "examplePinyin": "Xuéxiào xībian shì yí ge gōngyuán.",
+          "exampleTranslation": "West of the school is a park."
+        },
+        {
+          "word": "南边",
+          "reading": "nán bian",
+          "meaning": "south, south side",
+          "partOfSpeech": "noun",
+          "topic": "directions",
+          "exampleSentence": "银行南边有一家新开的书店。",
+          "examplePinyin": "Yínháng nánbian yǒu yì jiā xīn kāi de shūdiàn.",
+          "exampleTranslation": "There's a newly opened bookshop south of the bank."
+        },
+        {
+          "word": "上边",
+          "reading": "shàng biān",
+          "meaning": "on top, above",
+          "partOfSpeech": "noun",
+          "topic": "directions",
+          "exampleSentence": "桌子上边有一本新买的书。",
+          "examplePinyin": "Zhuōzi shàngbian yǒu yì běn xīn mǎi de shū.",
+          "exampleTranslation": "There's a newly bought book on the table."
+        },
+        {
+          "word": "下边",
+          "reading": "xià biān",
+          "meaning": "under, below",
+          "partOfSpeech": "noun",
+          "topic": "directions",
+          "exampleSentence": "椅子下边有一只正在睡觉的猫。",
+          "examplePinyin": "Yǐzi xiàbian yǒu yì zhī zhèngzài shuìjiào de māo.",
+          "exampleTranslation": "There's a cat sleeping under the chair."
+        },
+        {
+          "word": "对面",
+          "reading": "duì miàn",
+          "meaning": "opposite, across from",
+          "partOfSpeech": "noun",
+          "topic": "directions",
+          "exampleSentence": "图书馆在食堂对面。",
+          "examplePinyin": "Túshūguǎn zài shítáng duìmiàn.",
+          "exampleTranslation": "The library is opposite the canteen."
+        },
+        {
+          "word": "附近",
+          "reading": "fù jìn",
+          "meaning": "nearby, near",
+          "partOfSpeech": "noun",
+          "topic": "directions",
+          "exampleSentence": "学校附近有超市吗？",
+          "examplePinyin": "Xuéxiào fùjìn yǒu chāoshì ma?",
+          "exampleTranslation": "Is there a supermarket near the school?"
+        },
+        {
+          "word": "中间",
+          "reading": "zhōng jiān",
+          "meaning": "middle, in the middle",
+          "partOfSpeech": "noun",
+          "topic": "directions",
+          "exampleSentence": "就是三层中间那个大教室。",
+          "examplePinyin": "Jiù shì sān céng zhōngjiān nàge dà jiàoshì.",
+          "exampleTranslation": "It's that big classroom in the middle of the third floor."
+        },
+        {
+          "word": "旁边",
+          "reading": "páng biān",
+          "meaning": "side, next to",
+          "partOfSpeech": "noun",
+          "topic": "directions",
+          "exampleSentence": "爱华的旁边是克丽丝。",
+          "examplePinyin": "Àihuá de pángbiān shì Kèlìsī.",
+          "exampleTranslation": "Next to Aihua is Chris."
+        },
+        {
+          "word": "里",
+          "reading": "lǐ",
+          "meaning": "in, inside",
+          "partOfSpeech": "noun",
+          "topic": "directions",
+          "exampleSentence": "国际学生办公室就在楼里。",
+          "examplePinyin": "Guójì xuésheng bàngōngshì jiù zài lóu li.",
+          "exampleTranslation": "The International Students' Office is right in this building."
+        },
+        {
+          "word": "向",
+          "reading": "xiàng",
+          "meaning": "towards, to (a direction)",
+          "partOfSpeech": "preposition",
+          "topic": "directions",
+          "exampleSentence": "请向前走。",
+          "examplePinyin": "Qǐng xiàng qián zǒu.",
+          "exampleTranslation": "Please go straight ahead."
+        },
+        {
+          "word": "就",
+          "reading": "jiù",
+          "meaning": "right, exactly (for emphasis)",
+          "partOfSpeech": "adverb",
+          "topic": "grammar",
+          "exampleSentence": "足球场右边就是图书馆。",
+          "examplePinyin": "Zúqiúchǎng yòubian jiù shì túshūguǎn.",
+          "exampleTranslation": "The library is right there, to the right of the football pitch."
+        },
+        {
+          "word": "东门",
+          "reading": "dōng mén",
+          "meaning": "east gate",
+          "partOfSpeech": "noun",
+          "topic": "places",
+          "exampleSentence": "学校东门附近有一家新开的咖啡厅。",
+          "examplePinyin": "Xuéxiào dōngmén fùjìn yǒu yì jiā xīn kāi de kāfēitīng.",
+          "exampleTranslation": "There's a newly opened café near the school's east gate."
+        },
+        {
+          "word": "教学楼",
+          "reading": "jiào xué lóu",
+          "meaning": "classroom building",
+          "partOfSpeech": "noun",
+          "topic": "school",
+          "exampleSentence": "前面就是咱们学校最大的教学楼。",
+          "examplePinyin": "Qiánmiàn jiù shì zánmen xuéxiào zuì dà de jiàoxuélóu.",
+          "exampleTranslation": "Just ahead is our school's biggest classroom building."
+        },
+        {
+          "word": "办公室",
+          "reading": "bàn gōng shì",
+          "meaning": "office",
+          "partOfSpeech": "noun",
+          "topic": "school",
+          "exampleSentence": "老师在办公室里吗？",
+          "examplePinyin": "Lǎoshī zài bàngōngshì li ma?",
+          "exampleTranslation": "Is the teacher in the office?"
+        },
+        {
+          "word": "食堂",
+          "reading": "shí táng",
+          "meaning": "canteen, dining hall",
+          "partOfSpeech": "noun",
+          "topic": "school",
+          "exampleSentence": "我们中午在食堂吃饭吧。",
+          "examplePinyin": "Wǒmen zhōngwǔ zài shítáng chī fàn ba.",
+          "exampleTranslation": "Let's eat in the canteen at lunchtime."
+        },
+        {
+          "word": "网球场",
+          "reading": "wǎng qiú chǎng",
+          "meaning": "tennis court",
+          "partOfSpeech": "noun",
+          "topic": "sports",
+          "exampleSentence": "左边是食堂，右边是网球场。",
+          "examplePinyin": "Zuǒbian shì shítáng, yòubian shì wǎngqiúchǎng.",
+          "exampleTranslation": "The canteen is on the left, and the tennis court is on the right."
+        },
+        {
+          "word": "图书馆",
+          "reading": "tú shū guǎn",
+          "meaning": "library",
+          "partOfSpeech": "noun",
+          "topic": "school",
+          "exampleSentence": "请问图书馆在哪儿？",
+          "examplePinyin": "Qǐngwèn túshūguǎn zài nǎr?",
+          "exampleTranslation": "Excuse me, where's the library?"
+        },
+        {
+          "word": "足球场",
+          "reading": "zú qiú chǎng",
+          "meaning": "football pitch, soccer field",
+          "partOfSpeech": "noun",
+          "topic": "sports",
+          "exampleSentence": "下午我们去足球场踢球吧。",
+          "examplePinyin": "Xiàwǔ wǒmen qù zúqiúchǎng tī qiú ba.",
+          "exampleTranslation": "Let's go and play football on the pitch this afternoon."
+        },
+        {
+          "word": "教室",
+          "reading": "jiào shì",
+          "meaning": "classroom",
+          "partOfSpeech": "noun",
+          "topic": "school",
+          "exampleSentence": "教室里边有很多桌子。",
+          "examplePinyin": "Jiàoshì lǐbian yǒu hěn duō zhuōzi.",
+          "exampleTranslation": "There are lots of desks in the classroom."
+        },
+        {
+          "word": "咖啡厅",
+          "reading": "kā fēi tīng",
+          "meaning": "café, coffee shop",
+          "partOfSpeech": "noun",
+          "topic": "places",
+          "exampleSentence": "我们在咖啡厅休息一会儿吧。",
+          "examplePinyin": "Wǒmen zài kāfēitīng xiūxi yíhuìr ba.",
+          "exampleTranslation": "Let's take a short break in the café."
+        },
+        {
+          "word": "超市",
+          "reading": "chāo shì",
+          "meaning": "supermarket",
+          "partOfSpeech": "noun",
+          "topic": "places",
+          "exampleSentence": "学校附近有个大超市。",
+          "examplePinyin": "Xuéxiào fùjìn yǒu ge dà chāoshì.",
+          "exampleTranslation": "There's a big supermarket near the school."
+        },
+        {
+          "word": "宿舍",
+          "reading": "sù shè",
+          "meaning": "dormitory",
+          "partOfSpeech": "noun",
+          "topic": "school",
+          "exampleSentence": "咱们住的宿舍很舒服。",
+          "examplePinyin": "Zánmen zhù de sùshè hěn shūfu.",
+          "exampleTranslation": "The dorm we live in is very comfortable."
+        },
+        {
+          "word": "西餐厅",
+          "reading": "xī cān tīng",
+          "meaning": "Western restaurant",
+          "partOfSpeech": "noun",
+          "topic": "places",
+          "exampleSentence": "听说那家新开的西餐厅很不错。",
+          "examplePinyin": "Tīngshuō nà jiā xīn kāi de xīcāntīng hěn búcuò.",
+          "exampleTranslation": "I hear the Western restaurant that just opened is very good."
+        },
+        {
+          "word": "楼",
+          "reading": "lóu",
+          "meaning": "building; floor",
+          "partOfSpeech": "noun",
+          "topic": "places",
+          "exampleSentence": "办公室在几楼？",
+          "examplePinyin": "Bàngōngshì zài jǐ lóu?",
+          "exampleTranslation": "Which floor is the office on?"
+        },
+        {
+          "word": "层",
+          "reading": "céng",
+          "meaning": "floor, storey (measure word)",
+          "partOfSpeech": "measure word",
+          "topic": "places",
+          "exampleSentence": "国际学生办公室在教学楼三层。",
+          "examplePinyin": "Guójì xuésheng bàngōngshì zài jiàoxuélóu sān céng.",
+          "exampleTranslation": "The International Students' Office is on the third floor of the classroom building."
+        },
+        {
+          "word": "大使馆",
+          "reading": "dà shǐ guǎn",
+          "meaning": "embassy",
+          "partOfSpeech": "noun",
+          "topic": "places",
+          "exampleSentence": "大使馆旁边是一个公园。",
+          "examplePinyin": "Dàshǐguǎn pángbiān shì yí ge gōngyuán.",
+          "exampleTranslation": "Next to the embassy is a park."
+        },
+        {
+          "word": "自动取款机",
+          "reading": "zì dòng qǔ kuǎn jī",
+          "meaning": "ATM, cash machine",
+          "partOfSpeech": "noun",
+          "topic": "places",
+          "exampleSentence": "超市里有自动取款机吗？",
+          "examplePinyin": "Chāoshì li yǒu zìdòng qǔkuǎnjī ma?",
+          "exampleTranslation": "Is there a cash machine in the supermarket?"
+        },
+        {
+          "word": "车站",
+          "reading": "chē zhàn",
+          "meaning": "station, stop",
+          "partOfSpeech": "noun",
+          "topic": "places",
+          "exampleSentence": "车站对面有一家银行。",
+          "examplePinyin": "Chēzhàn duìmiàn yǒu yì jiā yínháng.",
+          "exampleTranslation": "There's a bank opposite the station."
+        },
+        {
+          "word": "公园",
+          "reading": "gōng yuán",
+          "meaning": "park",
+          "partOfSpeech": "noun",
+          "topic": "places",
+          "exampleSentence": "我家旁边有一个新开的公园。",
+          "examplePinyin": "Wǒ jiā pángbiān yǒu yí ge xīn kāi de gōngyuán.",
+          "exampleTranslation": "There's a newly opened park next to my home."
+        },
+        {
+          "word": "停车场",
+          "reading": "tíng chē chǎng",
+          "meaning": "car park, parking lot",
+          "partOfSpeech": "noun",
+          "topic": "places",
+          "exampleSentence": "商场后面是停车场。",
+          "examplePinyin": "Shāngchǎng hòumiàn shì tíngchēchǎng.",
+          "exampleTranslation": "Behind the mall is the car park."
+        },
+        {
+          "word": "加油站",
+          "reading": "jiā yóu zhàn",
+          "meaning": "petrol station, gas station",
+          "partOfSpeech": "noun",
+          "topic": "places",
+          "exampleSentence": "停车场旁边有一个加油站。",
+          "examplePinyin": "Tíngchēchǎng pángbiān yǒu yí ge jiāyóuzhàn.",
+          "exampleTranslation": "There's a petrol station next to the car park."
+        },
+        {
+          "word": "商场",
+          "reading": "shāng chǎng",
+          "meaning": "shopping mall",
+          "partOfSpeech": "noun",
+          "topic": "places",
+          "exampleSentence": "车站旁边有一个大商场。",
+          "examplePinyin": "Chēzhàn pángbiān yǒu yí ge dà shāngchǎng.",
+          "exampleTranslation": "There's a big mall next to the station."
+        },
+        {
+          "word": "国际",
+          "reading": "guó jì",
+          "meaning": "international",
+          "partOfSpeech": "adjective",
+          "topic": "school",
+          "exampleSentence": "他是国际学生。",
+          "examplePinyin": "Tā shì guójì xuésheng.",
+          "exampleTranslation": "He's an international student."
+        },
+        {
+          "word": "方便",
+          "reading": "fāng biàn",
+          "meaning": "convenient",
+          "partOfSpeech": "adjective",
+          "topic": "descriptions",
+          "exampleSentence": "学校附近有超市，买东西很方便。",
+          "examplePinyin": "Xuéxiào fùjìn yǒu chāoshì, mǎi dōngxi hěn fāngbiàn.",
+          "exampleTranslation": "There's a supermarket near the school, so shopping is very convenient."
+        },
+        {
+          "word": "帅",
+          "reading": "shuài",
+          "meaning": "handsome",
+          "partOfSpeech": "adjective",
+          "topic": "descriptions",
+          "exampleSentence": "听说办公室里有位特别帅的老师。",
+          "examplePinyin": "Tīngshuō bàngōngshì li yǒu wèi tèbié shuài de lǎoshī.",
+          "exampleTranslation": "I hear there's a really handsome teacher in the office."
+        },
+        {
+          "word": "特别",
+          "reading": "tè bié",
+          "meaning": "especially, really",
+          "partOfSpeech": "adverb",
+          "topic": "descriptions",
+          "exampleSentence": "那家咖啡厅的咖啡特别好喝。",
+          "examplePinyin": "Nà jiā kāfēitīng de kāfēi tèbié hǎohē.",
+          "exampleTranslation": "The coffee at that café is especially good."
+        },
+        {
+          "word": "位",
+          "reading": "wèi",
+          "meaning": "measure word for people (polite)",
+          "partOfSpeech": "measure word",
+          "topic": "grammar",
+          "exampleSentence": "那位老师是谁？",
+          "examplePinyin": "Nà wèi lǎoshī shì shéi?",
+          "exampleTranslation": "Who is that teacher?"
+        },
+        {
+          "word": "新生",
+          "reading": "xīn shēng",
+          "meaning": "new student",
+          "partOfSpeech": "noun",
+          "topic": "school",
+          "exampleSentence": "今年我们学校有很多新生。",
+          "examplePinyin": "Jīnnián wǒmen xuéxiào yǒu hěn duō xīnshēng.",
+          "exampleTranslation": "Our school has lots of new students this year."
+        },
+        {
+          "word": "一会儿",
+          "reading": "yí huìr",
+          "meaning": "a little while",
+          "partOfSpeech": "phrase",
+          "topic": "time",
+          "exampleSentence": "我一会儿去超市。",
+          "examplePinyin": "Wǒ yíhuìr qù chāoshì.",
+          "exampleTranslation": "I'm going to the supermarket in a bit."
+        },
+        {
+          "word": "那里",
+          "reading": "nà lǐ",
+          "meaning": "there",
+          "partOfSpeech": "pronoun",
+          "topic": "directions",
+          "exampleSentence": "明天下午那里有个讲座。",
+          "examplePinyin": "Míngtiān xiàwǔ nàlǐ yǒu ge jiǎngzuò.",
+          "exampleTranslation": "There's a lecture there tomorrow afternoon."
+        },
+        {
+          "word": "哪里",
+          "reading": "nǎ lǐ",
+          "meaning": "where",
+          "partOfSpeech": "pronoun",
+          "topic": "questions",
+          "exampleSentence": "你的宿舍在哪里？",
+          "examplePinyin": "Nǐ de sùshè zài nǎlǐ?",
+          "exampleTranslation": "Where's your dorm?"
+        },
+        {
+          "word": "咱们",
+          "reading": "zán men",
+          "meaning": "we, us (including you)",
+          "partOfSpeech": "pronoun",
+          "topic": "people",
+          "exampleSentence": "咱们可以顺便去看看那位老师。",
+          "examplePinyin": "Zánmen kěyǐ shùnbiàn qù kànkan nà wèi lǎoshī.",
+          "exampleTranslation": "We can drop in and see that teacher while we're there."
+        },
+        {
+          "word": "关于",
+          "reading": "guān yú",
+          "meaning": "about, on (a topic)",
+          "partOfSpeech": "preposition",
+          "topic": "grammar",
+          "exampleSentence": "这是一本关于中国的书。",
+          "examplePinyin": "Zhè shì yì běn guānyú Zhōngguó de shū.",
+          "exampleTranslation": "This is a book about China."
+        },
+        {
+          "word": "讲座",
+          "reading": "jiǎng zuò",
+          "meaning": "lecture, talk",
+          "partOfSpeech": "noun",
+          "topic": "school",
+          "exampleSentence": "明天下午有个关于新生选课的讲座。",
+          "examplePinyin": "Míngtiān xiàwǔ yǒu ge guānyú xīnshēng xuǎnkè de jiǎngzuò.",
+          "exampleTranslation": "Tomorrow afternoon there's a talk for new students about choosing courses."
+        },
+        {
+          "word": "顺便",
+          "reading": "shùn biàn",
+          "meaning": "on the way, while you're at it",
+          "partOfSpeech": "adverb",
+          "topic": "grammar",
+          "exampleSentence": "你能顺便帮我买个面包吗？",
+          "examplePinyin": "Nǐ néng shùnbiàn bāng wǒ mǎi ge miànbāo ma?",
+          "exampleTranslation": "Could you buy me some bread while you're at it?"
+        },
+        {
+          "word": "改天",
+          "reading": "gǎi tiān",
+          "meaning": "another day, some other time",
+          "partOfSpeech": "adverb",
+          "topic": "time",
+          "exampleSentence": "改天吧，我明天很忙。",
+          "examplePinyin": "Gǎitiān ba, wǒ míngtiān hěn máng.",
+          "exampleTranslation": "Maybe another day — I'm busy tomorrow."
+        },
+        {
+          "word": "放松",
+          "reading": "fàng sōng",
+          "meaning": "to relax",
+          "partOfSpeech": "verb",
+          "topic": "actions",
+          "exampleSentence": "咱们就休息一会儿，放松放松！",
+          "examplePinyin": "Zánmen jiù xiūxi yíhuìr, fàngsōng fàngsōng!",
+          "exampleTranslation": "Let's just take a short break and relax a little!"
+        },
+        {
+          "word": "自习",
+          "reading": "zì xí",
+          "meaning": "to study on your own",
+          "partOfSpeech": "verb",
+          "topic": "school",
+          "exampleSentence": "改天吧，我得去自习。",
+          "examplePinyin": "Gǎitiān ba, wǒ děi qù zìxí.",
+          "exampleTranslation": "Maybe another day — I have to go and study."
+        },
+        {
+          "word": "开",
+          "reading": "kāi",
+          "meaning": "to open (a shop or business)",
+          "partOfSpeech": "verb",
+          "topic": "actions",
+          "exampleSentence": "这家咖啡厅是新开的。",
+          "examplePinyin": "Zhè jiā kāfēitīng shì xīn kāi de.",
+          "exampleTranslation": "This café has just opened."
+        },
+        {
+          "word": "尝",
+          "reading": "cháng",
+          "meaning": "to taste, to try (food or drink)",
+          "partOfSpeech": "verb",
+          "topic": "food",
+          "exampleSentence": "听说那儿的咖啡不错，咱们去尝尝？",
+          "examplePinyin": "Tīngshuō nàr de kāfēi búcuò, zánmen qù chángchang?",
+          "exampleTranslation": "I hear the coffee there is good — shall we go and try it?"
+        },
+        {
+          "word": "选",
+          "reading": "xuǎn",
+          "meaning": "to choose, to pick",
+          "partOfSpeech": "verb",
+          "topic": "actions",
+          "exampleSentence": "你想选哪个？",
+          "examplePinyin": "Nǐ xiǎng xuǎn nǎge?",
+          "exampleTranslation": "Which one do you want to choose?"
+        },
+        {
+          "word": "选课",
+          "reading": "xuǎn kè",
+          "meaning": "to choose courses",
+          "partOfSpeech": "verb",
+          "topic": "school",
+          "exampleSentence": "新生什么时候选课？",
+          "examplePinyin": "Xīnshēng shénme shíhou xuǎnkè?",
+          "exampleTranslation": "When do new students choose their courses?"
+        },
+        {
+          "word": "听说",
+          "reading": "tīng shuō",
+          "meaning": "to hear (that)",
+          "partOfSpeech": "verb",
+          "topic": "social",
+          "exampleSentence": "听说学校附近有一家新开的超市。",
+          "examplePinyin": "Tīngshuō xuéxiào fùjìn yǒu yì jiā xīn kāi de chāoshì.",
+          "exampleTranslation": "I hear a new supermarket has opened near the school."
+        },
+        {
+          "word": "收到",
+          "reading": "shōu dào",
+          "meaning": "to receive",
+          "partOfSpeech": "verb",
+          "topic": "actions",
+          "exampleSentence": "我收到了同学送的礼物。",
+          "examplePinyin": "Wǒ shōudào le tóngxué sòng de lǐwù.",
+          "exampleTranslation": "I got the present my classmate gave me."
+        },
+        {
+          "word": "送",
+          "reading": "sòng",
+          "meaning": "to give (as a present)",
+          "partOfSpeech": "verb",
+          "topic": "social",
+          "exampleSentence": "生日的时候，朋友送了我一本书。",
+          "examplePinyin": "Shēngrì de shíhou, péngyou sòng le wǒ yì běn shū.",
+          "exampleTranslation": "On my birthday, a friend gave me a book."
+        },
+        {
+          "word": "礼物",
+          "reading": "lǐ wù",
+          "meaning": "present, gift",
+          "partOfSpeech": "noun",
+          "topic": "social",
+          "exampleSentence": "这是同学送的礼物。",
+          "examplePinyin": "Zhè shì tóngxué sòng de lǐwù.",
+          "exampleTranslation": "This is a present from a classmate."
+        },
+        {
+          "word": "演",
+          "reading": "yǎn",
+          "meaning": "to act (in a film or play)",
+          "partOfSpeech": "verb",
+          "topic": "activities",
+          "exampleSentence": "你最喜欢看谁演的电影？",
+          "examplePinyin": "Nǐ zuì xǐhuan kàn shéi yǎn de diànyǐng?",
+          "exampleTranslation": "Whose films do you most like watching?"
+        },
+        {
+          "word": "收拾",
+          "reading": "shōu shi",
+          "meaning": "to tidy up",
+          "partOfSpeech": "verb",
+          "topic": "daily life",
+          "exampleSentence": "我得收拾一下房间。",
+          "examplePinyin": "Wǒ děi shōushi yíxià fángjiān.",
+          "exampleTranslation": "I need to tidy my room."
+        },
+        {
+          "word": "害怕",
+          "reading": "hài pà",
+          "meaning": "to be afraid (of)",
+          "partOfSpeech": "verb",
+          "topic": "emotions",
+          "exampleSentence": "你最害怕的动物是什么？",
+          "examplePinyin": "Nǐ zuì hàipà de dòngwù shì shénme?",
+          "exampleTranslation": "Which animal are you most afraid of?"
+        },
+        {
+          "word": "动物",
+          "reading": "dòng wù",
+          "meaning": "animal",
+          "partOfSpeech": "noun",
+          "topic": "animals",
+          "exampleSentence": "你最喜欢的动物是什么？",
+          "examplePinyin": "Nǐ zuì xǐhuan de dòngwù shì shénme?",
+          "exampleTranslation": "What's your favourite animal?"
+        },
+        {
+          "word": "邻居",
+          "reading": "lín jū",
+          "meaning": "neighbour",
+          "partOfSpeech": "noun",
+          "topic": "people",
+          "exampleSentence": "那个打网球的人是我的邻居。",
+          "examplePinyin": "Nàge dǎ wǎngqiú de rén shì wǒ de línjū.",
+          "exampleTranslation": "The person playing tennis is my neighbour."
+        },
+        {
+          "word": "留学生",
+          "reading": "liú xué shēng",
+          "meaning": "international student",
+          "partOfSpeech": "noun",
+          "topic": "school",
+          "exampleSentence": "我是法国留学生。",
+          "examplePinyin": "Wǒ shì Fǎguó liúxuéshēng.",
+          "exampleTranslation": "I'm an international student from France."
+        },
+        {
+          "word": "法国",
+          "reading": "Fǎ guó",
+          "meaning": "France",
+          "partOfSpeech": "noun",
+          "topic": "places",
+          "exampleSentence": "那个法国男人是我们的新老师。",
+          "examplePinyin": "Nàge Fǎguó nánrén shì wǒmen de xīn lǎoshī.",
+          "exampleTranslation": "That French man is our new teacher."
+        },
+        {
+          "word": "玻璃",
+          "reading": "bō li",
+          "meaning": "glass (the material)",
+          "partOfSpeech": "noun",
+          "topic": "daily life",
+          "exampleSentence": "我想买一个玻璃杯子。",
+          "examplePinyin": "Wǒ xiǎng mǎi yí ge bōli bēizi.",
+          "exampleTranslation": "I'd like to buy a glass."
+        },
+        {
+          "word": "盒子",
+          "reading": "hé zi",
+          "meaning": "box",
+          "partOfSpeech": "noun",
+          "topic": "daily life",
+          "exampleSentence": "盒子里的巧克力是谁的？",
+          "examplePinyin": "Hézi li de qiǎokèlì shì shéi de?",
+          "exampleTranslation": "Whose are the chocolates in the box?"
+        },
+        {
+          "word": "巧克力",
+          "reading": "qiǎo kè lì",
+          "meaning": "chocolate",
+          "partOfSpeech": "noun",
+          "topic": "food",
+          "exampleSentence": "我最喜欢吃巧克力。",
+          "examplePinyin": "Wǒ zuì xǐhuan chī qiǎokèlì.",
+          "exampleTranslation": "Chocolate is my favourite thing to eat."
+        },
+        {
+          "word": "冰箱",
+          "reading": "bīng xiāng",
+          "meaning": "fridge",
+          "partOfSpeech": "noun",
+          "topic": "daily life",
+          "exampleSentence": "我做的饭在冰箱里。",
+          "examplePinyin": "Wǒ zuò de fàn zài bīngxiāng li.",
+          "exampleTranslation": "The food I made is in the fridge."
+        },
+        {
+          "word": "饼干",
+          "reading": "bǐng gān",
+          "meaning": "biscuit, cookie",
+          "partOfSpeech": "noun",
+          "topic": "food",
+          "exampleSentence": "姐姐买的饼干很好吃。",
+          "examplePinyin": "Jiějie mǎi de bǐnggān hěn hǎochī.",
+          "exampleTranslation": "The biscuits my older sister bought are delicious."
+        }
+      ],
+      "notes": [
+        {
+          "heading": "在, 有 and 是 — saying what is where",
+          "body": "Chinese has three patterns for location. Thing + 在 + place says where a known thing is: 咖啡厅在图书馆后面. Place + 有 + thing says that something is there — \"there is\" or \"there are\" — and usually brings in something new, often with 一个 or just 个: 学校附近有个大超市. Place + 是 + thing names what is at the place: 图书馆后面是咖啡厅. In 有 and 是 sentences the place comes first and takes no 在. Because 有 brings in something new, it can't introduce a specific, known thing: say 医院对面是我家 or 我家在医院对面, not 医院对面有我家.",
+          "examples": [
+            {
+              "chinese": "咖啡厅在图书馆后面。",
+              "pinyin": "Kāfēitīng zài túshūguǎn hòumiàn.",
+              "english": "The café is behind the library."
+            },
+            {
+              "chinese": "学校附近有个大超市。",
+              "pinyin": "Xuéxiào fùjìn yǒu ge dà chāoshì.",
+              "english": "There's a big supermarket near the school."
+            },
+            {
+              "chinese": "图书馆后面是咖啡厅。",
+              "pinyin": "Túshūguǎn hòumiàn shì kāfēitīng.",
+              "english": "Behind the library is the café."
+            },
+            {
+              "chinese": "桌子上有什么？",
+              "pinyin": "Zhuōzi shang yǒu shénme?",
+              "english": "What's on the table?"
+            }
+          ],
+          "table": {
+            "headers": ["Pattern", "Use", "Example"],
+            "rows": [
+              ["thing + 在 + place", "where a known thing is", "咖啡厅在图书馆后面。"],
+              ["place + 有 + thing", "there is, there are", "学校附近有个大超市。"],
+              ["place + 是 + thing", "what is at the place", "图书馆后面是咖啡厅。"]
+            ]
+          }
+        },
+        {
+          "heading": "Position words — 前面, 对面, 旁边 and more",
+          "body": "A position word comes after the place it is measured from: 食堂对面 is \"opposite the canteen\" and 足球场右边 is \"to the right of the football pitch\". After 前, 后, 左, 右, 上, 下 and 里, 面 and 边 are interchangeable, so 前面 = 前边. A plain 上 or 里 joins straight onto the noun and is read in the neutral tone: 桌子上, 楼里. 向前走 means \"go straight ahead\"; 向 works like 往 here. Put 就 before 是, 在 or 有 to point at something right there: 足球场右边就是图书馆.",
+          "examples": [
+            {
+              "chinese": "左边是食堂，右边是网球场。",
+              "pinyin": "Zuǒbian shì shítáng, yòubian shì wǎngqiúchǎng.",
+              "english": "On the left is the canteen, and on the right is the tennis court."
+            },
+            {
+              "chinese": "图书馆在食堂对面。",
+              "pinyin": "Túshūguǎn zài shítáng duìmiàn.",
+              "english": "The library is opposite the canteen."
+            },
+            {
+              "chinese": "国际学生办公室就在楼里。",
+              "pinyin": "Guójì xuésheng bàngōngshì jiù zài lóu li.",
+              "english": "The International Students' Office is right in this building."
+            },
+            {
+              "chinese": "请向前走。",
+              "pinyin": "Qǐng xiàng qián zǒu.",
+              "english": "Please go straight ahead."
+            }
+          ],
+          "table": {
+            "headers": ["Chinese", "Pinyin", "English"],
+            "rows": [
+              ["前面 · 后面", "qiánmiàn · hòumiàn", "in front · behind"],
+              ["左边 · 右边", "zuǒbian · yòubian", "on the left · on the right"],
+              [
+                "东边 · 西边 · 南边 · 北边",
+                "dōngbian · xībian · nánbian · běibian",
+                "to the east · west · south · north"
+              ],
+              [
+                "上边 · 下边 · 里边",
+                "shàngbian · xiàbian · lǐbian",
+                "on top · underneath · inside"
+              ],
+              [
+                "旁边 · 中间 · 对面",
+                "pángbiān · zhōngjiān · duìmiàn",
+                "next to · in the middle · opposite"
+              ],
+              ["附近", "fùjìn", "nearby"]
+            ]
+          }
+        },
+        {
+          "heading": "Describing a noun — with or without 的",
+          "body": "A describing word always comes before its noun, and 的 often links the two. Leave 的 out after a noun that says what kind of thing it is (汉语课, 玻璃杯子), after a one-syllable adjective (大眼睛, 长头发), and after a number or 这/那 with a measure word (三本书, 那只猫). Use 的 after a two-syllable adjective (漂亮的衣服), a verb phrase (打网球的邻居), a longer description (大眼睛的小狗), a place (桌子上的杯子) or an owner (老师的电脑). With family, and with groups you belong to, the 的 of ownership is usually dropped: 我妈妈, 咱们学校.",
+          "examples": [
+            {
+              "chinese": "那个法国男人是我们的新老师。",
+              "pinyin": "Nàge Fǎguó nánrén shì wǒmen de xīn lǎoshī.",
+              "english": "That French man is our new teacher."
+            },
+            {
+              "chinese": "红衣服的女孩是我妹妹。",
+              "pinyin": "Hóng yīfu de nǚhái shì wǒ mèimei.",
+              "english": "The girl in red is my younger sister."
+            },
+            {
+              "chinese": "盒子里的巧克力是谁的？",
+              "pinyin": "Hézi li de qiǎokèlì shì shéi de?",
+              "english": "Whose are the chocolates in the box?"
+            },
+            {
+              "chinese": "前面就是咱们学校最大的教学楼。",
+              "pinyin": "Qiánmiàn jiù shì zánmen xuéxiào zuì dà de jiàoxuélóu.",
+              "english": "Just ahead is our school's biggest classroom building."
+            }
+          ],
+          "table": {
+            "headers": ["Describing word", "的?", "Examples"],
+            "rows": [
+              ["noun saying what kind", "no", "汉语课 · 中国餐厅 · 玻璃杯子 · 法国男人"],
+              ["one-syllable adjective", "no", "大眼睛 · 高个子 · 胖女孩 · 长头发"],
+              ["number or 这/那 + measure word", "no", "三本书 · 一个人 · 那只猫 · 这些水果"],
+              [
+                "two-syllable adjective",
+                "yes",
+                "漂亮的衣服 · 好吃的蛋糕 · 便宜的咖啡 · 可爱的孩子"
+              ],
+              ["verb phrase", "yes", "跑步的人 · 打网球的邻居 · 看书的爸爸 · 吃苹果的妈妈"],
+              ["longer description", "yes", "大眼睛的小狗 · 高个子的男孩 · 红衣服的女孩"],
+              ["place", "yes", "桌子上的杯子 · 商店里的人 · 盒子里的巧克力"],
+              ["owner", "yes", "我的工作 · 你的朋友 · 他们的房子 · 老师的电脑"]
+            ]
+          }
+        },
+        {
+          "heading": "Hero names — describing word + noun",
+          "body": "Names follow the same rule: the describing word comes first, with no 的. 绿巨人 is literally \"green giant\" and 钢铁侠 is \"steel hero\". This is how Chinese names some well-known film superheroes.",
+          "table": {
+            "headers": ["Chinese", "Pinyin", "Literally", "Hero"],
+            "rows": [
+              ["绿巨人", "Lǜjùrén", "green giant", "the Hulk"],
+              ["钢铁侠", "Gāngtiěxiá", "steel hero", "Iron Man"],
+              ["黑寡妇", "Hēiguǎfu", "black widow", "Black Widow"],
+              ["美国队长", "Měiguó Duìzhǎng", "America captain", "Captain America"],
+              ["鹰眼", "Yīngyǎn", "eagle eye", "Hawkeye"],
+              ["雷神", "Léishén", "thunder god", "Thor"]
+            ]
+          }
+        },
+        {
+          "heading": "Verb phrase + 的 + noun — \"the … that …\"",
+          "body": "To describe a noun by an action, put the whole verb phrase in front of it and join them with 的. English puts this part after the noun (\"the clothes that my sister bought\"); Chinese puts it before: 姐姐买的衣服. The phrase can have its own subject (妈妈打的电话), an object (打网球的邻居) or an adverb (新开的咖啡厅, 正在睡觉的猫). The whole chunk then works as one noun, with any number and measure word in front of it: 一家新开的咖啡厅.",
+          "examples": [
+            {
+              "chinese": "姐姐买的衣服太大了。",
+              "pinyin": "Jiějie mǎi de yīfu tài dà le.",
+              "english": "The clothes my older sister bought are too big."
+            },
+            {
+              "chinese": "谁打的电话？妈妈打的电话。",
+              "pinyin": "Shéi dǎ de diànhuà? Māma dǎ de diànhuà.",
+              "english": "Who made the call? — Mom did."
+            },
+            {
+              "chinese": "我做的饭在冰箱里。",
+              "pinyin": "Wǒ zuò de fàn zài bīngxiāng li.",
+              "english": "The food I made is in the fridge."
+            },
+            {
+              "chinese": "椅子下边有一只正在睡觉的猫。",
+              "pinyin": "Yǐzi xiàbian yǒu yì zhī zhèngzài shuìjiào de māo.",
+              "english": "There's a cat sleeping under the chair."
+            }
+          ],
+          "table": {
+            "headers": ["Chinese", "Pinyin", "English"],
+            "rows": [
+              ["姐姐买的衣服", "jiějie mǎi de yīfu", "the clothes my older sister bought"],
+              ["妈妈打的电话", "māma dǎ de diànhuà", "the call Mom made"],
+              ["同学送的礼物", "tóngxué sòng de lǐwù", "the present a classmate gave"],
+              ["我做的饭", "wǒ zuò de fàn", "the meal I cooked"],
+              ["新开的咖啡厅", "xīn kāi de kāfēitīng", "the café that has just opened"],
+              ["你最喜欢的水果", "nǐ zuì xǐhuan de shuǐguǒ", "your favourite fruit"]
+            ]
+          }
+        },
+        {
+          "heading": "顺便 — while you're at it",
+          "body": "顺便 says you do something extra because you are going that way, or doing something else, anyway. It comes before the verb, after a modal verb such as 能 or 可以: subject + (modal verb) + 顺便 + verb + object. Often the main plan comes first and 顺便 adds the extra errand. In a request it makes the favour sound small and easy.",
+          "examples": [
+            {
+              "chinese": "你能顺便帮我买个面包吗？",
+              "pinyin": "Nǐ néng shùnbiàn bāng wǒ mǎi ge miànbāo ma?",
+              "english": "Could you buy me some bread while you're at it?"
+            },
+            {
+              "chinese": "我一会儿去超市，顺便去学校接孩子。",
+              "pinyin": "Wǒ yíhuìr qù chāoshì, shùnbiàn qù xuéxiào jiē háizi.",
+              "english": "I'm going to the supermarket in a bit, and I'll pick the kids up from school on the way."
+            },
+            {
+              "chinese": "他顺便去了医院看妈妈。",
+              "pinyin": "Tā shùnbiàn qù le yīyuàn kàn māma.",
+              "english": "He dropped in at the hospital to see his mother while he was out."
+            },
+            {
+              "chinese": "咱们可以顺便去看看那位最帅的老师！",
+              "pinyin": "Zánmen kěyǐ shùnbiàn qù kànkan nà wèi zuì shuài de lǎoshī!",
+              "english": "While we're there, we can go and see that super handsome teacher!"
+            }
+          ]
+        },
+        {
+          "heading": "Asking the way on campus, and 改天吧",
+          "body": "Ask where something is with 请问…在哪儿？ and whether a place has something with …有…吗？ To check a guess, add 是吗？ after a statement, or end it with 吗. In a building, 层 counts the floors: 三层 is the third floor. 位 is the polite measure word for people (那位老师), and after 有 the 一 is often dropped: 有位老师, 有个讲座. To turn down an invitation gently, say 改天吧, \"maybe another day\", and give your reason, often with 得.",
+          "examples": [
+            {
+              "chinese": "请问图书馆在哪儿？",
+              "pinyin": "Qǐngwèn túshūguǎn zài nǎr?",
+              "english": "Excuse me, where's the library?"
+            },
+            {
+              "chinese": "国际学生办公室就在楼里，是吗？",
+              "pinyin": "Guójì xuésheng bàngōngshì jiù zài lóu li, shì ma?",
+              "english": "The International Students' Office is in this building, isn't it?"
+            },
+            {
+              "chinese": "我们明天去看电影吧。改天吧。",
+              "pinyin": "Wǒmen míngtiān qù kàn diànyǐng ba. Gǎitiān ba.",
+              "english": "Let's go and see a film tomorrow. — Maybe another day."
+            },
+            {
+              "chinese": "明天一起吃饭好吗？改天吧，我明天很忙。",
+              "pinyin": "Míngtiān yìqǐ chī fàn hǎo ma? Gǎitiān ba, wǒ míngtiān hěn máng.",
+              "english": "Shall we eat together tomorrow? — Maybe another day, I'm busy tomorrow."
+            }
+          ],
+          "table": {
+            "headers": ["Chinese", "Pinyin", "English"],
+            "rows": [
+              [
+                "请问图书馆在哪儿？",
+                "Qǐngwèn túshūguǎn zài nǎr?",
+                "Excuse me, where's the library?"
+              ],
+              [
+                "学校附近有超市吗？",
+                "Xuéxiào fùjìn yǒu chāoshì ma?",
+                "Is there a supermarket near the school?"
+              ],
+              [
+                "你知道309教室在哪儿吗？",
+                "Nǐ zhīdào sān líng jiǔ jiàoshì zài nǎr ma?",
+                "Do you know where Room 309 is?"
+              ],
+              [
+                "就在国际学生办公室旁边吗？",
+                "Jiù zài guójì xuésheng bàngōngshì pángbiān ma?",
+                "Is it right next to the International Students' Office?"
+              ],
+              [
+                "改天吧，我得去自习。",
+                "Gǎitiān ba, wǒ děi qù zìxí.",
+                "Maybe another day — I have to go and study."
+              ]
+            ]
+          }
+        },
+        {
+          "heading": "从…到… and …的时候 — talking about your week",
+          "body": "Two patterns help you describe a routine. 从…到… marks where a stretch of time starts and ends: 我从八点到十一点半有课. …的时候 means \"when\" or \"while\": end the time clause with 的时候 and put it before the main clause, as in 休息的时候，我喜欢上网.",
+          "examples": [
+            {
+              "chinese": "我从八点到十一点半有课。",
+              "pinyin": "Wǒ cóng bā diǎn dào shíyī diǎn bàn yǒu kè.",
+              "english": "I have classes from eight to half past eleven."
+            },
+            {
+              "chinese": "我从星期一到星期五都很忙。",
+              "pinyin": "Wǒ cóng xīngqīyī dào xīngqīwǔ dōu hěn máng.",
+              "english": "I'm busy every day from Monday to Friday."
+            },
+            {
+              "chinese": "休息的时候，我喜欢在宿舍上网，也喜欢跟朋友聊天儿。",
+              "pinyin": "Xiūxi de shíhou, wǒ xǐhuan zài sùshè shàngwǎng, yě xǐhuan gēn péngyou liáotiānr.",
+              "english": "When I have a break, I like going online in my dorm and chatting with friends."
+            },
+            {
+              "chinese": "周末的时候，我喜欢爬山。",
+              "pinyin": "Zhōumò de shíhou, wǒ xǐhuan pá shān.",
+              "english": "At the weekend, I like hiking."
+            }
+          ]
+        }
+      ],
+      "selfCheck": [
+        {
+          "q": "How do you say \"There's a big supermarket near the school\"?",
+          "a": "学校附近有个大超市。(Xuéxiào fùjìn yǒu ge dà chāoshì.)"
+        },
+        {
+          "q": "Fill the blank （在 / 有 / 是）: 咖啡厅___图书馆后面。",
+          "a": "咖啡厅在图书馆后面。(Kāfēitīng zài túshūguǎn hòumiàn.) The café is a known thing, so 在 says where it is."
+        },
+        {
+          "q": "Which is correct for \"Opposite the hospital is my home\": 医院对面有我家 or 医院对面是我家?",
+          "a": "医院对面是我家。(Yīyuàn duìmiàn shì wǒ jiā.) 有 brings in something new, so a specific place like 我家 takes 是. You can also say 我家在医院对面。"
+        },
+        {
+          "q": "How do you ask \"Excuse me, where is the library?\" — and answer \"The library is opposite the canteen\"?",
+          "a": "请问图书馆在哪儿？(Qǐngwèn túshūguǎn zài nǎr?) / 图书馆在食堂对面。(Túshūguǎn zài shítáng duìmiàn.)"
+        },
+        {
+          "q": "Which of these need 的: 汉语___课, 漂亮___衣服, 三本___书, 桌子上___杯子?",
+          "a": "汉语课 and 三本书 take no 的; 漂亮的衣服 and 桌子上的杯子 need it. A noun saying what kind, and a number with a measure word, join the noun directly; a two-syllable adjective and a place take 的."
+        },
+        {
+          "q": "How do you say \"I like the clothes my older sister bought\"?",
+          "a": "我喜欢姐姐买的衣服。(Wǒ xǐhuan jiějie mǎi de yīfu.)"
+        },
+        {
+          "q": "Put in order: 很不错 / 新开的 / 听说 / 西餐厅 / 那家 (I hear the Western restaurant that just opened is very good.)",
+          "a": "听说那家新开的西餐厅很不错。(Tīngshuō nà jiā xīn kāi de xīcāntīng hěn búcuò.)"
+        },
+        {
+          "q": "Answer in your own words: 你最喜欢的动物是什么？ (What's your favourite animal?)",
+          "a": "Sample answer: 我最喜欢的动物是猫。(Wǒ zuì xǐhuan de dòngwù shì māo.)"
+        },
+        {
+          "q": "How do you ask a friend \"Could you buy me some bread while you're at it?\"",
+          "a": "你能顺便帮我买个面包吗？(Nǐ néng shùnbiàn bāng wǒ mǎi ge miànbāo ma?)"
+        },
+        {
+          "q": "How do you politely turn down \"咱们去尝尝？\" and say \"Maybe another day — I have to go and study\"?",
+          "a": "改天吧，我得去自习。(Gǎitiān ba, wǒ děi qù zìxí.)"
+        },
+        {
+          "q": "Give each verb a partner: 上, 做, 收拾, 看, 听, 学习.",
+          "a": "For example: 上课 (shàngkè) or 上网 (shàngwǎng), 做饭 (zuò fàn), 收拾房间 (shōushi fángjiān), 看书 (kàn shū), 听音乐 (tīng yīnyuè), 学习汉语 (xuéxí Hànyǔ)."
+        },
+        {
+          "q": "How do you say \"I'm busy from Monday to Friday, and when I have a break I like going online in my dorm\"?",
+          "a": "我从星期一到星期五都很忙，休息的时候，我喜欢在宿舍上网。(Wǒ cóng xīngqīyī dào xīngqīwǔ dōu hěn máng, xiūxi de shíhou, wǒ xǐhuan zài sùshè shàngwǎng.)"
+        }
+      ]
     }
   ]
 }
