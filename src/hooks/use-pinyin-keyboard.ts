@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { findCandidates, loadKeyboardDictionary, parseTyped } from '@/lib/language/pinyin-keyboard';
 import type {
   KeyboardCandidate,
@@ -14,7 +14,8 @@ export interface KeyboardTarget {
   insert: (text: string) => void;
   /** Deletes the selection, or the character before the caret. */
   deleteBack: () => void;
-  send: () => void;
+  /** What ↵ does when no pinyin is being typed: the chat sends the message. */
+  submit: () => void;
 }
 
 export type KeyboardKey =
@@ -30,6 +31,8 @@ export type KeyboardKey =
 export interface PinyinKeyboard {
   /** The dictionary loads the first time the keyboard opens. */
   status: 'loading' | 'ready' | 'unavailable';
+  /** The loaded dictionary, also good for looking words up; null until then. */
+  dictionary: KeyboardDictionary | null;
   /** Pinyin typed and not yet turned into characters. */
   typed: string;
   /** `typed` split into syllables; null when it isn't pinyin. */
@@ -39,6 +42,8 @@ export interface PinyinKeyboard {
   canTone: boolean;
   press: (key: KeyboardKey) => void;
   pick: (index: number) => void;
+  /** Takes a physical key press in the text box when it is the keyboard's; true when it did. */
+  handleKey: (event: React.KeyboardEvent) => boolean;
   retry: () => void;
 }
 
@@ -59,7 +64,7 @@ export const CHINESE_PUNCTUATION: Record<string, string> = {
  * the rest only matter mid-pinyin (space picks the first candidate, Enter types
  * the letters as they are, 1–5 add a tone).
  */
-export function keyForKeyPress(key: string, composing: boolean): KeyboardKey | null {
+function keyForKeyPress(key: string, composing: boolean): KeyboardKey | null {
   if (/^[a-z]$/.test(key)) return { kind: 'letter', letter: key };
   if (!composing) return null;
   if (/^[1-5]$/.test(key)) return { kind: 'tone', tone: Number(key) };
@@ -142,7 +147,7 @@ export function usePinyinKeyboard(open: boolean, target: KeyboardTarget): Pinyin
           target.insert(typed);
           setTyped('');
         } else {
-          target.send();
+          target.submit();
         }
         return;
       case 'clear':
@@ -161,9 +166,78 @@ export function usePinyinKeyboard(open: boolean, target: KeyboardTarget): Pinyin
     setTyped(typed.slice(syllables[candidate.length - 1].end).replace(/^'+/, ''));
   };
 
+  const handleKey = (event: React.KeyboardEvent): boolean => {
+    if (!open || event.metaKey || event.ctrlKey || event.altKey) return false;
+    const key = keyForKeyPress(event.key, typed !== '');
+    if (!key) return false;
+    event.preventDefault();
+    press(key);
+    return true;
+  };
+
   // Clearing the failure runs the loading effect again.
   const retry = () => setFailed(false);
 
   const status = dictionary ? 'ready' : failed ? 'unavailable' : 'loading';
-  return { status, typed, syllables, candidates, canTone, press, pick, retry };
+  return {
+    status,
+    dictionary,
+    typed,
+    syllables,
+    candidates,
+    canTone,
+    press,
+    pick,
+    handleKey,
+    retry,
+  };
+}
+
+interface TextareaTargetOptions {
+  maxLength: number;
+  submit: () => void;
+}
+
+/**
+ * The keyboard's target for a controlled textarea: edits at the caret, or over
+ * the selection, and puts the caret after the edit once it renders.
+ */
+export function useTextareaTarget(
+  textarea: React.RefObject<HTMLTextAreaElement | null>,
+  value: string,
+  setValue: (value: string) => void,
+  { maxLength, submit }: TextareaTargetOptions,
+): KeyboardTarget {
+  /** Where the caret goes once the edit renders. */
+  const caret = useRef<number | null>(null);
+
+  useLayoutEffect(() => {
+    if (caret.current === null) return;
+    textarea.current?.setSelectionRange(caret.current, caret.current);
+    caret.current = null;
+  }, [textarea, value]);
+
+  return {
+    insert: (text) => {
+      const el = textarea.current;
+      const start = el?.selectionStart ?? value.length;
+      const end = el?.selectionEnd ?? value.length;
+      const next = (value.slice(0, start) + text + value.slice(end)).slice(0, maxLength);
+      caret.current = Math.min(start + text.length, next.length);
+      setValue(next);
+    },
+    deleteBack: () => {
+      const el = textarea.current;
+      const start = el?.selectionStart ?? value.length;
+      const end = el?.selectionEnd ?? value.length;
+      if (start === end && start === 0) return;
+      // A character outside the BMP is two UTF-16 units.
+      const low = value.charCodeAt(start - 1);
+      const width = start >= 2 && low >= 0xdc00 && low <= 0xdfff ? 2 : 1;
+      const from = start === end ? start - width : start;
+      caret.current = from;
+      setValue(value.slice(0, from) + value.slice(end));
+    },
+    submit,
+  };
 }

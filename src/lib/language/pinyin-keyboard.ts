@@ -1,9 +1,10 @@
 /**
- * The candidate engine behind the chat's on-screen pinyin keyboard: turns typed
- * pinyin ("woxiangqu", "ni3hao", "xi'an") into characters and words to pick
- * from. The dictionary (public/pinyin-ime.json, built by
- * scripts/build-pinyin-ime.mjs) holds the commonest characters and words plus
- * every course word, each with its pinyin, a frequency cost and a short gloss.
+ * The candidate engine behind the on-screen pinyin keyboard (in the chat and on
+ * the Compose page): turns typed pinyin ("woxiangqu", "ni3hao", "xi'an") into
+ * characters and words to pick from. The dictionary (public/pinyin-ime.json,
+ * built by scripts/build-pinyin-ime.mjs) holds the commonest characters and
+ * words plus every course word, each with its pinyin, a frequency cost and a
+ * short gloss.
  */
 
 import { numberedToMarked } from './pinyin';
@@ -12,7 +13,7 @@ import { isSyllable, splitTyped, syllablesStartingWith } from './pinyin-syllable
 /** [characters, numbered pinyin, cost, gloss] as public/pinyin-ime.json stores them, commonest first. */
 type StoredEntry = [string, string, number, string];
 
-interface DictionaryWord {
+export interface DictionaryWord {
   text: string;
   /** Numbered pinyin as stored: "ni3 hao3", "Bei3 jing1" (a name), "zhe4 r5". */
   reading: string;
@@ -26,12 +27,15 @@ interface DictionaryWord {
 export interface KeyboardDictionary {
   /** Toneless syllables joined by spaces ("ni hao") → words, commonest first. */
   words: Map<string, DictionaryWord[]>;
-  /** Most syllables in one word. */
+  /** Characters → the word under each of its readings, commonest first. */
+  texts: Map<string, DictionaryWord[]>;
+  /** Most syllables in one word, which is also the most characters. */
   longest: number;
 }
 
 export function buildKeyboardDictionary(entries: StoredEntry[]): KeyboardDictionary {
   const words = new Map<string, DictionaryWord[]>();
+  const texts = new Map<string, DictionaryWord[]>();
   let longest = 1;
   for (const [text, reading, cost, gloss] of entries) {
     const syllables = reading.toLowerCase().split(' ');
@@ -52,8 +56,11 @@ export function buildKeyboardDictionary(entries: StoredEntry[]): KeyboardDiction
       if (list) list.push(word);
       else words.set(key, [word]);
     }
+    const readings = texts.get(text);
+    if (readings) readings.push(word);
+    else texts.set(text, [word]);
   }
-  return { words, longest };
+  return { words, texts, longest };
 }
 
 let loading: Promise<KeyboardDictionary | null> | null = null;

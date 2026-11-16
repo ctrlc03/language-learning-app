@@ -11,7 +11,7 @@
  * English notes, such as the bracketed "(You've met every goal…)".
  */
 
-import { hasHan, toPinyin } from '@/lib/language/pinyin';
+import { hasHan, sentencePinyin } from '@/lib/language/pinyin';
 
 export interface ReplyLine {
   chinese: string;
@@ -65,8 +65,7 @@ export function parseChineseReply(content: string, settled = true): ReplyPart[] 
   const waiting = settled ? null : parts[parts.length - 1];
   for (const part of parts) {
     if (part.kind === 'line' && !part.line.pinyin && part !== waiting) {
-      // pinyin-pro spaces punctuation like syllables: "nǐ hǎo ！" → "nǐ hǎo！"
-      part.line.pinyin = toPinyin(part.line.chinese).replace(/ (?=[，。！？；：、）」』”])/g, '');
+      part.line.pinyin = sentencePinyin(part.line.chinese);
     }
   }
   return parts;

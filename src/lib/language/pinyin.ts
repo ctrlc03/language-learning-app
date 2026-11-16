@@ -183,6 +183,14 @@ export function toPinyin(text: string): string {
 }
 
 /**
+ * `toPinyin` for a sentence shown on a line of its own: pinyin-pro spaces
+ * punctuation like a syllable ("nǐ hǎo ！"), here it joins the word before it ("nǐ hǎo！").
+ */
+export function sentencePinyin(text: string): string {
+  return toPinyin(text).replace(/ (?=[，。！？；：、）」』”])/g, '');
+}
+
+/**
  * Numbered pinyin to tone marks: "ni3 hao3" → "nǐ hǎo", "Bei3 jing1" → "Běi jīng".
  * 5 (or no digit) is the neutral tone, v is ü, and an erhua r joins the syllable
  * before it ("zhe4 r5" → "zhèr").

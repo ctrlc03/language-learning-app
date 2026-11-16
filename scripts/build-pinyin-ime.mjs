@@ -1,5 +1,6 @@
 /**
- * Builds the dictionary behind the on-screen pinyin keyboard in the chat: the
+ * Builds the dictionary behind the on-screen pinyin keyboard (in the chat and on
+ * the Compose page, whose word-by-word meanings also come from it): the
  * commonest characters and words with their pinyin, how common they are and a
  * short English gloss, plus every course word. Uses the `hanzi` library's data
  * at build time (CC-CEDICT readings and glosses, Jun Da's character frequencies,

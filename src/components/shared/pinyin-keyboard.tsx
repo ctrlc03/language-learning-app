@@ -55,16 +55,18 @@ function composition(keyboard: PinyinKeyboard): string {
 
 interface PinyinKeyboardPanelProps {
   keyboard: PinyinKeyboard;
-  /** Whether the Send key may send (there's a message and nothing being typed). */
-  canSend: boolean;
+  /** What ↵ does once nothing is being typed: "Send" in the chat. */
+  actionLabel: string;
+  /** Whether that action may run now. */
+  canAct: boolean;
 }
 
 /**
  * On-screen pinyin keyboard: type pinyin, then tap the characters (or a whole
- * guessed phrase) to put them in the message. Tone keys narrow the choices;
- * space takes the first; ↵ types the letters as they are.
+ * guessed phrase) to put them in the text. Tone keys narrow the choices; space
+ * takes the first; ↵ types the letters as they are, or runs the action.
  */
-export function PinyinKeyboardPanel({ keyboard, canSend }: PinyinKeyboardPanelProps) {
+export function PinyinKeyboardPanel({ keyboard, actionLabel, canAct }: PinyinKeyboardPanelProps) {
   const { typed, candidates, status, press } = keyboard;
   const strip = useRef<HTMLDivElement>(null);
 
@@ -189,12 +191,12 @@ export function PinyinKeyboardPanel({ keyboard, canSend }: PinyinKeyboardPanelPr
             </Key>
           ))}
           <Key
-            label={typed ? 'Type the letters as they are' : 'Send'}
-            disabled={!typed && !canSend}
+            label={typed ? 'Type the letters as they are' : actionLabel}
+            disabled={!typed && !canAct}
             className="flex-[1.5]"
             onPress={() => press({ kind: 'enter' })}
           >
-            <span className={cn(!typed && 'text-xs')}>{typed ? '↵' : 'Send'}</span>
+            <span className={cn(!typed && 'text-xs')}>{typed ? '↵' : actionLabel}</span>
           </Key>
         </div>
       </div>

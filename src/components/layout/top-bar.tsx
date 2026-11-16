@@ -26,6 +26,7 @@ export const NAV_TABS = [
   { href: '/writing', group: 'practice', cjk: '書', cjkZh: '写', label: 'Write' },
   { href: '/measure-words', group: 'practice', cjk: '量', label: 'Classifiers' },
   { href: '/typing', group: 'practice', cjk: '拼', label: 'Typing' },
+  { href: '/compose', group: 'practice', cjk: '作', label: 'Compose' },
   { href: '/numbers', group: 'practice', cjk: '数', label: 'Numbers' },
   { href: '/chat', group: 'chat', cjk: '話', cjkZh: '话', label: 'Chat' },
   { href: '/progress', group: 'progress', cjk: '弱', label: 'Weak Spots' },

@@ -2,8 +2,8 @@
 
 import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { PinyinKeyboardPanel } from './pinyin-keyboard';
-import { keyForKeyPress, usePinyinKeyboard } from '@/hooks/use-pinyin-keyboard';
+import { PinyinKeyboardPanel } from '@/components/shared/pinyin-keyboard';
+import { usePinyinKeyboard, useTextareaTarget } from '@/hooks/use-pinyin-keyboard';
 import { cn } from '@/lib/utils';
 
 /** Longest message the box accepts; the server rejects far longer ones. */
@@ -26,8 +26,6 @@ export function ChatInput({
   const [value, setValue] = useState('');
   const [keyboardOpen, setKeyboardOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  /** Where the caret goes once the keyboard's edit renders. */
-  const caret = useRef<number | null>(null);
 
   const handleSubmit = useCallback(() => {
     const trimmed = value.trim();
@@ -37,41 +35,19 @@ export function ChatInput({
   }, [value, disabled, onSend]);
 
   const open = pinyinKeyboard && keyboardOpen;
-  const keyboard = usePinyinKeyboard(open, {
-    insert: (text) => {
-      const el = textareaRef.current;
-      const start = el?.selectionStart ?? value.length;
-      const end = el?.selectionEnd ?? value.length;
-      const next = (value.slice(0, start) + text + value.slice(end)).slice(0, MAX_INPUT_CHARS);
-      caret.current = Math.min(start + text.length, next.length);
-      setValue(next);
-    },
-    deleteBack: () => {
-      const el = textareaRef.current;
-      const start = el?.selectionStart ?? value.length;
-      const end = el?.selectionEnd ?? value.length;
-      if (start === end && start === 0) return;
-      // A character outside the BMP is two UTF-16 units.
-      const low = value.charCodeAt(start - 1);
-      const width = start >= 2 && low >= 0xdc00 && low <= 0xdfff ? 2 : 1;
-      const from = start === end ? start - width : start;
-      caret.current = from;
-      setValue(value.slice(0, from) + value.slice(end));
-    },
-    send: handleSubmit,
+  const target = useTextareaTarget(textareaRef, value, setValue, {
+    maxLength: MAX_INPUT_CHARS,
+    submit: handleSubmit,
   });
+  const keyboard = usePinyinKeyboard(open, target);
   const composing = open && keyboard.typed !== '';
 
-  // Fit the box to its text, and put the caret after what the keyboard typed.
+  // Fit the box to its text.
   useLayoutEffect(() => {
     const textarea = textareaRef.current;
     if (!textarea) return;
     textarea.style.height = 'auto';
     textarea.style.height = Math.min(textarea.scrollHeight, 150) + 'px';
-    if (caret.current !== null) {
-      textarea.setSelectionRange(caret.current, caret.current);
-      caret.current = null;
-    }
   }, [value]);
 
   // With the keyboard open the box keeps focus, so a physical keyboard types into the
@@ -89,14 +65,7 @@ export function ChatInput({
     // Enter confirms an IME candidate (pinyin/kana) while composing; it must not send.
     // keyCode 229 covers browsers that fire keydown after compositionend.
     if (e.nativeEvent.isComposing || e.nativeEvent.keyCode === 229) return;
-    if (open && !e.metaKey && !e.ctrlKey && !e.altKey) {
-      const key = keyForKeyPress(e.key, composing);
-      if (key) {
-        e.preventDefault();
-        keyboard.press(key);
-        return;
-      }
-    }
+    if (keyboard.handleKey(e)) return;
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSubmit();
@@ -160,7 +129,11 @@ export function ChatInput({
         </Button>
       </div>
       {open && (
-        <PinyinKeyboardPanel keyboard={keyboard} canSend={!disabled && value.trim() !== ''} />
+        <PinyinKeyboardPanel
+          keyboard={keyboard}
+          actionLabel="Send"
+          canAct={!disabled && value.trim() !== ''}
+        />
       )}
     </div>
   );

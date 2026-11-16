@@ -17,6 +17,7 @@ const CRITICAL_URLS = [OFFLINE_URL, '/manifest.webmanifest'];
 const WARM_URLS = [
   '/',
   '/chat',
+  '/compose',
   '/dashboard',
   '/exercises',
   '/flashcards',
