@@ -152,6 +152,7 @@ export type ExerciseType =
   | 'grammar-drill'
   | 'dialogue-reading'
   | 'dialogue-comprehension'
+  | 'listening'
   | 'typed-recall';
 
 export interface Exercise {
@@ -180,6 +181,7 @@ export type ExerciseData =
   | GrammarDrillData
   | DialogueReadingData
   | DialogueComprehensionExerciseData
+  | ListeningQuizData
   | TypedRecallData;
 
 export interface MultipleChoiceData {
@@ -315,6 +317,12 @@ export interface DialogueComprehensionExerciseData {
   /** Why each option is wrong, told to a learner who picks it; null for the right one. */
   whyWrong?: (string | null)[];
   explanation?: string;
+}
+
+// Listening: the app reads a short conversation aloud and the learner answers one
+// multiple-choice question about it; the words are shown once it is answered.
+export interface ListeningQuizData extends Omit<DialogueComprehensionExerciseData, 'type'> {
+  type: 'listening';
 }
 
 // Production: the prompt gives the meaning, the learner types the Chinese in

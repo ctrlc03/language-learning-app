@@ -15,6 +15,7 @@ export const AI_EXERCISE_TYPES = [
   'sentence-construction',
   'grammar-drill',
   'dialogue-comprehension',
+  'listening',
   'translation',
 ] as const satisfies readonly ExerciseType[];
 

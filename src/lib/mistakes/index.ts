@@ -113,6 +113,7 @@ export function describeExercise(exercise: Exercise): MistakeText {
     case 'character-recognition':
       return { prompt: data.character, answer: data.meaning, answerPinyin: data.reading };
     case 'dialogue-comprehension':
+    case 'listening':
       return {
         prompt: data.question,
         answer: data.options[data.correctIndex],

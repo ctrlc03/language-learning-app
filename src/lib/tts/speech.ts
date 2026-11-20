@@ -33,6 +33,12 @@ export function speechErrorMessage(err: unknown): string {
   return err instanceof SpeechUnavailableError ? err.message : "Couldn't play audio. Try again.";
 }
 
+/** Who reads a line: the learner's voice, or another for the second speaker of a conversation. */
+export type SpeechVoice = 'main' | 'other';
+
+/** Pitch for the second speaker when no second voice of the same accent is installed. */
+const OTHER_SPEAKER_PITCH = 0.8;
+
 // Preferred voices per language, ranked best-first.
 // These are known high-quality voices on macOS, iOS, Windows, Chrome, etc.
 const PREFERRED_VOICES: Record<Language, string[]> = {
@@ -205,6 +211,22 @@ function getBestVoice(language: Language): SpeechSynthesisVoice | null {
   return best;
 }
 
+/**
+ * Another installed voice with the same accent as `main` (zh-CN with zh-CN: a zh-TW
+ * voice reads some words differently), for the second speaker; null when there is none.
+ */
+function getOtherVoice(
+  language: Language,
+  main: SpeechSynthesisVoice,
+): SpeechSynthesisVoice | null {
+  const lang = normalizeLang(main.lang);
+  const others = getAvailableVoices(language).filter(
+    (v) => v.name !== main.name && normalizeLang(v.lang) === lang,
+  );
+  others.sort((a, b) => scoreVoice(b, language) - scoreVoice(a, language));
+  return others[0] ?? null;
+}
+
 function getBestEnglishVoice(): SpeechSynthesisVoice | null {
   if (cachedEnglishVoice !== undefined) return cachedEnglishVoice;
 
@@ -278,7 +300,12 @@ function stopResumeWatchdog() {
   }
 }
 
-export function speak(text: string, language: Language, rate: number = 1.0): Promise<void> {
+export function speak(
+  text: string,
+  language: Language,
+  rate: number = 1.0,
+  voice: SpeechVoice = 'main',
+): Promise<void> {
   return new Promise((resolve, reject) => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
       reject(new SpeechUnavailableError(NO_SPEECH_MESSAGE));
@@ -292,24 +319,27 @@ export function speak(text: string, language: Language, rate: number = 1.0): Pro
     // Small delay after cancel() to let the engine reset —
     // without this, Chrome/Safari silently drop the next utterance.
     setTimeout(() => {
-      const voice = getBestVoice(language);
+      const main = getBestVoice(language);
       // With no Mandarin voice the browser would read hanzi in its default voice: wrong sounds or
       // silence. Say so once voices have loaded (an empty list just means they haven't yet).
-      if (!voice && language === 'chinese' && speechSynthesis.getVoices().length > 0) {
+      if (!main && language === 'chinese' && speechSynthesis.getVoices().length > 0) {
         reject(new SpeechUnavailableError(NO_MANDARIN_VOICE_MESSAGE));
         return;
       }
+      // A second speaker gets a second voice, or failing that the same voice pitched lower.
+      const other = voice === 'other' && main ? getOtherVoice(language, main) : null;
+      const chosen = other ?? main;
 
       const utterance = new SpeechSynthesisUtterance(text);
       // Set lang to the primary code for this language
       utterance.lang = LANG_CODES[language][0];
       utterance.rate = rate;
-      utterance.pitch = 1.0;
+      utterance.pitch = voice === 'other' && !other ? OTHER_SPEAKER_PITCH : 1.0;
 
-      if (voice) {
-        utterance.voice = voice;
+      if (chosen) {
+        utterance.voice = chosen;
         // Override lang to match the selected voice exactly
-        utterance.lang = voice.lang;
+        utterance.lang = chosen.lang;
       }
 
       utterance.onend = () => {

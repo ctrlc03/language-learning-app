@@ -5,8 +5,11 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useSpeechInit } from '@/hooks/use-speech';
 import { useCurrentLesson } from '@/hooks/use-current-lesson';
 import { useProgress } from '@/hooks/use-progress';
+import { useMistakeLog } from '@/hooks/use-mistakes';
+import { useListeningQuiz } from '@/hooks/use-listening-quiz';
 import { DictationExercise } from '@/components/listening/dictation-exercise';
 import { ListenAndChoose } from '@/components/listening/listen-choose';
+import { ExerciseShell } from '@/components/exercises/exercise-shell';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -149,12 +152,14 @@ const LISTEN_CHOOSE_SETS = {
   },
 };
 
-type ExerciseMode = 'select' | 'dictation' | 'listen-choose';
+type ExerciseMode = 'select' | 'dictation' | 'listen-choose' | 'quiz';
 
 export default function ListeningPage() {
   const { language, difficulty } = useLanguage();
   const [currentLesson] = useCurrentLesson();
   const { recordActivity } = useProgress();
+  const { recordExercise } = useMistakeLog();
+  const quiz = useListeningQuiz(currentLesson, difficulty);
   const [mode, setMode] = useState<ExerciseMode>('select');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [sessionCorrect, setSessionCorrect] = useState(0);
@@ -286,7 +291,90 @@ export default function ListeningPage() {
               </p>
             </Card>
           </button>
+
+          {language === 'chinese' && (
+            <button
+              onClick={() => {
+                setMode('quiz');
+                void quiz.next();
+              }}
+              className="text-left md:col-span-2"
+            >
+              <Card className="p-6 hover:border-primary/50 hover:bg-primary/5 transition-all h-full">
+                <div className="text-3xl mb-2">
+                  <svg
+                    className="w-8 h-8 text-primary"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"
+                    />
+                  </svg>
+                </div>
+                <h3 className="font-semibold">Listening Quiz</h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  The AI writes a short conversation from your lessons: listen, then answer a
+                  question about it. Needs a connection.
+                </p>
+              </Card>
+            </button>
+          )}
         </div>
+      </div>
+    );
+  }
+
+  if (mode === 'quiz') {
+    return (
+      <div className="p-5 md:p-8 max-w-2xl mx-auto space-y-6">
+        <div className="flex items-center justify-between">
+          <Button variant="ghost" size="sm" onClick={() => setMode('select')}>
+            &larr; Back
+          </Button>
+          <span
+            className="text-[10px] tracking-[0.15em] px-2 py-1 border border-primary/40 text-primary"
+            title="Written by the AI from your lessons"
+          >
+            AI
+          </span>
+        </div>
+        {quiz.loading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full mx-auto" />
+            <p className="text-xs mt-3 text-muted-foreground">
+              Writing a conversation from your lessons…
+            </p>
+          </div>
+        ) : quiz.exercise ? (
+          <ExerciseShell
+            exercise={quiz.exercise}
+            onComplete={(result) => {
+              handleComplete(result.correct);
+              if (quiz.exercise) {
+                recordExercise(quiz.exercise, result.correct, 'practice', result.userAnswer);
+              }
+            }}
+            onNext={() => void quiz.next()}
+          />
+        ) : (
+          quiz.error && (
+            <Card>
+              <CardContent className="p-5 text-center space-y-3">
+                <p role="alert" className="text-sm text-destructive">
+                  {quiz.error}
+                </p>
+                <Button variant="outline" size="sm" onClick={() => void quiz.next()}>
+                  Try again
+                </Button>
+              </CardContent>
+            </Card>
+          )
+        )}
       </div>
     );
   }

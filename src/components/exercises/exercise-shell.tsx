@@ -16,6 +16,7 @@ import { CharacterRecognition } from './character-recognition';
 import { GrammarDrill } from './grammar-drill';
 import { DialogueReading } from './dialogue-reading';
 import { DialogueComprehension } from './dialogue-comprehension';
+import { ListeningQuiz } from './listening-quiz';
 import { TypedRecall } from './typed-recall';
 import { speak, stopSpeaking } from '@/lib/tts/speech';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -37,6 +38,7 @@ const TYPE_LABELS: Record<string, string> = {
   'grammar-drill': 'Grammar Drill',
   'dialogue-reading': 'Dialogue Reading',
   'dialogue-comprehension': 'Dialogue Quiz',
+  listening: 'Listening Quiz',
   'typed-recall': 'Typed Recall',
 };
 
@@ -204,6 +206,15 @@ export function ExerciseShell({ exercise, onComplete, onNext }: ExerciseShellPro
       case 'dialogue-comprehension':
         return (
           <DialogueComprehension data={exercise.data} onSubmit={handleSubmit} disabled={!!result} />
+        );
+      case 'listening':
+        return (
+          <ListeningQuiz
+            data={exercise.data}
+            language={exercise.language}
+            onSubmit={handleSubmit}
+            disabled={!!result}
+          />
         );
       case 'typed-recall':
         return <TypedRecall data={exercise.data} onSubmit={handleSubmit} disabled={!!result} />;

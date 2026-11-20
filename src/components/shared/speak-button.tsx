@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { speak, stopSpeaking } from '@/lib/tts/speech';
+import type { SpeechVoice } from '@/lib/tts/speech';
 import { useSpeechNotice } from '@/hooks/use-speech';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { Language } from '@/types';
@@ -12,6 +13,8 @@ import { cn } from '@/lib/utils';
 interface SpeakButtonProps {
   text: string;
   language?: Language;
+  /** `other`: the second speaker's voice in a conversation. */
+  voice?: SpeechVoice;
   size?: 'sm' | 'md' | 'lg' | 'icon';
   className?: string;
 }
@@ -38,6 +41,7 @@ export function SpeechNotice({ message }: { message: string | null }) {
 export function SpeakButton({
   text,
   language: langOverride,
+  voice = 'main',
   size = 'icon',
   className,
 }: SpeakButtonProps) {
@@ -55,13 +59,13 @@ export function SpeakButton({
 
     setSpeaking(true);
     try {
-      await speak(text, language, speechRate);
+      await speak(text, language, speechRate, voice);
     } catch (err) {
       reportSpeechError(err);
     } finally {
       setSpeaking(false);
     }
-  }, [text, language, speechRate, speaking, reportSpeechError]);
+  }, [text, language, speechRate, voice, speaking, reportSpeechError]);
 
   return (
     <>

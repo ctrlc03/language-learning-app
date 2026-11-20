@@ -32,6 +32,7 @@ import type {
   FillInBlankData,
   FuriSegment,
   GrammarDrillData,
+  ListeningQuizData,
   MultipleChoiceData,
   SentenceConstructionData,
   SentenceMcData,
@@ -62,6 +63,7 @@ export type ExercisePlan =
   | (WordPlan & { type: 'fill-in-blank' })
   | (WordPlan & { type: 'sentence-construction' })
   | (WordPlan & { type: 'dialogue-comprehension' })
+  | (WordPlan & { type: 'listening' })
   | (WordPlan & { type: 'sentence-mc'; direction: SentenceMcData['direction'] })
   | (WordPlan & { type: 'translation'; direction: TranslationDirection })
   | (PlanBase & { type: 'grammar-drill'; rule: GrammarRule });
@@ -263,6 +265,37 @@ const dialogueInput = z.object({
   explanation: english('One or two sentences on where the conversation gives the answer'),
 });
 
+const listeningInput = z.object({
+  title: english('A short title that does not give the answer away'),
+  setting: english(
+    'One sentence on where the conversation happens and who is talking, without giving the answer away',
+  ),
+  lines: z
+    .array(
+      z.object({
+        speaker: z.enum(['A', 'B']),
+        text: chinese('What the speaker says'),
+        translation: english('Its translation'),
+      }),
+    )
+    .min(3)
+    .max(6),
+  question: english('A question about a detail the learner has to hear; call the speakers A and B'),
+  options: choices(4, 'Four answers in English, one right'),
+  correctIndex,
+  optionNotes: reasons(
+    4,
+    'For each option, in the same order: why it is wrong, pointing to what the conversation says instead; for the right one, why it is right',
+  ),
+  explanation: english('One or two sentences on which line gives the answer'),
+});
+
+/** What both conversation exercises have the model write: the lines and a question about them. */
+type ConversationReply = Pick<
+  z.infer<typeof dialogueInput>,
+  'lines' | 'question' | 'options' | 'correctIndex' | 'optionNotes' | 'explanation'
+>;
+
 const translationInput = z.object({
   chinese: chinese('The sentence'),
   english: english('Its natural translation'),
@@ -282,6 +315,8 @@ function inputSchema(plan: ExercisePlan): z.ZodType {
       return grammarDrillInput;
     case 'dialogue-comprehension':
       return dialogueInput;
+    case 'listening':
+      return listeningInput;
     case 'translation':
       return translationInput;
   }
@@ -848,12 +883,12 @@ function buildGrammarDrill(
   };
 }
 
-function buildDialogue(
-  plan: PlanOf<'dialogue-comprehension'>,
-  raw: unknown,
+/** A conversation and its question, checked, with the options shuffled. */
+function conversationQuiz(
+  plan: WordPlan,
+  input: ConversationReply,
   random: () => number,
-): Built {
-  const input = parse(dialogueInput, raw);
+): Omit<DialogueComprehensionExerciseData, 'type' | 'title' | 'setting'> {
   input.lines.forEach((line) => {
     chineseSentence(line.text);
     englishText(line.translation, 'Each line translation');
@@ -863,7 +898,6 @@ function buildDialogue(
     `The conversation must use ${plan.word.word}.`,
   );
   check(new Set(input.lines.map((l) => l.speaker)).size === 2, 'Both A and B must speak.');
-  chineseSentence(input.titleChinese);
   check(allDistinct(input.options, looseEnglish), 'The four options must all differ.');
   checkHeardApart(input.options, false);
 
@@ -872,10 +906,7 @@ function buildDialogue(
     input.options.filter((_, i) => i !== input.correctIndex),
     random,
   );
-  const data: DialogueComprehensionExerciseData = {
-    type: 'dialogue-comprehension',
-    title: input.title,
-    setting: input.setting,
+  return {
     lines: input.lines.map((line) => ({
       speaker: line.speaker,
       text: line.text,
@@ -890,6 +921,22 @@ function buildDialogue(
     ),
     explanation: input.explanation,
   };
+}
+
+function buildDialogue(
+  plan: PlanOf<'dialogue-comprehension'>,
+  raw: unknown,
+  random: () => number,
+): Built {
+  const input = parse(dialogueInput, raw);
+  const quiz = conversationQuiz(plan, input, random);
+  chineseSentence(input.titleChinese);
+  const data: DialogueComprehensionExerciseData = {
+    type: 'dialogue-comprehension',
+    title: input.title,
+    setting: input.setting,
+    ...quiz,
+  };
   return {
     exercise: assemble(
       plan,
@@ -903,6 +950,30 @@ function buildDialogue(
       input.question,
       ...input.options,
     ],
+  };
+}
+
+function buildListening(plan: PlanOf<'listening'>, raw: unknown, random: () => number): Built {
+  const input = parse(listeningInput, raw);
+  // Nothing the learner sees before answering may show the words they are meant to hear.
+  check(
+    [input.title, input.setting, input.question, ...input.options].every(isEnglish),
+    'Write the title, setting, question and options in English only, quoting no Chinese: the learner must not see any of the words before answering.',
+  );
+  const data: ListeningQuizData = {
+    type: 'listening',
+    title: input.title,
+    setting: input.setting,
+    ...conversationQuiz(plan, input, random),
+  };
+  return {
+    exercise: assemble(
+      plan,
+      input.title,
+      'Listen to the conversation, then answer the question. The words appear once you answer.',
+      data,
+    ),
+    chinese: input.lines.map((l) => l.text),
   };
 }
 
@@ -954,6 +1025,8 @@ function buildByType(plan: ExercisePlan, raw: unknown, random: () => number): Bu
       return buildGrammarDrill(plan, raw, random);
     case 'dialogue-comprehension':
       return buildDialogue(plan, raw, random);
+    case 'listening':
+      return buildListening(plan, raw, random);
     case 'translation':
       return buildTranslation(plan, raw);
   }

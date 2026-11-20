@@ -77,6 +77,8 @@ Write one new Chinese sentence that uses the pattern (not one of the examples). 
     }
     case 'dialogue-comprehension':
       return `Write a short everyday conversation of 4 to 8 lines between A and B that uses ${describeWord(plan.word)}, with an English title, the same title in Chinese and a one-sentence English setting. Then ask one question in English about what is said, with four English options, one right. The answer must come from the conversation, not from common sense.`;
+    case 'listening':
+      return `Write a short everyday conversation of 3 to 6 lines between A and B that uses ${describeWord(plan.word)}, for a listening exercise: the learner hears it read aloud and sees none of the words until they answer. Keep each line short and natural, the way people talk. Give a short English title and a one-sentence English setting; neither may give the answer away. Then ask one question in English about a detail the learner has to hear: what someone wants or is going to do, where or when something happens, how many or how much. Call the speakers A and B. Give four English options, one right, quoting no Chinese in the question or the options. Make the wrong options things the conversation mentions or that fit the situation, so only careful listening tells them apart. The answer must come from the conversation, not from common sense.`;
     case 'translation':
       return `Write one Chinese sentence that uses ${describeWord(plan.word)}, and its natural English translation.`;
   }
