@@ -19,6 +19,7 @@ import {
   hasSeveralReadings,
   piecesPinyin,
   pinyinSegments,
+  sentencePinyin,
   toPinyin,
   wordPinyin,
 } from '@/lib/language/pinyin';
@@ -910,7 +911,7 @@ function conversationQuiz(
     lines: input.lines.map((line) => ({
       speaker: line.speaker,
       text: line.text,
-      pinyin: toPinyin(line.text),
+      pinyin: sentencePinyin(line.text),
       translation: line.translation,
     })),
     question: input.question,
